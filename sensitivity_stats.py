@@ -1,0 +1,399 @@
+# Computes the sensitivity statistics: robustness value, partial R2, and Cohen's f2; plus helper functions
+import sys
+from scipy.stats import t
+import numpy as np
+import pandas as pd
+
+
+def robustness_value(model=None, t_statistic=None, dof=None, q=1, alpha=1.0):
+    """
+    This function computes the robustness value of a regression coefficient. The robustness value describes the
+    minimum strength of association (parameterized in terms of partial R2) that omitted variables would need to have
+    both with the treatment and with the outcome to change the estimated coefficient by a certain amount
+    (for instance, to bring it down to zero).
+    
+    For instance, a robustness value of 1% means that an unobserved confounder that explain 1% of the residual variance
+    of the outcome and 1% of the residual variance of the treatment is strong enough to explain away the estimated
+    effect. Whereas a robustness value of 90% means that any unobserved confounder that explain less than 90% of the
+    residual variance of both the outcome and the treatment assignment cannot fully account for the observed effect.
+    You may also compute robustness value taking into account sampling uncertainty.
+    See details in Cinelli and Hazlett (2020).
+    
+    The function robustness_value can take as input a statsmodels OLSResults object
+        or you may directly pass the t-value and degrees of freedom.
+
+    Reference:
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+        Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+    
+    Examples:
+    # using an lm object
+    ## loads data
+    data("darfur")
+    
+    ## fits model
+    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
+                 pastvoted + hhsize_darfur + female + village, data = darfur)
+    
+    ## robustness value of directly harmed q =1 (reduce estimate to zero)
+    robustness_value(model, covariates = "directlyharmed")
+    
+    ## robustness value of directly harmed q = 1/2 (reduce estimate in half)
+    robustness_value(model, covariates = "directlyharmed", q = 1/2)
+    
+    ## robustness value of directly harmed q = 1/2, alpha = 0.05
+    ## (reduce estimate in half, with 95% confidence)
+    robustness_value(model, covariates = "directlyharmed", q = 1/2, alpha = 0.05)
+    
+    # you can also provide the statistics directly
+    robustness_value(t_statistic = 4.18445, dof = 783)
+
+    Required parameters: either model or t_statistic and dof.
+    :param model: a statsmodels OLSResults object containing the restricted regression
+    :param t_statistic: a float with the t_statistic for the restricted model regression
+    :param dof: an int with the degrees of freedom of the restricted regression
+    :param q: a float with the percent to reduce the point estimate by for the robustness value RV_q
+    :param alpha: a float with the significance level for the robustness value RV_qa to render the
+        estimate not significant
+    :return: a numpy array with the robustness value
+    """
+    if model is None and (t_statistic is None or dof is None):
+        sys.exit('Error: robustness_value requires either a statsmodels OLSResults object '
+                 'or a t-statistic and degrees of freedom.')
+    check_q(q)
+    check_alpha(alpha)
+
+    if model is not None:
+        model_data = model_helper(model)
+        t_statistic = model_data['t_statistics']
+        dof = int(model_data['dof'])
+    elif type(t_statistic) is float or type(t_statistic) is int:
+        t_statistic = pd.Series(t_statistic)
+
+    fq = q * abs(t_statistic / np.sqrt(dof))  # Cohen's f for given q value
+    f_crit = abs(t.ppf(alpha / 2, dof - 1)) / np.sqrt(dof - 1)  # computes critical f
+    fqa = fq - f_crit  # f for q and alpha values
+
+    rv = 0.5 * (np.sqrt(fqa**4 + (4 * fqa**2)) - fqa**2)  # constraint binding case
+    rvx = (fq**2 - f_crit**2)/(1 + fq**2)  # constraint not binding case
+
+    # combined results
+    rv_out = rv
+    rv_out[fqa < 0] = 0
+    rv_out[(fqa > 0) & (fq > 1 / f_crit)] = rvx[(fqa > 0) & (fq > 1 / f_crit)]
+
+    # set attributes and return
+    # rv_out['q'] = q
+    # rv_out['alpha'] = alpha
+    return rv_out
+
+
+def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
+    """
+    This function computes the partial R2 for a linear regression model. The partial R2 describes how much of the
+    residual variance of the outcome (after partialing out the other covariates) a covariate explains.
+    
+    The partial R2 can be used as an extreme-scenario sensitivity analysis to omitted variables.
+    Considering an unobserved confounder that explains 100% of the residual variance of the outcome,
+    the partial R2 describes how strongly associated with the treatment this unobserved confounder would need to be
+    in order to explain away the estimated effect.
+    For details see Cinelli and Hazlett (2020).
+
+    Reference:
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+        Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+    
+    This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
+    
+    For partial R2 of groups of covariates, check group_partial_r2.
+    
+    Examples:
+    # using an lm object
+    ## loads data
+    data("darfur")
+    
+    ## fits model
+    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
+                 pastvoted + hhsize_darfur + female + village, data = darfur)
+    
+    ## partial R2 of the treatment (directly harmed) with the outcome (peacefactor)
+    partial_r2(model, covariates = "directlyharmed")
+    
+    ## partial R2 of female with the outcome
+    partial_r2(model, covariates = "female")
+    
+    # you can also provide the statistics directly
+    partial_r2(t_statistic = 4.18445, dof = 783)
+
+    Required parameters: either model or t_statistic and dof.
+    :param model: a statsmodels OLSResults object containing the restricted regression
+    :param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof
+        from the model. If not specified, defaults to all variables.
+    :param t_statistic: a float with the t_statistic for the restricted model regression
+    :param dof: an int with the degrees of freedom of the restricted regression
+    :return: a float with the computed partial R^2
+    """
+    if model is None and (t_statistic is None or dof is None):
+        sys.exit('Error: partial_r2 requires either a statsmodels OLSResults object '
+                 'or a t-statistic and degrees of freedom.')
+
+    if model is not None:
+        model_data = model_helper(model, covariates=covariates)
+        t_statistic = model_data['t_statistics']
+        dof = model_data['dof']
+        return (t_statistic ** 2 / (t_statistic ** 2 + dof))[0]  # extracts float
+    else:
+        return t_statistic ** 2 / (t_statistic ** 2 + dof)
+
+
+def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
+    """
+    This function computes the partial (Cohen's) f2 for a linear regression model. The partial (Cohen's) f2 is a
+    common measure of effect size (a transformation of the partial R2) that can also be used directly
+    for sensitivity analysis using a bias factor table.
+    For details see Cinelli and Hazlett (2020).
+
+    Reference:
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+        Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+    This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
+
+    Examples:
+    # using an lm object
+    ## loads data
+    data("darfur")
+
+    ## fits model
+    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
+                 pastvoted + hhsize_darfur + female + village, data = darfur)
+
+    ## partial R2 of the treatment (directly harmed) with the outcome (peacefactor)
+    partial_f2(model, covariates = "directlyharmed")
+
+    ## partial R2 of female with the outcome
+    partial_f2(model, covariates = "female")
+
+    # you can also provide the statistics directly
+    partial_f2(t_statistic = 4.18445, dof = 783)
+
+    Required parameters: either model or t_statistic and dof.
+    :param model: a statsmodels OLSResults object containing the restricted regression
+    :param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof
+        from the model. If not specified, defaults to all variables.
+    :param t_statistic: a float with the t_statistic for the restricted model regression
+    :param dof: an int with the degrees of freedom of the restricted regression
+    :return: a float with the computed partial f^2
+    """
+    if model is None and (t_statistic is None or dof is None):
+        sys.exit('Error: partial_f2 requires either a statsmodels OLSResults object '
+                 'or a t-statistic and degrees of freedom.')
+
+    if model is not None:
+        model_data = model_helper(model, covariates=covariates)
+        t_statistic = model_data['t_statistics']
+        dof = model_data['dof']
+
+    return t_statistic ** 2 / dof
+
+
+def partial_f(model=None, covariates=None, t_statistic=None, dof=None):
+    """ This is the square root of the partial_f2 function described above. """
+    return np.sqrt(partial_f2(model, covariates, t_statistic, dof))
+
+
+def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=None):
+    """
+    Partial R2 of groups of covariates in a linear regression model
+
+    This function computes the partial R2 of a group of covariates in a linear regression model. Multivariate version
+        of the partial_r2 function; see that for more details.
+
+    Examples:
+    data("darfur")
+
+    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
+                 pastvoted + hhsize_darfur + female + village, data = darfur)
+
+    group_partial_r2(model, covariates = c("female", "pastvoted"))
+
+
+    Required parameters: either model or f_statistic, p, and dof.
+    :param model: a statsmodels OLSResults object containing the restricted regression
+    :param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof
+        from the model. If not specified, defaults to all variables.
+    :param f_statistic: a float with the f_statistic for the restricted model regression
+    :param p: an int with the number of parameters in the model
+    :param dof: an int with the degrees of freedom of the restricted regression
+    :return: a float with the computed group partial R^2
+    """
+    if (model is None or covariates is None) and (f_statistic is None or p is None or dof is None):
+        sys.exit('Error: group_partial_r2 requires either a statsmodels OLSResults object and covariates or an '
+                 'f-statistic, number of parameters, and degrees of freedom.')
+
+    params = model.params
+    check_covariates(model.model.exog_names, covariates)
+    params = params[covariates]
+    if np.isscalar(params):
+        return partial_r2(model=model, covariates=covariates, t_statistic=f_statistic, dof=dof)
+    v = model.cov_params().loc[covariates, :][covariates]  # variance-covariance matrix
+    dof = model.df_resid
+    p = len(params)
+    f = np.matmul(np.matmul(params.values.T, np.linalg.inv(v.values)), params.values) / p
+    r2 = f * p / (f * p + dof)
+    return r2
+
+
+def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=None, q=1, alpha=1.0, reduce=True):
+    """    
+    Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
+    See those function descriptions above for more details.
+
+    Examples:
+    ## loads data
+    data("darfur")
+    
+    ## fits model
+    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
+                 pastvoted + hhsize_darfur + female + village, data = darfur)
+    
+    ## sensitivity stats for directly harmed
+    sensitivity_stats(model, treatment = "directlyharmed")
+    
+    ## you can  also pass the numeric values directly
+    sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783)
+
+    Reference:
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+        Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+
+    Required parameters: either model and treatment, or estimate, se, and dof.
+    :param model: a statsmodels OLSResults object containing the restricted regression
+    :param treatment: a string with treatment variable name
+    :param estimate: a float with the coefficient estimate of the restricted regression
+    :param se: a float with the standard error of the restricted regression
+    :param dof: an int with the degrees of freedom of the restricted regression
+    :param q: a float with the percent to reduce the point estimate by for the robustness value RV_q
+    :param alpha: a float with the significance level for the robustness value RV_qa to render the
+        estimate not significant
+    :param reduce: whether to reduce or increase the estimate due to confounding
+    :return: a Pandas DataFrame containing the following quantities:
+        * treatment: a string with the name of the treatment variable
+        * estimate: a float with the estimated effect of the treatment
+        * se: a float with the estimated standard error of the treatment effect
+        * t_statistics: a float with  the t-value of the treatment
+        * r2yd.x: a float with the partial R2 of the treatment and the outcome, see details in partial_r2
+        * rv_q: a float the robustness value of the treatment, see details in robustness_value
+        * rv_qa: a float with the robustness value of the treatment considering statistical significance,
+            see details in robustness_value
+        * f2yd_x: a float with the partial (Cohen's) f2 of the treatment with the outcome, see details in partial_f2
+        * dof: an int with the degrees of freedom of the model
+    """
+    if (model is None or treatment is None) and (estimate is None or se is None or dof is None):
+        sys.exit('Error: sensitivity_stats requires either a statsmodels OLSResults object and treatment name or an '
+                 'estimate, standard error, and degrees of freedom.')
+    if model is not None:
+        if type(treatment) is not str:
+            sys.exit('Error: must provide only one treatment variable.')
+        model_data = model_helper(model, covariates=treatment)
+        estimate = list(model_data['estimate'])[0]
+        se = list(model_data['se'])[0]
+        dof = int(model_data['dof'])
+
+    check_q(q)
+    check_alpha(alpha)
+    check_se(se)
+    check_dof(dof)
+
+    if reduce:
+        h0 = estimate * (1 - q)
+    else:
+        h0 = estimate * (1 + q)
+    original_t = estimate / se
+    t_statistic = (estimate - h0) / se
+    r2yd_x = partial_r2(t_statistic=original_t, dof=dof)
+    rv_q = list(robustness_value(t_statistic=original_t, dof=dof, q=q))[0]
+    rv_qa = list(robustness_value(t_statistic=original_t, dof=dof, q=q, alpha=alpha))[0]
+    f2yd_x = partial_f2(t_statistic=original_t, dof=dof)
+    sensitivity_stats_df = {'estimate': estimate, 'se': se, 't_statistic': t_statistic,
+                            'r2yd_x': r2yd_x, 'rv_q': rv_q, 'rv_qa': rv_qa, 'f2yd_x': f2yd_x, 'dof': dof}
+    return sensitivity_stats_df
+
+
+# Helper function for quickly extracting properties from a model, allowing specification of a subset of covariates
+def model_helper(model, covariates=None):
+    """ Internal function for extracting info from a statsmodels OLSResults object and returning it in a dict."""
+    error_if_no_dof(model)  # check to make sure there aren't zero residual degrees of freedom for this model
+    if covariates is not None:
+        covariates = check_covariates(model.model.exog_names, covariates)
+        used_variables = covariates
+    else:
+        used_variables = model.model.exog_names  # use all variables if no covariates specified
+    model_info = {
+        'covariates': used_variables,
+        'estimate': model.params[used_variables],
+        'se': model.bse[used_variables],
+        't_statistics': model.tvalues[used_variables],
+        'dof': int(model.df_resid)
+    }
+    return model_info
+
+
+# Variable validators for sensitivity stats and sensemakr
+
+def check_r2(r2dz_x, r2yz_dx):
+    """ Ensures that r2dz_x and r2yz_dx are numpy scalars or arrays """
+    for r in [r2dz_x, r2yz_dx]:
+        if np.isscalar(r) and not np.issubdtype(r, np.number):
+            sys.exit('Partial R^2 must be a number or array of numbers between zero and one.')
+        elif not np.isscalar(r):
+            r = np.array(r)
+            if not(all(np.issubdtype(i, np.number) and 0 < i < 1 for i in r)):
+                sys.exit('Partial R^2 must be a number or array of numbers between zero and one.')
+
+
+def check_q(q):
+    """ Ensures that q, the percent reduction to the point estimate for RV_q, is a float or int greater than 0. """
+    if (type(q) is not float and type(q) is not int) or q < 0:
+        sys.exit('Error: the q parameter must be a single number greater than 0. q was: ' + str(q))
+
+
+def check_alpha(alpha):
+    """ Ensures that alpha, the significance level for RV_qa, is a float between 0 and 1. """
+    if type(alpha) is not float or alpha < 0 or alpha > 1:
+        sys.exit('Error: alpha must be between 0 and 1. alpha was: ' + str(alpha))
+
+
+def check_se(se):
+    """ Ensures that standard error is a float greater than zero. """
+    if type(se) is not float or se < 0:
+        sys.exit('Standard error provided must be a single non-negative number. SE was: ' + str(se))
+
+
+def check_dof(dof):
+    """ Ensures that the degrees of freedom for a regression is a positive integer. """
+    dof = float(dof)
+    if type(dof) is float and dof.is_integer():
+        dof = int(dof)
+    if type(dof) is not int or dof <= 0:
+        sys.exit('Error: degrees of freedom provided must be a single positive integer. DOF was: ' + str(dof))
+
+
+def error_if_no_dof(model):
+    """ For a given statsmodels OLSResults object, ensure that its degrees of freedom is not zero. """
+    if model.df_resid == 0:
+        sys.exit('Error: There are 0 residual degrees of freedom in the regression model provided.')
+
+
+def check_covariates(all_names, covariates):
+    """ Ensure that all provided covariates are strings and are in the regression model. """
+    if covariates is not None:
+        if type(covariates) is str:
+            covariates = [covariates]  # make into a list if it's only a single string
+        if not all(type(i) is str for i in covariates):
+            sys.exit('Error: Treatment and covariates names must be strings.')
+        not_found = [i for i in covariates if i not in all_names]
+        if len(not_found) > 0:
+            sys.exit('Variables not found in model: ' + ', '.join(not_found))
+    return covariates
