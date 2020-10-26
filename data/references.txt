@@ -1,0 +1,9 @@
+This data was originally curated by Chad Hazlett. See:
+Hazlett, Chad. (2019) "Angry or Weary? How Violence Impacts Attitudes toward Peace among Darfurian Refugees." Journal of Conflict Resolution: 0022002719879217.
+
+This example was used in the original Sensemakr paper:
+Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+Finally, the data itself was extracted from the original Sensemakr repository:
+https://github.com/carloscinelli/sensemakr/blob/master/data/darfur.rda
+
