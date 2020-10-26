@@ -22,33 +22,34 @@ Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omit
     Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 
 Example:
-# loads data
-data("darfur")
+# load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')
 
-# fits model
-model <- lm(peacefactor ~ directlyharmed + age +
-                          farmer_dar + herder_dar +
-                           pastvoted + hhsize_darfur +
-                           female + village, data = darfur)
+# fit a statsmodels OLSResults object ("fitted_model")
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~
+    directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+fitted_model = model.fit()
 
-# computes adjusted estimate for confounder with  r2dz.x = 0.05, r2yz.dx = 0.05
-adjusted_estimate(model, treatment = "directlyharmed", r2dz.x = 0.05, r2yz.dx = 0.05)
+# import this module
+import bias_functions
 
-# computes adjusted SE for confounder with  r2dz.x = 0.05, r2yz.dx = 0.05
-adjusted_se(model, treatment = "directlyharmed", r2dz.x = 0.05, r2yz.dx = 0.05)
+# computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
 
-# computes adjusted t-value for confounder with  r2dz.x = 0.05, r2yz.dx = 0.05
-adjusted_t(model, treatment = "directlyharmed", r2dz.x = 0.05, r2yz.dx = 0.05)
+# computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+bias_functions.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+
+# computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
 
 # Alternatively, pass in numerical values directly.
-adjusted_estimate(estimate = 0.09731582, se = 0.02325654,
-                  dof = 783, r2dz.x = 0.05, r2yz.dx = 0.05)
+bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
 
-adjusted_se(estimate = 0.09731582, se = 0.02325654,
-            dof = 783, r2dz.x = 0.05, r2yz.dx = 0.05)
+bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
 
-adjusted_t(estimate = 0.09731582, se = 0.02325654,
-           dof = 783, r2dz.x = 0.05, r2yz.dx = 0.05)
+bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
 
 Required parameters:
 For all methods, r2dz_x and r2yz_dx are required. For all methods other than bf, either model and treatment
@@ -80,8 +81,9 @@ import numpy as np
 
 def adjusted_estimate(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True):
     """ Compute the bias-adjusted coefficient estimate. See description at top for details. """
-    estimate, se, dof = param_check('adjusted_estimate', r2dz_x, r2yz_dx, model=model, treatment=treatment,
-                                    estimate=estimate, se=se, dof=dof, reduce=reduce)
+    r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_estimate', r2dz_x, r2yz_dx, model=model,
+                                                     treatment=treatment, estimate=estimate,
+                                                     se=se, dof=dof, reduce=reduce)
     if reduce:
         return np.sign(estimate) * (abs(estimate) - bias(r2dz_x, r2yz_dx, se=se, dof=dof))
     else:
@@ -90,16 +92,16 @@ def adjusted_estimate(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None
 
 def adjusted_se(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
     """ Compute the bias-adjusted regression standard error. See description at top for details. """
-    estimate, se, dof = param_check('adjusted_se', r2dz_x, r2yz_dx, model=model, treatment=treatment,
-                                    se=se, dof=dof, estimate_is_param=False, reduce_is_param=False)
+    r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_se', r2dz_x, r2yz_dx, model=model, treatment=treatment,
+                                                     se=se, dof=dof, estimate_is_param=False, reduce_is_param=False)
     new_se = np.sqrt((1 - r2yz_dx) / (1 - r2dz_x)) * se * np.sqrt(dof / (dof - 1))
     return new_se
 
 
 def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True, h0=0):
     """ Compute bias-adjusted t-statistic, adjusted_estimate - h0 / adjusted_se. See description at top for details. """
-    estimate, se, dof = param_check('adjusted_t', r2dz_x, r2yz_dx, model=model, treatment=treatment,
-                                    estimate=estimate, se=se, dof=dof, reduce=reduce)
+    r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_t', r2dz_x, r2yz_dx, model=model, treatment=treatment,
+                                                     estimate=estimate, se=se, dof=dof, reduce=reduce)
     new_estimate = adjusted_estimate(estimate=estimate, r2yz_dx=r2yz_dx, r2dz_x=r2dz_x, se=se, dof=dof, reduce=reduce)
     new_t = (new_estimate - h0) / adjusted_se(r2yz_dx=r2yz_dx, r2dz_x=r2dz_x, se=se, dof=dof)
     return new_t  # , h0
@@ -108,24 +110,25 @@ def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=No
 def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None,
                         reduce=True, h0=0):
     """ Compute the bias-adjusted partial R^2, based on adjusted_t. See description at top for details. """
-    estimate, se, dof = param_check('adjusted_partial_r2', r2dz_x, r2yz_dx, model=model, treatment=treatment,
-                                    estimate=estimate, se=se, dof=dof, reduce=reduce)
+    r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_partial_r2', r2dz_x, r2yz_dx, model=model,
+                                                     treatment=treatment, estimate=estimate,
+                                                     se=se, dof=dof, reduce=reduce)
     new_t = adjusted_t(estimate=estimate, r2yz_dx=r2yz_dx, r2dz_x=r2dz_x, se=se, dof=dof, reduce=reduce, h0=h0)
     return sensitivity_stats.partial_r2(t_statistic=new_t, dof=dof-1)
 
 
 def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
     """ Compute the omitted variable bias for the partial R^2 parameterization. See description at top for details. """
-    estimate, se, dof = param_check('bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
-                                    se=se, dof=dof, estimate_is_param=False, reduce_is_param=False)
+    r2dz_x, r2yz_dx, estimate, se, dof = param_check('bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
+                                                     se=se, dof=dof, estimate_is_param=False, reduce_is_param=False)
     bias_val = bf(r2dz_x, r2yz_dx) * se * np.sqrt(dof)  # numpy array
     return bias_val
 
 
 def relative_bias(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None):
     """ Compute the relative bias for the partial R^2 parameterization. See description at top for details. """
-    estimate, se, dof = param_check('relative_bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
-                                    estimate=estimate, se=se, dof=dof, reduce_is_param=False)
+    r2dz_x, r2yz_dx, estimate, se, dof = param_check('relative_bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
+                                                     estimate=estimate, se=se, dof=dof, reduce_is_param=False)
     t_statistic = abs(estimate / se)
     f = sensitivity_stats.partial_f(t_statistic=t_statistic, dof=dof)
     bf_val = bf(r2dz_x, r2yz_dx)
@@ -172,9 +175,9 @@ def param_check(function_name, r2dz_x, r2yz_dx,
         dof = int(model_data['dof'])
     sensitivity_stats.check_se(se)
     sensitivity_stats.check_dof(dof)
-    sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+    r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
     if estimate_is_param and type(estimate) is not float and type(estimate) is not int:
         sys.exit('Error in ' + function_name + ' method: provided estimate must be a single number.')
     if reduce_is_param and type(reduce) is not bool:
         sys.exit('Error in ' + function_name + ' method: reduce must be True or False boolean value.')
-    return estimate, se, dof
+    return r2dz_x, r2yz_dx, estimate, se, dof

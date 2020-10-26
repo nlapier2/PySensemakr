@@ -25,15 +25,21 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
         Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 
     Examples:
-    #runs regression model
-    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
-                  pastvoted + hhsize_darfur + female + village, data = darfur)
+    # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+    import pandas as pd
+    darfur = pd.read_csv('data/darfur.csv')
+
+    # fit a statsmodels OLSResults object ("fitted_model")
+    import statsmodels.formula.api as smf
+    model = smf.ols(formula='peacefactor ~
+        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    fitted_model = model.fit()
 
     # bounds on the strength of confounders 1, 2, or 3 times as strong as female
     # and 1,2, or 3 times as strong as pastvoted
-    ovb_bounds(model, treatment = "directlyharmed",
-               benchmark_covariates = c("female", "pastvoted"),
-               kd = [1, 2, 3])
+    import ovb_bounds
+    ovb_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed",
+               benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3])
 
     Required parameters: model and treatment
     :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
@@ -102,33 +108,30 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
     # the treatment and outcome regression tables.
     # You can still compute the bounds.
 
+    # first import the necessary libraries
+    import sensitivity_stats
+    import bias_functions
+    import ovb_bounds
+
     # Use the t statistic of female in the outcome regression
     # to compute the partial R2 of female with the outcome.
-    r2yxj_dx = partial_r2(t_statistic = -9.789, dof = 783)
+    r2yxj_dx = sensitivity_stats.partial_r2(t_statistic = -9.789, dof = 783)
 
     # Use the t-value of female in the *treatment* regression
     # to compute the partial R2 of female with the treatment
-    r2dxj_x = partial_r2(t_statistic = -2.680, dof = 783)
+    r2dxj_x = sensitivity_stats.partial_r2(t_statistic = -2.680, dof = 783)
 
-    # Compute manually bounds on the strength of confounders 1, 2, or 3
-    # times as strong as female
-    bounds = ovb_partial_r2_bound(r2dxj_x = r2dxj_x,
-                                  r2yxj_dx = r2yxj_dx,
-                                  kd = [1, 2, 3],
-                                  ky = [1, 3, 3],
-                                  bound_label = str([1, 2, 3]) + "x" + "female"
-    # Compute manually adjusted estimates
-    bound_values = adjusted_estimate(estimate = 0.0973,
-                                     se = 0.0232,
-                                     dof = 783,
-                                     r2dz.x = bounds['r2dz_x'],
-                                     r2yz.dx = bounds['r2yz_dx'])
+    #### Compute manually bounds on the strength of confounders 1, 2, or 3
+    #### times as strong as female
+    ###bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,
+    ###                              kd = [1, 2, 3], ky = [1, 3, 3], bound_label = "[1, 2, 3]x female")
+    #### Compute manually adjusted estimates
+    ###bound_values = bias_functions.adjusted_estimate(estimate = 0.0973, se = 0.0232, dof = 783,
+    ###                                 r2dz_x = bounds['r2dz_x'], r2yz_dx = bounds['r2yz_dx'])
 
-    # Plot contours and bounds
-    ovb_contour_plot(estimate = 0.0973,
-                    se = 0.0232,
-                    dof = 783)
-    add_bound_to_contour(bounds, bound_value = bound_values)
+    #### Plot contours and bounds
+    ###ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)
+    ###add_bound_to_contour(bounds, bound_value = bound_values)
 
     
     Required parameters: model and treatment or r2dxj_x and r2yxj_dx
@@ -192,7 +195,9 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 
     bounds = pd.DataFrame()
     for i in range(len(benchmark_covariates)):
-        sensitivity_stats.check_r2(r2dxj_x[i], r2yxj_dx[i])
+        r2dxj_x[i], r2yxj_dx[i] = sensitivity_stats.check_r2(r2dxj_x[i], r2yxj_dx[i])
+        if type(kd) is list:
+            kd = np.array(kd)
         r2dz_x = kd * (r2dxj_x[i] / (1 - r2dxj_x[i]))
         if (np.isscalar(r2dz_x) and r2dz_x >= 1) or (not np.isscalar(r2dz_x) and any(i >= 1 for i in r2dz_x)):
             sys.exit("Implied bound on r2dz.x >= 1. Impossible kd value. Try a lower kd.")

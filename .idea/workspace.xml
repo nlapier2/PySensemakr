@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="aae939a4-58dc-44c0-98b1-c9ffe8f02727" name="Default Changelist" comment="" />
+    <list default="true" id="aae939a4-58dc-44c0-98b1-c9ffe8f02727" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bias_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/bias_functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ovb_bounds.py" beforeDir="false" afterPath="$PROJECT_DIR$/ovb_bounds.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ovb_plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/ovb_plots.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sensemakr.py" beforeDir="false" afterPath="$PROJECT_DIR$/sensemakr.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sensitivity_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/sensitivity_stats.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,8 +22,12 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="JupyterTrust" id="6bc35817-df07-45ba-b12f-fb548c9bbf6c" />
   <component name="ProjectId" id="1gsj2s5HfXIymjTGZ54FM0jUxM0" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -23,6 +35,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -43,7 +56,7 @@
       <option name="presentableId" value="Default" />
       <updated>1598909989712</updated>
       <workItem from="1598909991202" duration="17242000" />
-      <workItem from="1601864084807" duration="70600000" />
+      <workItem from="1601864084807" duration="74451000" />
     </task>
     <servers />
   </component>

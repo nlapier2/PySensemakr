@@ -31,28 +31,33 @@ Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omit
     Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 
 Examples:
-# loads dataset
-data("darfur")
 
-# runs regression model
-model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
-              pastvoted + hhsize_darfur + female + village, data = darfur)
+# load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')
+
+# fit a statsmodels OLSResults object ("fitted_model")
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~
+    directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+fitted_model = model.fit()
 
 # runs sensemakr for sensitivity analysis
-sensitivity <- sensemakr.Sensemakr(model, treatment = "directlyharmed",
-                         benchmark_covariates = "female", kd = [1, 2, 3])
+import sensemakr
+sensitivity = sensemakr.Sensemakr(
+    fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 
 # description of results
 sensitivity.summary()
 
-# plot bias contour of point estimate
-plot(sensitivity)
+#### plot bias contour of point estimate
+###plot(sensitivity)
 
-# plot bias contour of t-value
-plot(sensitivity, sensitivity.of = "t-value")
+#### plot bias contour of t-value
+###plot(sensitivity, sensitivity_of = "t-value")
 
-# plot extreme scenario
-plot(sensitivity, type = "extreme")
+#### plot extreme scenario
+###plot(sensitivity, type = "extreme")
 
 # Pandas DataFrame with sensitivity statistics
 sensitivity.sensitivity_stats
@@ -61,49 +66,44 @@ sensitivity.sensitivity_stats
 sensitivity.bounds
 
 ### Using sensitivity functions directly ###
+import sensitivity_stats
+import ovb_bounds
+import bias_functions
 
 # robustness value of directly harmed q = 1 (reduce estimate to zero)
-robustness_value(model, covariates = "directlyharmed")
+sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed')
 
 # robustness value of directly harmed q = 1/2 (reduce estimate in half)
-robustness_value(model, covariates = "directlyharmed", q = 0.5)
+sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed', q = 0.5)
 
 # robustness value of directly harmed q = 1/2, alpha = 0.05
-robustness_value(model, covariates = "directlyharmed", q = 0.5, alpha = 0.05)
+sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed', q = 0.5, alpha = 0.05)
 
 # partial R2 of directly harmed with peacefactor
-partial_r2(model, covariates = "directlyharmed")
+sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")
 
 # partial R2 of female with peacefactor
-partial_r2(model, covariates = "female")
+sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")
 
-# data.frame with sensitivity statistics
-sensitivity_stats(model, treatment = "directlyharmed")
+# pandas DataFrame with sensitivity statistics
+sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = "directlyharmed")
 
 # bounds on the strength of confounders using female and age
-ovb_bounds(model,
-           treatment = "directlyharmed",
-           benchmark_covariates = c("female", "age"),
-           kd = [1, 2, 3])
+ovb_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed",
+    benchmark_covariates = ["female", "age"], kd = [1, 2, 3])
 
 # adjusted estimate given hypothetical strength of confounder
-adjusted_estimate(model, treatment = "directlyharmed", r2dz_x = 0.1, r2yz_dx = 0.1)
+bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.1, r2yz_dx = 0.1)
 
 # adjusted t-value given hypothetical strength of confounder
-adjusted_t(model, treatment = "directlyharmed", r2dz_x = 0.1, r2yz_dx = 0.1)
+bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.1, r2yz_dx = 0.1)
 
-# bias contour plot directly from model
-ovb_contour_plot(model,
-                 treatment = "directlyharmed",
-                 benchmark_covariates = "female",
-                 kd = [1, 2, 3])
+#### bias contour plot directly from model
+###ovb_contour_plot(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 
-# extreme scenario plot directly from model
-ovb_extreme_plot(model,
-                 treatment = "directlyharmed",
-                 benchmark_covariates = "female",
-                 kd = [1, 2, 3], lim = 0.05)
-]
+#### extreme scenario plot directly from model
+###ovb_extreme_plot(model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3], lim = 0.05)
+
 """
 
 import sys
@@ -264,7 +264,7 @@ class Sensemakr:
             self.bounds = None
         else:
             if model is not None:
-                sensitivity_stats.check_r2(self.r2dz_x, self.r2yz_dx)
+                self.r2dz_x, self.r2yz_dx = sensitivity_stats.check_r2(self.r2dz_x, self.r2yz_dx)
                 # Compute adjusted parameter estimate, standard error, and t statistic
                 self.adjusted_estimate = bias_functions.adjusted_estimate(model=self.model, treatment=self.treatment,
                                                                           r2dz_x=self.r2dz_x, r2yz_dx=self.r2yz_dx,
@@ -275,7 +275,7 @@ class Sensemakr:
                                                             r2dz_x=self.r2dz_x, r2yz_dx=self.r2yz_dx,
                                                             h0=self.h0, reduce=self.reduce)
             else:
-                sensitivity_stats.check_r2(self.r2dz_x, self.r2yz_dx)
+                self.r2dz_x, self.r2yz_dx = sensitivity_stats.check_r2(self.r2dz_x, self.r2yz_dx)
                 # Compute adjusted parameter estimate, standard error, and t statistic
                 self.adjusted_estimate = bias_functions.adjusted_estimate(estimate=self.estimate, se=self.se,
                                                                           dof=self.dof, treatment=self.treatment,

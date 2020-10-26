@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 
-def robustness_value(model=None, t_statistic=None, dof=None, q=1, alpha=1.0):
+def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=1, alpha=1.0):
     """
     This function computes the robustness value of a regression coefficient. The robustness value describes the
     minimum strength of association (parameterized in terms of partial R2) that omitted variables would need to have
@@ -64,7 +64,7 @@ def robustness_value(model=None, t_statistic=None, dof=None, q=1, alpha=1.0):
     check_alpha(alpha)
 
     if model is not None:
-        model_data = model_helper(model)
+        model_data = model_helper(model, covariates=covariates)
         t_statistic = model_data['t_statistics']
         dof = int(model_data['dof'])
     elif type(t_statistic) is float or type(t_statistic) is int:
@@ -108,22 +108,27 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     For partial R2 of groups of covariates, check group_partial_r2.
     
     Examples:
-    # using an lm object
-    ## loads data
-    data("darfur")
-    
-    ## fits model
-    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
-                 pastvoted + hhsize_darfur + female + village, data = darfur)
-    
-    ## partial R2 of the treatment (directly harmed) with the outcome (peacefactor)
-    partial_r2(model, covariates = "directlyharmed")
-    
-    ## partial R2 of female with the outcome
-    partial_r2(model, covariates = "female")
+    # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+    import pandas as pd
+    darfur = pd.read_csv('data/darfur.csv')
+
+    # fit a statsmodels OLSResults object ("fitted_model")
+    import statsmodels.formula.api as smf
+    model = smf.ols(formula='peacefactor ~
+        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    fitted_model = model.fit()
+
+    # load this module
+    import sensitivity_stats
+
+    # partial R2 of directly harmed with peacefactor
+    sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")
+
+    # partial R2 of female with peacefactor
+    sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")
     
     # you can also provide the statistics directly
-    partial_r2(t_statistic = 4.18445, dof = 783)
+    sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)
 
     Required parameters: either model or t_statistic and dof.
     :param model: a statsmodels OLSResults object containing the restricted regression
@@ -160,22 +165,27 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
     This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
 
     Examples:
-    # using an lm object
-    ## loads data
-    data("darfur")
+    # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+    import pandas as pd
+    darfur = pd.read_csv('data/darfur.csv')
 
-    ## fits model
-    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
-                 pastvoted + hhsize_darfur + female + village, data = darfur)
+    # fit a statsmodels OLSResults object ("fitted_model")
+    import statsmodels.formula.api as smf
+    model = smf.ols(formula='peacefactor ~
+        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    fitted_model = model.fit()
 
-    ## partial R2 of the treatment (directly harmed) with the outcome (peacefactor)
-    partial_f2(model, covariates = "directlyharmed")
+    # load this module
+    import sensitivity_stats
 
-    ## partial R2 of female with the outcome
-    partial_f2(model, covariates = "female")
+    # partial f2 of directly harmed with peacefactor
+    sensitivity_stats.partial_f2(model = fitted_model, covariates = "directlyharmed")
+
+    # partial f2 of female with peacefactor
+    sensitivity_stats.partial_f2(model = fitted_model, covariates = "female")
 
     # you can also provide the statistics directly
-    partial_f2(t_statistic = 4.18445, dof = 783)
+    sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783)
 
     Required parameters: either model or t_statistic and dof.
     :param model: a statsmodels OLSResults object containing the restricted regression
@@ -210,12 +220,18 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
         of the partial_r2 function; see that for more details.
 
     Examples:
-    data("darfur")
+    # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+    import pandas as pd
+    darfur = pd.read_csv('data/darfur.csv')
 
-    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
-                 pastvoted + hhsize_darfur + female + village, data = darfur)
+    # fit a statsmodels OLSResults object ("fitted_model")
+    import statsmodels.formula.api as smf
+    model = smf.ols(formula='peacefactor ~
+        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    fitted_model = model.fit()
 
-    group_partial_r2(model, covariates = c("female", "pastvoted"))
+    import sensitivity_stats
+    sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"])
 
 
     Required parameters: either model or f_statistic, p, and dof.
@@ -250,18 +266,22 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
     See those function descriptions above for more details.
 
     Examples:
-    ## loads data
-    data("darfur")
-    
-    ## fits model
-    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
-                 pastvoted + hhsize_darfur + female + village, data = darfur)
-    
+    # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+    import pandas as pd
+    darfur = pd.read_csv('data/darfur.csv')
+
+    # fit a statsmodels OLSResults object ("fitted_model")
+    import statsmodels.formula.api as smf
+    model = smf.ols(formula='peacefactor ~
+        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    fitted_model = model.fit()
+
+    import sensitivity_stats
     ## sensitivity stats for directly harmed
-    sensitivity_stats(model, treatment = "directlyharmed")
+    sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = "directlyharmed")
     
     ## you can  also pass the numeric values directly
-    sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783)
+    sensitivity_stats.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783)
 
     Reference:
     Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
@@ -344,6 +364,14 @@ def model_helper(model, covariates=None):
 
 def check_r2(r2dz_x, r2yz_dx):
     """ Ensures that r2dz_x and r2yz_dx are numpy scalars or arrays """
+    if type(r2dz_x) is float or type(r2dz_x) is int:
+        r2dz_x = np.float64(r2dz_x)
+    elif type(r2dz_x) is list:
+        r2dz_x = np.array(r2dz_x)
+    if type(r2yz_dx) is float or type(r2yz_dx) is int:
+        r2yz_dx = np.float64(r2yz_dx)
+    elif type(r2yz_dx) is list:
+        r2yz_dx = np.array(r2yz_dx)
     for r in [r2dz_x, r2yz_dx]:
         if np.isscalar(r) and not np.issubdtype(r, np.number):
             sys.exit('Partial R^2 must be a number or array of numbers between zero and one.')
@@ -351,6 +379,7 @@ def check_r2(r2dz_x, r2yz_dx):
             r = np.array(r)
             if not(all(np.issubdtype(i, np.number) and 0 < i < 1 for i in r)):
                 sys.exit('Partial R^2 must be a number or array of numbers between zero and one.')
+    return r2dz_x, r2yz_dx
 
 
 def check_q(q):

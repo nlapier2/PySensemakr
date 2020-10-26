@@ -92,7 +92,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=
 
     # add bounds
     if r2dz_x is not None:
-        sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+        r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
         add_bound_to_contour(r2dz_x=r2dz_x, r2yz_dx=r2yz_dx, bound_value=bound_value, bound_label=bound_label,
                              sensitivity_of=sensitivity_of, label_text=label_text, label_bump_x=label_bump_x,
                              label_bump_y=label_bump_y, round_dig=round_dig)
@@ -213,15 +213,7 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
     check_estimate(estimate)
     if r2yz_dx is None:
         r2yz_dx = r2dz_x
-    if type(r2dz_x) is float or type(r2dz_x) is int:
-        r2dz_x = np.float64(r2dz_x)
-    else:
-        r2dz_x = np.array(r2dz_x)
-    if type(r2yz_dx) is float or type(r2yz_dx) is int:
-        r2yz_dx = np.float64(r2yz_dx)
-    else:
-        r2yz_dx = np.array(r2yz_dx)
-    sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+    r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
 
     if lim is None:
         lim = min(np.max(list(r2dz_x * 1.2) + [0.4]), 1 - 10 ** -12)
