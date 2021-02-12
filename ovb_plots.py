@@ -83,12 +83,12 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=
 
     # draw red critical contour line
     CS = ax.contour(grid_values_x, grid_values_y, z_axis,
-                    colors=col_thr_line, linewidths=1.0, linestyles="dashed", levels=[threshold])
+                    colors=col_thr_line, linewidths=1.0, linestyles=[(0, (7, 3))], levels=[threshold])
     ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray")
 
     # Plot point for unadjusted estimate / t_statistic
     ax.scatter([0], [0], c='k', marker='^')
-    ax.annotate("Unadjusted\n" + str(plot_estimate), (0.0 + label_bump_x, 0.0 + label_bump_y))
+    ax.annotate("Unadjusted\n({:1.3f})".format(plot_estimate), (0.0 + label_bump_x, 0.0 + label_bump_y))
 
     # Plot labeling and limit-setting
     if xlab is None:
