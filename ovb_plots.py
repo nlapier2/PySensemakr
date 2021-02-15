@@ -70,21 +70,31 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=
             bound_value = bias_functions.adjusted_t(r2dz_x, r2yz_dx, estimate=estimate, se=se, dof=dof,
                                                     reduce=reduce, h0=estimate_threshold)
 
-    # fig, ax = plt.subplots()
+    # TODO: see which of these params we want to include in function args list
+    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
     # draw all contours
-    plt.contour(grid_values_x, grid_values_y, z_axis, colors=col_contour, linewidths=1.0)
+    CS = ax.contour(grid_values_x, grid_values_y, z_axis,
+                    colors=col_contour, linewidths=1.0, linestyles="solid")
+
+    # remove contour line at threshold level
+    threshold_index = CS.levels.tolist().index(threshold)
+    CS.collections[threshold_index].remove()
+    ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=np.delete(CS.levels, threshold_index))
+
     # draw red critical contour line
-    plt.contour(grid_values_x, grid_values_y, z_axis, colors=col_thr_line, linewidths=1.0, levels=[threshold])
+    CS = ax.contour(grid_values_x, grid_values_y, z_axis,
+                    colors=col_thr_line, linewidths=1.0, linestyles=[(0, (7, 3))], levels=[threshold])
+    ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray")
 
     # Plot point for unadjusted estimate / t_statistic
-    plt.scatter([0], [0], c='k', marker='^')
-    plt.annotate("Unadjusted\n" + str(plot_estimate), (0.0 + label_bump_x, 0.0 + label_bump_y))
+    ax.scatter([0], [0], c='k', marker='^')
+    ax.annotate("Unadjusted\n({:1.3f})".format(plot_estimate), (0.0 + label_bump_x, 0.0 + label_bump_y))
 
     # Plot labeling and limit-setting
     if xlab is None:
-        xlab = "Partial R^2 of confounder(s) with the treatment"
+        xlab = r"Partial $R^2$ of confounder(s) with the treatment"
     if ylab is None:
-        ylab = "Partial R^2 of confounder(s) with the outcome"
+        ylab = r"Partial $R^2$ of confounder(s) with the outcome"
     plt.xlabel(xlab)
     plt.ylabel(ylab)
     plt.xlim(-(lim / 15.0), lim)
@@ -141,7 +151,7 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     if type(r2yz_dx) is int or type(r2yz_dx) is float:
         r2yz_dx = [r2yz_dx]
     for i in range(len(r2dz_x)):
-        plt.scatter(r2dz_x[i], r2yz_dx[i], c='r', marker='o')
+        plt.scatter(r2dz_x[i], r2yz_dx[i], c='red', marker='D', edgecolors='black')
         if label_text:
             if bound_value is not None and bound_value[i] is not None:
                 bound_value[i] = round(bound_value[i], round_dig)

@@ -1,0 +1,11 @@
+# run: conda env create --file environment.yml
+name: pysensemakr
+
+dependencies:
+ - python>=3.8
+ - pandas
+ - numpy
+ - statsmodels
+ - matplotlib
+ - scipy
+ - jupyter
