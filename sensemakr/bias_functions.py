@@ -74,7 +74,7 @@ reduce_is_param: flag for whether reduce is a parameter for the calling function
 """
 
 
-import sensitivity_stats
+from . import sensitivity_stats
 import sys
 import numpy as np
 

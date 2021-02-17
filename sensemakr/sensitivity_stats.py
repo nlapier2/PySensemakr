@@ -27,26 +27,30 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
         Journal of the Royal Statistical Society, Series B (Statistical Methodology).
     
     Examples:
-    # using an lm object
-    ## loads data
-    data("darfur")
-    
-    ## fits model
-    model <- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +
-                 pastvoted + hhsize_darfur + female + village, data = darfur)
-    
+
+    # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+    import pandas as pd
+    darfur = pd.read_csv('data/darfur.csv')
+
+    # fit a statsmodels OLSResults object ("fitted_model")
+    import statsmodels.formula.api as smf
+    model = smf.ols(formula='peacefactor ~
+        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    fitted_model = model.fit()
+
+    from sensemakr import sensitivity_stats
     ## robustness value of directly harmed q =1 (reduce estimate to zero)
-    robustness_value(model, covariates = "directlyharmed")
+    sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed")
     
     ## robustness value of directly harmed q = 1/2 (reduce estimate in half)
-    robustness_value(model, covariates = "directlyharmed", q = 1/2)
+    sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2)
     
     ## robustness value of directly harmed q = 1/2, alpha = 0.05
     ## (reduce estimate in half, with 95% confidence)
-    robustness_value(model, covariates = "directlyharmed", q = 1/2, alpha = 0.05)
+    sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2, alpha = 0.05)
     
     # you can also provide the statistics directly
-    robustness_value(t_statistic = 4.18445, dof = 783)
+    sensitivity_stats.robustness_value(t_statistic = 4.18445, dof = 783)
 
     Required parameters: either model or t_statistic and dof.
     :param model: a statsmodels OLSResults object containing the restricted regression
@@ -119,7 +123,7 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     fitted_model = model.fit()
 
     # load this module
-    import sensitivity_stats
+    from sensemakr import sensitivity_stats
 
     # partial R2 of directly harmed with peacefactor
     sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")
@@ -176,7 +180,7 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
     fitted_model = model.fit()
 
     # load this module
-    import sensitivity_stats
+    from sensemakr import sensitivity_stats
 
     # partial f2 of directly harmed with peacefactor
     sensitivity_stats.partial_f2(model = fitted_model, covariates = "directlyharmed")
@@ -230,7 +234,7 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
         directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     fitted_model = model.fit()
 
-    import sensitivity_stats
+    from sensemakr import sensitivity_stats
     sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"])
 
 
@@ -276,7 +280,7 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
         directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     fitted_model = model.fit()
 
-    import sensitivity_stats
+    from sensemakr import sensitivity_stats
     ## sensitivity stats for directly harmed
     sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = "directlyharmed")
     

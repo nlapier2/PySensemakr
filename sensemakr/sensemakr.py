@@ -38,12 +38,12 @@ darfur = pd.read_csv('data/darfur.csv')
 
 # fit a statsmodels OLSResults object ("fitted_model")
 import statsmodels.formula.api as smf
-model = smf.ols(formula='peacefactor ~
+model = smf.ols(formula='peacefactor ~ \
     directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
 fitted_model = model.fit()
 
 # runs sensemakr for sensitivity analysis
-import sensemakr
+from sensemakr import sensemakr
 sensitivity = sensemakr.Sensemakr(
     fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 
@@ -66,9 +66,9 @@ sensitivity.sensitivity_stats
 sensitivity.bounds
 
 ### Using sensitivity functions directly ###
-import sensitivity_stats
-import ovb_bounds
-import bias_functions
+from sensemakr import sensitivity_stats
+from sensemakr import ovb_bounds
+from sensemakr import bias_functions
 
 # robustness value of directly harmed q = 1 (reduce estimate to zero)
 sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed')
@@ -110,9 +110,9 @@ import sys
 import pandas as pd
 from scipy.stats import t
 import numpy as np
-import sensitivity_stats
-import bias_functions
-import ovb_bounds
+from . import sensitivity_stats
+from . import bias_functions
+from . import ovb_bounds
 
 
 class Sensemakr:

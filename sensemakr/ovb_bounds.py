@@ -1,7 +1,7 @@
 # Computes bounds on the strength of unobserved confounders using observed covariates
 import sys
-import bias_functions
-import sensitivity_stats
+from . import bias_functions
+from . import sensitivity_stats
 from scipy.stats import t
 import pandas as pd
 import numpy as np
@@ -31,13 +31,13 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
 
     # fit a statsmodels OLSResults object ("fitted_model")
     import statsmodels.formula.api as smf
-    model = smf.ols(formula='peacefactor ~
+    model = smf.ols(formula='peacefactor ~ \
         directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     fitted_model = model.fit()
 
     # bounds on the strength of confounders 1, 2, or 3 times as strong as female
     # and 1,2, or 3 times as strong as pastvoted
-    import ovb_bounds
+    from sensemakr import ovb_bounds
     ovb_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed",
                benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3])
 
@@ -109,9 +109,9 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
     # You can still compute the bounds.
 
     # first import the necessary libraries
-    import sensitivity_stats
-    import bias_functions
-    import ovb_bounds
+    from sensemakr import sensitivity_stats
+    from sensemakr import bias_functions
+    from sensemakr import ovb_bounds
 
     # Use the t statistic of female in the outcome regression
     # to compute the partial R2 of female with the outcome.

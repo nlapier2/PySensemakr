@@ -1,8 +1,8 @@
 # Code for producing sensitivity contour plots and other plots
 import matplotlib.pyplot as plt
-import sensitivity_stats
-import ovb_bounds
-import bias_functions
+from . import sensitivity_stats
+from . import ovb_bounds
+from . import bias_functions
 import sys
 import numpy as np
 from scipy.stats import t
