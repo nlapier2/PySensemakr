@@ -25,7 +25,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=
                      benchmark_covariates=None, kd=1, ky=None, r2dz_x=None, r2yz_dx=None, bound_label=None,
                      reduce=True, estimate_threshold=0, t_threshold=2, lim=None, lim_y=None,
                      col_contour="black", col_thr_line="red", label_text=True, label_bump_x=None, label_bump_y=None,
-                     xlab=None, ylab=None, asp=None, list_par=None, round_dig=3):
+                     xlab=None, ylab=None, asp=None, list_par=None, plot_margin_fraction=0.05, round_dig=3):
     if sensitivity_of not in ["estimate", "t-value"]:
         sys.exit('Error: "sensitivity_of" argument is required and must be "estimate" or "t-value".')
     if sense_obj is not None:
@@ -106,6 +106,17 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=
         add_bound_to_contour(r2dz_x=r2dz_x, r2yz_dx=r2yz_dx, bound_value=bound_value, bound_label=bound_label,
                              sensitivity_of=sensitivity_of, label_text=label_text, label_bump_x=label_bump_x,
                              label_bump_y=label_bump_y, round_dig=round_dig)
+
+    # add margin to top and right side of plot
+    x_plot_margin = plot_margin_fraction * lim
+    y_plot_margin = plot_margin_fraction * lim_y
+
+    x0, x1, y0, y1 = plt.axis()
+    plt.axis((x0,
+              x1 + x_plot_margin,
+              y0,
+              y1 + y_plot_margin))
+    plt.tight_layout()
 
 
 def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, reduce=None,
