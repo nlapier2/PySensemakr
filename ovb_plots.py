@@ -232,9 +232,9 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
     if asp is None:
         asp = lim / lim_y
     if label_bump_x is None:
-        label_bump_x = lim / 15.0
+        label_bump_x = lim / 30.0
     if label_bump_y is None:
-        label_bump_y = lim_y / 15.0
+        label_bump_y = lim_y / 30.0
     if lim > 1.0:
         lim = 1 - 10 ** -12
         print('Warning: Contour limit larger than 1 was set to 1.')
