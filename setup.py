@@ -2,10 +2,6 @@ import os
 import setuptools
 import versioneer
 
-SCRIPTS = []
-SCRIPTS.extend([os.path.join("scripts", script)
-				for script in os.listdir(os.path.join(os.path.dirname(__file__), "scripts"))
-				if script.endswith(".py")])
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(HERE, 'README.md'), 'r') as fid:
@@ -25,7 +21,6 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/nlapier2/PySensemakr",
     package_data={'PySensemakr': ['data/cmash*', 'data/db_info*', 'data/organism_files/*']},
-    scripts=SCRIPTS,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
