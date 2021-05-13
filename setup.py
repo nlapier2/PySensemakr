@@ -20,6 +20,7 @@ setuptools.setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/nlapier2/PySensemakr",
+    packages=setuptools.find_packages(),
     package_data={'PySensemakr': ['data/cmash*', 'data/db_info*', 'data/organism_files/*']},
     classifiers=[
         "Development Status :: 3 - Alpha",
