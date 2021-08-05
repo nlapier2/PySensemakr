@@ -237,9 +237,11 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
     r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
 
     if lim is None:
-        lim = min(np.max(list(r2dz_x * 1.2) + [0.4]), 1 - 10 ** -12)
+        lim = min(np.max(np.append(r2dz_x * 1.2, 0.4)), 1 - 10 ** -12)
+        #lim = min(np.max(list(r2dz_x * 1.2) + [0.4]), 1 - 10 ** -12)
     if lim_y is None:
-        lim_y = min(np.max(list(r2yz_dx * 1.2) + [0.4]), 1 - 10 ** -12)
+        lim_y = min(np.max(np.append(r2yz_dx * 1.2, 0.4)), 1 - 10 ** -12)
+        #lim_y = min(np.max(list(r2yz_dx * 1.2) + [0.4]), 1 - 10 ** -12)
     if asp is None:
         asp = lim / lim_y
     if label_bump_x is None:
