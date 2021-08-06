@@ -368,6 +368,8 @@ def model_helper(model, covariates=None):
 
 def check_r2(r2dz_x, r2yz_dx):
     """ Ensures that r2dz_x and r2yz_dx are numpy scalars or arrays """
+    if r2dz_x is None:
+        return r2dz_x, r2yz_dx
     if type(r2dz_x) is float or type(r2dz_x) is int:
         r2dz_x = np.float64(r2dz_x)
     elif type(r2dz_x) is list:

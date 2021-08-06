@@ -323,6 +323,8 @@ class Sensemakr:
                 se_multiple * bench_bounds['adjusted_se']
             bench_bounds['adjusted_upper_CI'] = bench_bounds['adjusted_estimate'] + \
                 se_multiple * bench_bounds['adjusted_se']
+        else:
+            self.bench_bounds = None
 
         if self.bounds is None:
             self.bounds = self.bench_bounds
@@ -385,7 +387,9 @@ class Sensemakr:
               "it is no longer 'statistically different' from", h0, ", at the significance level of alpha =",
               self.alpha, ".\n")
 
-        print("Bounds on omitted variable bias:\n--The table below shows the maximum strength of unobserved confounders"
-              " with association with the treatment and the outcome bounded by a multiple of the observed explanatory"
-              " power of the chosen benchmark covariate(s).\n")
-        print(self.bounds)
+        if self.bounds is not None:
+            print("Bounds on omitted variable bias:\n--The table below shows the maximum strength of unobserved confounders"
+                  " with association with the treatment and the outcome bounded by a multiple of the observed explanatory"
+                  " power of the chosen benchmark covariate(s).\n")
+            print(self.bounds)
+
