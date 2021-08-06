@@ -77,9 +77,14 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=
                     colors=col_contour, linewidths=1.0, linestyles="solid")
 
     # remove contour line at threshold level
-    threshold_index = CS.levels.tolist().index(threshold)
-    CS.collections[threshold_index].remove()
-    ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=np.delete(CS.levels, threshold_index))
+    round_thr = round(threshold, 0)
+    cs_levels = CS.levels.tolist()
+    if round_thr in cs_levels:
+        threshold_index = cs_levels.index(round_thr)
+        CS.collections[threshold_index].remove()
+        ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=np.delete(CS.levels, threshold_index))
+    else:
+        ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=CS.levels)
 
     # draw red critical contour line
     CS = ax.contour(grid_values_x, grid_values_y, z_axis,
