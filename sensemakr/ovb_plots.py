@@ -10,6 +10,7 @@ import pandas as pd
 
 
 plot_env = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'sensitivity_of': None, 'treatment': None}
+plot_env_ext = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'treatment': None}
 
 
 def plot(sense_obj, plot_type):
@@ -177,8 +178,74 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
             plt.annotate(label, (r2dz_x[i] + label_bump_x, r2yz_dx[i] + label_bump_y))
 
 
-def ovb_extreme_plot(sense_obj):  # not yet implemented
-    return sense_obj
+
+
+
+
+def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, se=None, dof=None,
+                     benchmark_covariates=None, kd=1, r2dz_x=None, r2yz_dx=[1, 0.75, 0.5],
+                     reduce=True, threshold=0, lim=None, lim_y=None,label_bump_x=None, label_bump_y=None,
+                     xlab=None, ylab=None, asp=None, list_par=None):
+    if sense_obj is not None:
+        # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
+        treatment, estimate, se, dof, r2dz_x, dum, bound_label, reduce, estimate_threshold, t_threshold = \
+            extract_from_sense_obj(sense_obj)
+    elif model is not None and treatment is not None:
+        estimate, se, dof, r2dz_x, dum = extract_from_model(
+            model, treatment, benchmark_covariates, kd, ky, r2dz_x, r2yz_dx)
+    elif estimate is None or se is None or dof is None:
+        sys.exit('Error: must provide a Sensemakr object, a statsmodels OLSResults object and treatment, or'
+                 'an estimate, standard error, and degrees of freedom.')
+    estimate, r2dz_x, dum, lim, lim_y, label_bump_x, label_bump_y, asp, list_par = check_params_extreme(
+        estimate, r2dz_x, dum, lim, lim_y, label_bump_x, label_bump_y, asp, list_par)
+    # plot_env_ext['lim'] = lim
+    # plot_env_ext['lim_y'] = lim_y
+    # plot_env_ext['reduce'] = reduce
+    # plot_env_ext['treatment'] = treatment
+    #print(r2dz_x)
+    r2d_values = np.arange(0, lim, 0.001)
+
+    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    for i in range(len(r2yz_dx)):
+        y=bias_functions.adjusted_estimate(r2d_values, r2yz_dx[i],
+                   estimate=estimate, se=se, dof=dof)
+        if(i==0):
+            ax.plot(r2d_values,y,label='%s%%' % int(round(r2yz_dx[i]*100)),linewidth=1.5, linestyle="solid",color='black')
+            ax.axhline(y=threshold,color='r',linestyle='--')
+            lim_y1=np.max(y)+np.abs(np.max(y))/15
+            lim_y2=np.min(y)-np.abs(np.min(y))/15
+        else:
+            ax.plot(r2d_values,y,label='%s%%' % int(round(r2yz_dx[i]*100)),linewidth=np.abs(2.1-0.5*i), linestyle="--",color='black')
+            if(r2dz_x.all()):
+                #ax.plot(r2dz_x, [lim_y2]*len(r2dz_x), '|', color='r')
+                for rug in r2dz_x:
+                    ax.axvline(x=rug,ymin=0, ymax=0.022,color='r',linewidth=2.5, linestyle="solid")
+
+    ax.legend(ncol=len(r2yz_dx),frameon=False)
+    ax.get_legend().set_title(r"Partial $R^2$ of confounder(s) with the outcome")
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    # Plot labeling and limit-setting
+    if xlab is None:
+        xlab = r"Partial $R^2$ of confounder(s) with the treatment"
+    if ylab is None:
+        ylab = r"Adjusted effect estimate"
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.xlim(-(lim / 35.0), lim+(lim / 35.0))
+    plt.ylim(lim_y2 , lim_y1)
+
+    # add margin to top and right side of plot
+    # x_plot_margin = plot_margin_fraction * lim
+    # y_plot_margin = plot_margin_fraction * lim_y
+    #
+    # x0, x1, y0, y1 = plt.axis()
+    # plt.axis((x0,
+    #           x1 + x_plot_margin,
+    #           y0,
+    #           y1 + y_plot_margin))
+    plt.tight_layout()
+
 
 
 # Extracts sensitivity and bounding parameters from a given Sensemakr object
@@ -278,6 +345,48 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
     if list_par is None:
         list_par = {'mar': [4, 4, 1, 1]}
     return estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par
+
+# Checks to make sure given parameters are valid and sets some default parameter values if not specified by the user
+def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par):
+    check_estimate(estimate)
+    if r2yz_dx is None:
+        r2yz_dx = r2dz_x
+    r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+
+    if lim is None:
+        if r2dz_x is None:
+            lim = 0.1
+        else:
+            lim = min(np.max(np.append(r2dz_x * 1.2, 0.1)), 1 - 10 ** -12)
+            #lim = min(np.max(list(r2dz_x * 1.2) + [0.4]), 1 - 10 ** -12)
+    if lim_y is None:
+        if r2yz_dx is None:
+            lim_y = 0.1
+        else:
+            lim_y = min(np.max(np.append(r2yz_dx * 1.2, 0.1)), 1 - 10 ** -12)
+            #lim_y = min(np.max(list(r2yz_dx * 1.2) + [0.4]), 1 - 10 ** -12)
+    if asp is None:
+        asp = lim / lim_y
+    if label_bump_x is None:
+        label_bump_x = lim / 30.0
+    if label_bump_y is None:
+        label_bump_y = lim_y / 30.0
+    if lim > 1.0:
+        lim = 1 - 10 ** -12
+        print('Warning: Contour limit larger than 1 was set to 1.')
+    elif lim < 0:
+        lim = 0.4
+        print('Warning: Contour limit less than 0 was set to 0.4.')
+    if lim_y > 1.0:
+        lim_y = 1 - 10 ** -12
+        print('Warning: Contour limit larger than 1 was set to 1.')
+    elif lim_y < 0:
+        lim_y = 0.4
+        print('Warning: Contour limit less than 0 was set to 0.4.')
+    if list_par is None:
+        list_par = {'mar': [4, 4, 1, 1]}
+    return estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par
+
 
 
 # Parameter validators
