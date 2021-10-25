@@ -123,7 +123,7 @@ class Sensemakr:
     It returns an object of class Sensemakr with several pre-computed sensitivity statistics for reporting.
     After creating the object, you may directly use the plot and summary methods of the returned object.
 
-    Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly, 
+    Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly,
     such as the functions for sensitivity plots (ovb_contour_plot, ovb_extreme_plot), the functions for
     computing bias-adjusted estimates and t-values (adjusted_estimate, adjusted_t), the functions for computing the
     robustness value and partial R2 (robustness_value, partial_r2),  or the functions for bounding the strength
@@ -347,8 +347,9 @@ class Sensemakr:
 
         print("Sensitivity Analysis to Unobserved Confounding\n")
         if self.model is not None:
-            model_formula = self.model.model.endog_names + ' ~ ' + ' + '.join(self.model.model.exog_names)
-            print("Model Formula: " + model_formula + "\n")
+            #model_formula = self.model.model.endog_names + ' ~ ' + ' + '.join(self.model.model.exog_names)
+            #print("Model Formula: " + model_formula + "\n")
+            print("Model Formula: "+self.model.model.formula+"\n")
         print("Null hypothesis: q =", self.q, "and reduce =", self.reduce, "\n")
         print("-- This means we are considering biases that", direction, "the absolute value of the current estimate.")
         print("-- The null hypothesis deemed problematic is H0:tau =", h0, "\n")
@@ -392,4 +393,3 @@ class Sensemakr:
                   " with association with the treatment and the outcome bounded by a multiple of the observed explanatory"
                   " power of the chosen benchmark covariate(s).\n")
             print(self.bounds)
-
