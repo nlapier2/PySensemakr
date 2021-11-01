@@ -8,7 +8,7 @@ import numpy as np
 import statsmodels.api as sm
 
 
-def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha=1.0, h0=0, reduce=True,
+def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha=1, h0=0, reduce=True,
                bound='partial r2', adjusted_estimates=True):
     """
     Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
@@ -133,7 +133,7 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
     ###ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)
     ###add_bound_to_contour(bounds, bound_value = bound_values)
 
-    
+
     Required parameters: model and treatment or r2dxj_x and r2yxj_dx
     :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
     :param treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest
@@ -164,11 +164,16 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
     elif type(benchmark_covariates) is str:
         benchmark_covariates = [benchmark_covariates]
     else:
-        if type(benchmark_covariates) is not list:
-            sys.exit('Benchmark covariates must be a string, list of strings or 2d list containing only strings.')
-        for i in benchmark_covariates:
-            if type(i) is not str and (type(i) is not list or any(type(j) is not str for j in i)):
-                sys.exit('Benchmark covariates must be a string, list of strings or 2d list containing only strings.')
+        if ((type(benchmark_covariates) is not list) and (type(benchmark_covariates) is not dict)):
+            sys.exit('Benchmark covariates must be a string, list of strings, 2d list containing only strings or dict containing only strings and list of strings.')
+        if (type(benchmark_covariates) is list):
+            for i in benchmark_covariates:
+                if type(i) is not str and (type(i) is not list or any(type(j) is not str for j in i)):
+                    sys.exit('Benchmark covariates must be a string, list of strings, 2d list containing only strings or dict containing only strings and list of strings.')
+        else: #benchmark_covariates is a dict
+            for i in benchmark_covariates:
+                if(type(benchmark_covariates[i]) is not str and (type(benchmark_covariates[i]) is not list or any(type(j) is not str for j in benchmark_covariates[i]))):
+                    sys.exit('Benchmark covariates must be a string, list of strings, 2d list containing only strings or dict containing only strings and list of strings.')
 
     if model is not None:
         m = pd.DataFrame(model.model.exog, columns=model.model.exog_names)
@@ -182,11 +187,17 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
             # r2yxj_dx = partial R^2 with outcome; r2dxj_x = partial R^2 with treatment
             r2yxj_dx = [sensitivity_stats.partial_r2(model, covariates=benchmark_covariates)]
             r2dxj_x = [sensitivity_stats.partial_r2(treatment_results, covariates=benchmark_covariates)]
-        else:
+        elif(type(benchmark_covariates) is list):
             r2yxj_dx, r2dxj_x = [], []
             for b in benchmark_covariates:
-                r2yxj_dx.append(sensitivity_stats.group_partial_r2(model, covariates=b))
-                r2dxj_x.append(sensitivity_stats.group_partial_r2(treatment_results, covariates=b))
+              	r2yxj_dx.append(sensitivity_stats.group_partial_r2(model, covariates=b))
+              	r2dxj_x.append(sensitivity_stats.group_partial_r2(treatment_results, covariates=b))
+     	# Group Benchmark
+        elif(type(benchmark_covariates) is dict):
+            r2yxj_dx, r2dxj_x = [], []
+            for b in benchmark_covariates:
+                r2yxj_dx.append(sensitivity_stats.group_partial_r2(model, benchmark_covariates[b]))
+                r2dxj_x.append(sensitivity_stats.group_partial_r2(treatment_results, benchmark_covariates[b]))
     elif r2dxj_x is not None:
         if type(r2dxj_x) is int or type(r2dxj_x) is float:
             r2dxj_x = [r2dxj_x]
@@ -208,15 +219,27 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
         if (np.isscalar(r2yz_dx) and r2yz_dx > 1) or (not np.isscalar(r2yz_dx) and any(i > 1 for i in r2yz_dx)):
             print('Warning: Implied bound on r2yz.dx greater than 1, try lower kd and/or ky. Setting r2yz.dx to 1.')
             r2yz_dx[r2yz_dx > 1] = 1
-        if type(kd) is int or type(kd) is float:
-            bound_label = label_maker(benchmark_covariate=benchmark_covariates[i], kd=kd, ky=ky)
-            bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx},
-                                   ignore_index=True)
-        else:
-            for j in range(len(kd)):
-                bound_label = label_maker(benchmark_covariate=benchmark_covariates[i], kd=kd[j], ky=ky[j])
-                bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x[j], 'r2yz_dx': r2yz_dx[j]},
+        if(type(benchmark_covariates) is not dict):
+            if type(kd) is int or type(kd) is float:
+                bound_label = label_maker(benchmark_covariate=benchmark_covariates[i], kd=kd, ky=ky)
+                bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx},
                                        ignore_index=True)
+            else:
+                for j in range(len(kd)):
+                    bound_label = label_maker(benchmark_covariate=benchmark_covariates[i], kd=kd[j], ky=ky[j])
+                    bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x[j], 'r2yz_dx': r2yz_dx[j]},
+                                           ignore_index=True)
+        else:
+            if type(kd) is int or type(kd) is float:
+                bound_label = label_maker(benchmark_covariate=list(benchmark_covariates)[i], kd=kd, ky=ky)
+                bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx},
+                                       ignore_index=True)
+            else:
+                for j in range(len(kd)):
+                    bound_label = label_maker(benchmark_covariate=list(benchmark_covariates)[i], kd=kd[j], ky=ky[j])
+                    bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x[j], 'r2yz_dx': r2yz_dx[j]},
+                                           ignore_index=True)
+
     return bounds
 
 
