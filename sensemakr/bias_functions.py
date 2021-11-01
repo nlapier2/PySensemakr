@@ -144,7 +144,7 @@ def rel_bias(r_est, est):
 def bf(r2dz_x, r2yz_dx):
     """ Compute the bias function for the partial R^2 parameters. See description at top for details. """
     r2dz_x, r2yz_dx = np.array(r2dz_x), np.array(r2yz_dx)
-    return np.sqrt(r2yz_dx * r2dz_x) / (1 - r2dz_x)
+    return np.sqrt((r2yz_dx * r2dz_x) / (1 - r2dz_x))
 
 
 def param_check(function_name, r2dz_x, r2yz_dx,
