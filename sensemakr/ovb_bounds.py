@@ -8,7 +8,7 @@ import numpy as np
 import statsmodels.api as sm
 
 
-def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha=1, h0=0, reduce=True,
+def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha=0.05, h0=0, reduce=True,
                bound='partial r2', adjusted_estimates=True):
     """
     Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
