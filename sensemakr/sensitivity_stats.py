@@ -402,7 +402,7 @@ def check_alpha(alpha):
 
 def check_se(se):
     """ Ensures that standard error is a float greater than zero. """
-    if type(se) is not float or se < 0:
+    if (type(se) is not float and type(se) is not int) or se < 0:
         sys.exit('Standard error provided must be a single non-negative number. SE was: ' + str(se))
 
 
