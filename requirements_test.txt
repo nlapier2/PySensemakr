@@ -1,0 +1,8 @@
+pandas
+numpy
+statsmodels
+matplotlib
+scipy
+jupyter
+pytest
+pytest-cov
