@@ -4,3 +4,5 @@ omit =
     versioneer.py
     test_dev.py
     sensemakr/_version.py
+    sensemakr/__init__.py
+    *tests*
