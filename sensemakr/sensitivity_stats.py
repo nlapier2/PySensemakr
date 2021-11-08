@@ -250,17 +250,17 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     if (model is None or covariates is None) and (f_statistic is None or p is None or dof is None):
         sys.exit('Error: group_partial_r2 requires either a statsmodels OLSResults object and covariates or an '
                  'f-statistic, number of parameters, and degrees of freedom.')
-
-    params = model.params
-    check_covariates(model.model.exog_names, covariates)
-    params = params[covariates]
-    if np.isscalar(params):
-        return partial_r2(model=model, covariates=covariates, t_statistic=f_statistic, dof=dof)
-    v = model.cov_params().loc[covariates, :][covariates]  # variance-covariance matrix
-    dof = model.df_resid
-    p = len(params)
-    f = np.matmul(np.matmul(params.values.T, np.linalg.inv(v.values)), params.values) / p
-    r2 = f * p / (f * p + dof)
+    if((f_statistic is None or p is None or dof is None)):
+        params = model.params
+        check_covariates(model.model.exog_names, covariates)
+        params = params[covariates]
+        if np.isscalar(params):
+            return partial_r2(model=model, covariates=covariates, t_statistic=f_statistic, dof=dof)
+        v = model.cov_params().loc[covariates, :][covariates]  # variance-covariance matrix
+        dof = model.df_resid
+        p = len(params)
+        f_statistic = np.matmul(np.matmul(params.values.T, np.linalg.inv(v.values)), params.values) / p
+    r2 = f_statistic * p / (f_statistic * p + dof)
     return r2
 
 
