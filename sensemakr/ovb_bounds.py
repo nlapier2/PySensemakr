@@ -157,7 +157,7 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
     if (model is None or treatment is None) and (r2dxj_x is None or r2yxj_dx is None):
         sys.exit('Error: ovb_partial_r2_bound requires either a statsmodels OLSResults object and a treatment name'
                  'or the partial R^2 values with the benchmark covariate, r2dxj_x and r2yxj_dx.')
-    if type(treatment) is not str:
+    if (treatment is not None and type(treatment) is not str):
         sys.exit('Error: treatment must be a single string.')
     if benchmark_covariates is None:
         return None

@@ -139,9 +139,9 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     if sensitivity_of is None:
         sensitivity_of = plot_env['sensitivity_of']
     if label_bump_x is None:
-        label_bump_x = plot_env['lim'] / 15.0
+        label_bump_x = plot_env['lim'] / 30.0
     if label_bump_y is None:
-        label_bump_y = plot_env['lim_y'] / 15.0
+        label_bump_y = plot_env['lim_y'] /30.0
     if reduce is None:
         reduce = plot_env['reduce']
     if ky is None:
@@ -163,10 +163,14 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         r2dz_x = bounds['r2dz_x']
         r2yz_dx = bounds['r2yz_dx']
 
-    if type(r2dz_x) is int or type(r2dz_x) is float:
+    if np.isscalar(r2dz_x):
         r2dz_x = [r2dz_x]
-    if type(r2yz_dx) is int or type(r2yz_dx) is float:
+    if np.isscalar(r2yz_dx):
         r2yz_dx = [r2yz_dx]
+    if np.isscalar(bound_value):
+        bound_value = [bound_value]
+    if np.isscalar(bound_label):
+        bound_label = [bound_label]
     for i in range(len(r2dz_x)):
         plt.scatter(r2dz_x[i], r2yz_dx[i], c='red', marker='D', edgecolors='black')
         if label_text:
