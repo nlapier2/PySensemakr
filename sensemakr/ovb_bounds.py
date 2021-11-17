@@ -90,7 +90,7 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
 
 
 def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None,
-                         benchmark_covariates=None, kd=None, ky=None):
+                         benchmark_covariates=None, kd=1, ky=None):
     """
     The function `ovb_partial_r2_bound()` returns only a Pandas DataFrame with the bounds on the strength of the
     unobserved confounder. Adjusted estimates, standard errors and t-values (among other quantities) need to be computed
@@ -159,7 +159,10 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
                  'or the partial R^2 values with the benchmark covariate, r2dxj_x and r2yxj_dx.')
     if (treatment is not None and type(treatment) is not str):
         sys.exit('Error: treatment must be a single string.')
-    if benchmark_covariates is None:
+    if ((benchmark_covariates is None) and (r2dxj_x is not None)) :
+        #return None
+        benchmark_covariates=['manual']
+    elif(benchmark_covariates is None):
         return None
     elif type(benchmark_covariates) is str:
         benchmark_covariates = [benchmark_covariates]
@@ -199,9 +202,9 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
                 r2yxj_dx.append(sensitivity_stats.group_partial_r2(model, benchmark_covariates[b]))
                 r2dxj_x.append(sensitivity_stats.group_partial_r2(treatment_results, benchmark_covariates[b]))
     elif r2dxj_x is not None:
-        if type(r2dxj_x) is int or type(r2dxj_x) is float:
+        if np.isscalar(r2dxj_x):
             r2dxj_x = [r2dxj_x]
-        if type(r2yxj_dx) is int or type(r2yxj_dx) is float:
+        if np.isscalar(r2yxj_dx):
             r2yxj_dx = [r2yxj_dx]
 
     bounds = pd.DataFrame()
@@ -209,6 +212,8 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
         r2dxj_x[i], r2yxj_dx[i] = sensitivity_stats.check_r2(r2dxj_x[i], r2yxj_dx[i])
         if type(kd) is list:
             kd = np.array(kd)
+        if ky is None:
+            ky=kd
         r2dz_x = kd * (r2dxj_x[i] / (1 - r2dxj_x[i]))
         if (np.isscalar(r2dz_x) and r2dz_x >= 1) or (not np.isscalar(r2dz_x) and any(i >= 1 for i in r2dz_x)):
             sys.exit("Implied bound on r2dz.x >= 1. Impossible kd value. Try a lower kd.")
@@ -220,7 +225,7 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
             print('Warning: Implied bound on r2yz.dx greater than 1, try lower kd and/or ky. Setting r2yz.dx to 1.')
             r2yz_dx[r2yz_dx > 1] = 1
         if(type(benchmark_covariates) is not dict):
-            if type(kd) is int or type(kd) is float:
+            if np.isscalar(kd):
                 bound_label = label_maker(benchmark_covariate=benchmark_covariates[i], kd=kd, ky=ky)
                 bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx},
                                        ignore_index=True)

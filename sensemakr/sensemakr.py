@@ -248,6 +248,7 @@ class Sensemakr:
             self.se = self.sensitivity_stats['se']
             self.dof = self.model.df_resid
         else:
+            self.model=None
             self.estimate = estimate
             self.sensitivity_stats = sensitivity_stats.sensitivity_stats(estimate=self.estimate, se=se, dof=dof,
                                                                          q=self.q, alpha=self.alpha, reduce=self.reduce)
@@ -294,7 +295,7 @@ class Sensemakr:
             self.adjusted_upper_CI = self.adjusted_estimate + se_multiple * self.adjusted_se
 
             # Place results in a DataFrame
-            if(type(self.r2dz_x) is not np.float64):
+            if(not np.isscalar(self.r2dz_x)):
 	            self.bounds = pd.DataFrame(data={'r2dz_x': self.r2dz_x,
 	                                             'r2yz_dx': self.r2yz_dx,
 	                                             'bound_label': self.bound_label,
@@ -320,22 +321,23 @@ class Sensemakr:
                                                       benchmark_covariates=self.benchmark_covariates, kd=self.kd,
                                                       ky=self.ky, alpha=self.alpha, h0=self.h0, reduce=self.reduce)
         elif self.r2dxj_x is not None and self.estimate is not None:
-            self.benchmark_covariates = 'manual_benchmark'
+            if self.benchmark_covariates is None:
+                self.benchmark_covariates = 'manual_benchmark'
             # bound_label = ovb_bounds.label_maker(benchmark_covariate=self.benchmark_covariates, kd=kd, ky=ky)
-            self.bench_bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x=self.r2dxj_x, r2yxj_dx=self.r2yxj_dx, kd=kd, ky=ky)
-            if self.bench_bounds is not None:
-	            self.bench_bounds['adjusted_estimate'] = bias_functions.adjusted_estimate(self.r2dz_x, self.r2yz_dx,
-	                                                                                 estimate=self.estimate, se=self.se, dof=self.dof,
-	                                                                                 reduce=self.reduce)
-	            self.bench_bounds['adjusted_se'] = bias_functions.adjusted_se(self.r2dz_x, self.r2yz_dx,
-	                                                                           se=self.se,dof=self.dof)
-	            self.bench_bounds['adjusted_t'] = bias_functions.adjusted_t(self.r2dz_x, self.r2yz_dx, estimate=self.estimate,
-	                                                                   se=self.se, reduce=self.reduce)
-	            se_multiple = abs(t.ppf(alpha / 2, model.model.df_resid))  # number of SEs within CI based on alpha
-	            self.bench_bounds['adjusted_lower_CI'] = bench_bounds['adjusted_estimate'] - \
-	                se_multiple * bench_bounds['adjusted_se']
-	            self.bench_bounds['adjusted_upper_CI'] = bench_bounds['adjusted_estimate'] + \
-	                se_multiple * bench_bounds['adjusted_se']
+            self.bench_bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x=self.r2dxj_x, r2yxj_dx=self.r2yxj_dx, kd=kd, ky=ky,benchmark_covariates=self.benchmark_covariates)
+            if (self.bench_bounds is not None):
+                if(self.r2dz_x is None):
+                    self.r2dz_x=self.bench_bounds['r2dz_x'].values
+                if(self.r2yz_dx is None):
+                    self.r2yz_dx=self.bench_bounds['r2yz_dx'].values
+                self.bench_bounds['adjusted_estimate'] = bias_functions.adjusted_estimate(self.r2dz_x, self.r2yz_dx, estimate=self.estimate, se=self.se, dof=self.dof,reduce=self.reduce)
+                self.bench_bounds['adjusted_se'] = bias_functions.adjusted_se(self.r2dz_x, self.r2yz_dx,se=self.se,dof=self.dof)
+                self.bench_bounds['adjusted_t'] = bias_functions.adjusted_t(self.r2dz_x, self.r2yz_dx, estimate=self.estimate,se=self.se, reduce=self.reduce,dof=self.dof)
+                se_multiple = abs(t.ppf(alpha / 2, self.dof))  # number of SEs within CI based on alpha
+                self.bench_bounds['adjusted_lower_CI'] = self.bench_bounds['adjusted_estimate'] - \
+                    se_multiple * self.bench_bounds['adjusted_se']
+                self.bench_bounds['adjusted_upper_CI'] = self.bench_bounds['adjusted_estimate'] + \
+                    se_multiple * self.bench_bounds['adjusted_se']
         else:
             self.bench_bounds = None
 
