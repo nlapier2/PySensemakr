@@ -36,6 +36,13 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     elif model is not None and treatment is not None:
         estimate, se, dof, r2dz_x, r2yz_dx = extract_from_model(
             model, treatment, benchmark_covariates, kd, ky, r2dz_x, r2yz_dx)
+        if(np.isscalar(kd)):
+            kd=[kd]
+        if(ky is None):
+            ky=kd
+        bound_label=[]
+        for i in range(len(kd)):
+            bound_label.append( ovb_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
     elif estimate is None or se is None or dof is None:
         sys.exit('Error: must provide a Sensemakr object, a statsmodels OLSResults object and treatment, or'
                  'an estimate, standard error, and degrees of freedom.')
@@ -144,9 +151,13 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         label_bump_y = plot_env['lim_y'] /30.0
     if reduce is None:
         reduce = plot_env['reduce']
-    if ky is None:
-        ky = kd
 
+    if(np.isscalar(kd)):
+        kd=[kd]
+    if(ky is None):
+        ky=kd
+    if(np.isscalar(ky)):
+        ky=[ky]
     if model is not None:
         if treatment != plot_env['treatment']:
             print('Warning: treatment variable provided does not equal treatment of previous contour plot.')
@@ -154,11 +165,12 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         bounds = ovb_bounds.ovb_bounds(model=model, treatment=treatment, benchmark_covariates=benchmark_covariates,
                                        kd=kd, ky=ky, adjusted_estimates=True, reduce=reduce)
         if sensitivity_of == 'estimate':
-            bound_value = bounds['adjusted_estimate']
+            bound_value = bounds['adjusted_estimate'].copy()
         else:
-            bound_value = bounds['adjusted_t']
-        if bound_label is not None:
-            bound_label = bounds['bound_label']
+            bound_value = bounds['adjusted_t'].copy()
+        if bound_label is None:
+            bound_label = bounds['bound_label'].copy()
+
     if bounds is not None:
         r2dz_x = bounds['r2dz_x']
         r2yz_dx = bounds['r2yz_dx']
@@ -174,7 +186,7 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     for i in range(len(r2dz_x)):
         plt.scatter(r2dz_x[i], r2yz_dx[i], c='red', marker='D', edgecolors='black')
         if label_text:
-            if bound_value is not None and bound_value[i] is not None:
+            if bound_value is not None and bound_label is not None:
                 bound_value[i] = round(bound_value[i], round_dig)
                 label = str(bound_label[i]) + '\n(' + str(bound_value[i]) + ')'
             else:

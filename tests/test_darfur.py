@@ -187,8 +187,19 @@ def test_darfur_adjusted_estimates():
 	should_be_half_estimate=bias(model=model,treatment='directlyharmed',r2yz_dx=rv,r2dz_x=rv)
 	np.testing.assert_allclose(should_be_half_estimate,0.5*model.params['directlyharmed'],atol=1e-8)
 
+def test_darfur_plots():
+	contour_out=ovb_contour_plot(model=model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
+	add_bound_to_contour(model=model,treatment='directlyharmed',benchmark_covariates='age',kd=10)
+	add_bound_to_contour(model=model, treatment = "directlyharmed",benchmark_covariates = "age", kd = 200, ky = 20)
 
+	## t-value
+	contour_out=ovb_contour_plot(model=model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3],sensitivity_of='t-value')
+	add_bound_to_contour(model=model,treatment='directlyharmed',benchmark_covariates='age',kd=200,ky=10,sensitivity_of='t-value')
 
+	# test extreme scenario plot
+	extreme_out =ovb_extreme_plot(model=model, treatment = "directlyharmed", kd = [1,2,3])
+	
+	assert(True)
 
 def test_darfur_different_q():
 	darfur_out=sensemakr.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',q=2,kd=[1,2,3])

@@ -83,9 +83,9 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
         bounds['adjusted_t'] = bias_functions.adjusted_t(bounds['r2dz_x'], bounds['r2yz_dx'], model=model,
                                                          treatment=treatment, reduce=reduce, h0=h0)
 
-    se_multiple = abs(t.ppf(alpha / 2, model.model.df_resid))  # number of SEs within CI based on alpha
-    bounds['adjusted_lower_CI'] = bounds['adjusted_estimate'] - se_multiple * bounds['adjusted_se']
-    bounds['adjusted_upper_CI'] = bounds['adjusted_estimate'] + se_multiple * bounds['adjusted_se']
+        se_multiple = abs(t.ppf(alpha / 2, model.model.df_resid))  # number of SEs within CI based on alpha
+        bounds['adjusted_lower_CI'] = bounds['adjusted_estimate'] - se_multiple * bounds['adjusted_se']
+        bounds['adjusted_upper_CI'] = bounds['adjusted_estimate'] + se_multiple * bounds['adjusted_se']
     return bounds
 
 
@@ -251,7 +251,7 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 def label_maker(benchmark_covariate, kd, ky, digits=2):
     """ Returns a string created by appending the covariate name to the multiplier(s) ky and (if applicable) kd. """
     if benchmark_covariate is None:
-        variable_text = '\n'
+        variable_text = 'manual'
     else:
         variable_text = ' ' + str(benchmark_covariate)
     if ky == kd:
