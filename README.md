@@ -8,3 +8,9 @@
 ```
 pip install Pysensemakr
 ```
+
+## Development Version
+
+```
+pip3 install git+https://github.com/KennyZhang-17/PySensemakr
+```
