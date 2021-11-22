@@ -234,6 +234,8 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
 
             # Add rugs
             if(r2dz_x is not None):
+                if(np.isscalar(r2dz_x)):
+                    r2dz_x=[r2dz_x]
                 for rug in r2dz_x:
                     ax.axvline(x=rug,ymin=0, ymax=0.022,color='r',linewidth=2.5, linestyle="solid")
         else:

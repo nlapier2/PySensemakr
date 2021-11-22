@@ -51,6 +51,9 @@ def test_bounds():
 	assert(out['adjusted_estimate'].values==out['adjusted_upper_CI'].values)
 	assert(out['adjusted_estimate'].values==out['adjusted_lower_CI'].values)
 
+	out=ovb_partial_r2_bound(model=model,treatment='directlyharmed',benchmark_covariates='female')
+	np.testing.assert_allclose(out['r2dz_x'].values,0.0091642,atol=1e-6)
+
 def test_partial_r2():
 	b=ovb_partial_r2_bound(r2dxj_x=0.1,r2yxj_dx=0.1)
 	ovb_contour_plot(model=model,treatment='directlyharmed')
@@ -82,4 +85,6 @@ def test_group_bench():
 	np.testing.assert_allclose(kd,1,atol=1e-7)
 	out = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = [['x1','x2']], kd =kd, ky= ky)
 	out2 = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =kd, ky= ky)
+	out3 = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =[1,2,3])
+	plot(out,'contour')
 	assert(out.bounds.equals(out2.bounds))
