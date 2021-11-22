@@ -326,10 +326,8 @@ class Sensemakr:
             # bound_label = ovb_bounds.label_maker(benchmark_covariate=self.benchmark_covariates, kd=kd, ky=ky)
             self.bench_bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x=self.r2dxj_x, r2yxj_dx=self.r2yxj_dx, kd=kd, ky=ky,benchmark_covariates=self.benchmark_covariates)
             if (self.bench_bounds is not None):
-                if(self.r2dz_x is None):
-                    self.r2dz_x=self.bench_bounds['r2dz_x'].values
-                if(self.r2yz_dx is None):
-                    self.r2yz_dx=self.bench_bounds['r2yz_dx'].values
+                self.r2dz_x=self.bench_bounds['r2dz_x'].values
+                self.r2yz_dx=self.bench_bounds['r2yz_dx'].values
                 self.bench_bounds['adjusted_estimate'] = bias_functions.adjusted_estimate(self.r2dz_x, self.r2yz_dx, estimate=self.estimate, se=self.se, dof=self.dof,reduce=self.reduce)
                 self.bench_bounds['adjusted_se'] = bias_functions.adjusted_se(self.r2dz_x, self.r2yz_dx,se=self.se,dof=self.dof)
                 self.bench_bounds['adjusted_t'] = bias_functions.adjusted_t(self.r2dz_x, self.r2yz_dx, estimate=self.estimate,se=self.se, reduce=self.reduce,dof=self.dof)
@@ -344,7 +342,7 @@ class Sensemakr:
         if self.bounds is None:
             self.bounds = self.bench_bounds
         else:
-            self.bounds.append(self.bench_bounds)
+            self.bounds = self.bounds.append(self.bench_bounds).reset_index()
 
     def summary(self, digits=3):
         """

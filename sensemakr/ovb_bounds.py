@@ -251,7 +251,7 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 def label_maker(benchmark_covariate, kd, ky, digits=2):
     """ Returns a string created by appending the covariate name to the multiplier(s) ky and (if applicable) kd. """
     if benchmark_covariate is None:
-        variable_text = 'manual'
+        return 'manual'
     else:
         variable_text = ' ' + str(benchmark_covariate)
     if ky == kd:

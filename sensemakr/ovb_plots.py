@@ -36,13 +36,6 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     elif model is not None and treatment is not None:
         estimate, se, dof, r2dz_x, r2yz_dx = extract_from_model(
             model, treatment, benchmark_covariates, kd, ky, r2dz_x, r2yz_dx)
-        if(np.isscalar(kd)):
-            kd=[kd]
-        if(ky is None):
-            ky=kd
-        bound_label=[]
-        for i in range(len(kd)):
-            bound_label.append( ovb_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
     elif estimate is None or se is None or dof is None:
         sys.exit('Error: must provide a Sensemakr object, a statsmodels OLSResults object and treatment, or'
                  'an estimate, standard error, and degrees of freedom.')
@@ -116,6 +109,18 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     # add bounds
     if r2dz_x is not None:
         r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+        if(np.isscalar(kd)):
+            kd=[kd]
+        if(ky is None):
+            ky=kd
+        bound_label=[]
+        for i in range(len(kd)):
+            bound_label.append( ovb_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
+        if(np.isscalar(r2dz_x)):
+            bound_label.append( ovb_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
+        elif(len(r2dz_x)>len(kd)):
+            for i in range(len(r2dz_x)-len(kd)):
+                bound_label.append( ovb_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
         add_bound_to_contour(r2dz_x=r2dz_x, r2yz_dx=r2yz_dx, bound_value=bound_value, bound_label=bound_label,
                              sensitivity_of=sensitivity_of, label_text=label_text, label_bump_x=label_bump_x,
                              label_bump_y=label_bump_y, round_dig=round_dig)
@@ -181,8 +186,7 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         r2yz_dx = [r2yz_dx]
     if np.isscalar(bound_value):
         bound_value = [bound_value]
-    if np.isscalar(bound_label):
-        bound_label = [bound_label]
+
     for i in range(len(r2dz_x)):
         plt.scatter(r2dz_x[i], r2yz_dx[i], c='red', marker='D', edgecolors='black')
         if label_text:
@@ -317,8 +321,14 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
         if r2dz_x is None:
             bounds = bench_bounds
         else:
-            bounds = pd.DataFrame(data={'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx})
-            bounds.append(bench_bounds)
+            if(r2yz_dx is None):
+                r2yz_dx=r2dz_x
+            if(np.isscalar(r2dz_x)):
+                bounds = pd.DataFrame(data={'r2dz_x': [r2dz_x], 'r2yz_dx': [r2yz_dx]})
+                bounds = bounds.append(bench_bounds).reset_index()
+            else:
+                bounds = pd.DataFrame(data={'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx})
+                bounds = bounds.append(bench_bounds).reset_index()
     return estimate, se, dof, bounds['r2dz_x'], bounds['r2yz_dx']
 
 

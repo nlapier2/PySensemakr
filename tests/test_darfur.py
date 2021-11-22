@@ -109,7 +109,7 @@ def test_darfur_manual_bounds():
 	bounds_check=sense_out.bounds
 	to_check=bounds_check.adjusted_se
 	true_check=adjusted_se(model=model,treatment='directlyharmed',r2dz_x=0.1,r2yz_dx=0.1)
-	assert(to_check.values==true_check)
+	assert(to_check.values[0]==true_check)
 
 def test_darfur_sensemakr_manually():
 	model_treat=smf.ols(formula='directlyharmed ~  age + farmer_dar + herder_dar +\
