@@ -57,6 +57,7 @@ def test_simulation():
 
 def test_manual_input():
     out=sensemakr.Sensemakr(estimate=2,se=2,dof=100,r2dz_x=0.2,r2dxj_x=0.2,r2yxj_dx=0.2,kd=2,ky=1)
+    out.summary()
     est= out.bounds['adjusted_estimate'][0]
     est_check = adjusted_estimate(estimate = 2, se=2, dof=100, r2dz_x=0.2, r2yz_dx=0.2)
     assert(est==est_check)

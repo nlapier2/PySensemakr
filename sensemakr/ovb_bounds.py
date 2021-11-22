@@ -235,7 +235,7 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
                     bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x[j], 'r2yz_dx': r2yz_dx[j]},
                                            ignore_index=True)
         else:
-            if type(kd) is int or type(kd) is float:
+            if np.isscalar(kd):
                 bound_label = label_maker(benchmark_covariate=list(benchmark_covariates)[i], kd=kd, ky=ky)
                 bounds = bounds.append({'bound_label': bound_label, 'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx},
                                        ignore_index=True)

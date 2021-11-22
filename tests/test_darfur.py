@@ -39,6 +39,7 @@ def test_columns():
     assert(np.sum(col_vec)==14)
 def test_darfur_Sensemakr():
 	darfur_out=sensemakr.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
+	darfur_out.summary()
 	ovb_contour_plot(sense_obj=darfur_out)
 	ovb_extreme_plot(sense_obj=darfur_out)
 	# info
@@ -71,6 +72,7 @@ def test_darfur_Sensemakr():
 
 def test_darfur_Sensemakr_negative():
 	darfur_out=sensemakr.Sensemakr(model=model2,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
+	darfur_out.summary()
 	ovb_contour_plot(sense_obj=darfur_out)
 	ovb_extreme_plot(sense_obj=darfur_out)
 	# info
@@ -103,6 +105,7 @@ def test_darfur_Sensemakr_negative():
 
 def test_darfur_manual_bounds():
 	sense_out=sensemakr.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',r2dz_x=0.1)
+	sense_out.summary()
 	bounds_check=sense_out.bounds
 	to_check=bounds_check.adjusted_se
 	true_check=adjusted_se(model=model,treatment='directlyharmed',r2dz_x=0.1,r2yz_dx=0.1)
