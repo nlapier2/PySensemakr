@@ -21,7 +21,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/nlapier2/PySensemakr",
     packages=setuptools.find_packages(),
-    package_data={'PySensemakr': ['data/cmash*', 'data/db_info*', 'data/organism_files/*']},
+    package_data={'PySensemakr': ['data/*.csv']},
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -36,6 +36,5 @@ setuptools.setup(
     python_requires='>=3.8',
     install_requires=requirements,
 
-    include_package_data=True,
-    package_data={'': ['data/*.csv']},
+    include_package_data=True
 )
