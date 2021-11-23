@@ -25,6 +25,8 @@ from sensemakr import sensitivity_stats
 from sensemakr import bias_functions
 from sensemakr import ovb_bounds
 from sensemakr import ovb_plots
+from sensemakr import sensemakr
+from sensemakr import darfur
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 import numpy as np
@@ -34,7 +36,7 @@ import pandas as pd
 
 ```python
 # loads data
-darfur = pd.read_csv("data/darfur.csv")
+darfur = darfur.load_darfur()
 darfur.head()
 ```
 
