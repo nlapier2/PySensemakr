@@ -23,7 +23,8 @@ def test_adjusted_t():
     np.testing.assert_allclose(adjusted_t(estimate = 0.097, se = 0.0233, dof = 783, r2dz_x = 0, r2yz_dx = 0,h0=2*0.097),-4.160431,atol=1e-4)
 def test_bf():
     assert(bf(0.1,0.3)==np.sqrt(0.3*0.1/(1-0.1)))
-
+def test_adjusted_partial_r2():
+	np.testing.assert_allclose(adjusted_partial_r2(0.2, 0.2,estimate=2,se=3,dof=100),0.02403814,atol=1e-6)
 # Simulated Tests
 def rcoef():return(np.random.uniform(-1,1,1))
 

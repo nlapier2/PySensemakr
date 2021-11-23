@@ -56,9 +56,31 @@ def test_errors():
 		sensitivity_stats.sensitivity_stats(estimate=2,se='hey') 
 	with pytest.raises(SystemExit):
 		sensitivity_stats.sensitivity_stats(estimate=2,se=100,dof=-2)
+	with pytest.raises(SystemExit):
+		sensitivity_stats.robustness_value(covariates='female',dof=10)
+	with pytest.raises(SystemExit):
+		sensitivity_stats.partial_r2(covariates='female',dof=10)
+	with pytest.raises(SystemExit):
+		sensitivity_stats.partial_f2(covariates='female',dof=10)
+	with pytest.raises(SystemExit):
+		sensitivity_stats.group_partial_r2(covariates='female',dof=10)
 	with pytest.raises(TypeError):
 		adjusted_estimate(estimate=2,se=3,dof=100,reduce='nope')
 	with pytest.raises(TypeError):
 		adjusted_estimate(estimate=[2,3],se=3,dof=100)
 	with pytest.raises(SystemExit):
 		adjusted_t(estimate=[2,3],se=3,dof=100,r2dz_x=0.1,r2yz_dx=0.2)
+	with pytest.raises(SystemExit):
+		sensitivity_stats.check_q('nope')
+	with pytest.raises(SystemExit):
+		sensitivity_stats.check_alpha('nope')
+	with pytest.raises(SystemExit):
+		sensitivity_stats.check_se(-1)
+	with pytest.raises(SystemExit):
+		sensitivity_stats.check_covariates(['female','directlyharmed'],[1,2])
+	with pytest.raises(SystemExit):
+		sensitivity_stats.check_covariates(['female','directlyharmed'],'village')
+	with pytest.raises(TypeError):
+		sensitivity_stats.check_r2([0.1,0.2,0.3],['nope'])
+	with pytest.raises(SystemExit):
+		sensitivity_stats.check_r2([0.1,0.2,0.3],[1,2,3])

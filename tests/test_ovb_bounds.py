@@ -86,5 +86,22 @@ def test_group_bench():
 	out = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = [['x1','x2']], kd =kd, ky= ky)
 	out2 = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =kd, ky= ky)
 	out3 = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =[1,2,3])
+	bound=ovb_partial_r2_bound(model=model,treatment="d")
+	bound2=ovb_partial_r2_bound(model=model,treatment="d",benchmark_covariates='x1')
 	plot(out,'contour')
 	assert(out.bounds.equals(out2.bounds))
+	
+
+def test_bound_errors():
+	with pytest.raises(SystemExit):
+		ovb_bounds(model=model,treatment='directlyharmed',benchmark_covariates='female',alpha=0.2,bound='partial f2')
+	with pytest.raises(SystemExit):
+		ovb_partial_r2_bound(model=model,benchmark_covariates='female')
+	with pytest.raises(SystemExit):
+		ovb_partial_r2_bound(model=model,treatment=2,benchmark_covariates='female')
+	with pytest.raises(SystemExit):
+		ovb_partial_r2_bound(model=model,treatment='d',benchmark_covariates=np.array([1,2,3]))
+	with pytest.raises(SystemExit):
+		ovb_partial_r2_bound(model=model,treatment='d',benchmark_covariates=[1,'x1'])
+	with pytest.raises(SystemExit):
+		ovb_partial_r2_bound(model=model,treatment='d',benchmark_covariates={"X":[1,'x1']})

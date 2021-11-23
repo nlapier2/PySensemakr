@@ -43,6 +43,7 @@ def test_plots():
 	ovb_contour_plot(model=model,treatment='directlyharmed',r2dz_x=0.1,lim=-0.5,lim_y=-0.2)
 	ovb_extreme_plot(model=model,treatment='directlyharmed',r2dz_x=0.1,lim=-0.5)
 	ovb_extreme_plot(model=model,treatment='directlyharmed',r2dz_x=0.1,lim=1.2)
+	ovb_extreme_plot(model=model,treatment='directlyharmed',r2dz_x=0.1,lim=1.2,lim_y=0.5)
 	plt.close('all')
 	assert(True)
 def test_plot_errors():
@@ -68,4 +69,6 @@ def test_plot_errors():
 		ovb_contour_plot(estimate=2,se=3,dof=100,ky=2,kd=[2,3])
 	with pytest.raises(SystemExit):
 		ovb_contour_plot(estimate=None,se=3,dof=100)
+	with pytest.raises(SystemExit):
+		add_bound_to_contour(benchmark_covariates='female',r2dz_x=0.2)
 	plt.close('all')
