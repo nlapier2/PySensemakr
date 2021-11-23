@@ -1,6 +1,6 @@
 pandas
 numpy
+scipy
 statsmodels
 matplotlib
-scipy
 jupyter
