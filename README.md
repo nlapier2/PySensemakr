@@ -1,4 +1,21 @@
-<h1>Table of Contents<span class="tocSkip"></span></h1>
+# PySensemakr
+
+![PyPI](https://img.shields.io/pypi/v/Pysensemakr)
+[![CI](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml/badge.svg)](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/gh/KennyZhang-17/PySensemakr)](https://app.codecov.io/gh/KennyZhang-17/PySensemakr)
+## Installation
+
+```
+pip install Pysensemakr
+```
+
+## Development Version
+
+```
+pip3 install git+https://github.com/KennyZhang-17/PySensemakr
+```
+
+<h1>Example Usage<span class="tocSkip"></span></h1>
 <div class="toc"><ul class="toc-item"></ul></div>
 
 
@@ -16,42 +33,11 @@ import pandas as pd
 
 
 ```python
-%load_ext autoreload
-```
-
-    The autoreload extension is already loaded. To reload it, use:
-      %reload_ext autoreload
-
-
-
-```python
-%autoreload 2
-```
-
-
-```python
 # loads data
 darfur = pd.read_csv("data/darfur.csv")
 darfur.head()
 ```
 
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -241,7 +227,7 @@ ovb_plots.ovb_contour_plot(sense_obj=s, sensitivity_of='estimate')
 
 
     
-![png](output_8_0.png)
+![png](/images/output_8_0.png)
     
 
 
@@ -252,6 +238,6 @@ ovb_plots.ovb_extreme_plot(sense_obj=s)
 
 
     
-![png](output_9_0.png)
+![png](/images/output_9_0.png)
     
 
