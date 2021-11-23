@@ -12,7 +12,7 @@ pip install Pysensemakr
 ## Development Version
 
 ```
-pip3 install git+https://github.com/KennyZhang-17/PySensemakr
+pip3 install -e git+https://github.com/KennyZhang-17/PySensemakr
 ```
 
 <h1>Example Usage<span class="tocSkip"></span></h1>
