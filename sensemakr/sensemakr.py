@@ -381,22 +381,22 @@ class Sensemakr:
         print("Verbal interpretation of sensitivity statistics:\n")
         print("-- Partial R2 of the treatment with the outcome: an extreme confounder (orthogonal to the covariates) ",
               "that explains 100% of the residual variance of the outcome, would need to explain at least",
-              100.0 * self.sensitivity_stats['r2yd_x'], "% of the residual variance of the treatment "
+              round(100.0 * self.sensitivity_stats['r2yd_x'],digits), "% of the residual variance of the treatment "
                                                         "to fully account for the observed estimated effect.\n")
 
         print("-- Robustness Value,", "q =", self.q, ": unobserved confounders (orthogonal to the covariates) that ",
-              "explain more than", 100.0 * self.sensitivity_stats['rv_q'], "% of the residual variance",
+              "explain more than", round(100.0 * self.sensitivity_stats['rv_q'],digits), "% of the residual variance",
               "of both the treatment and the outcome are strong enough to bring the point estimate to", h0,
               "(a bias of", 100.0 * self.q, "% of the original estimate). Conversely, unobserved confounders that "
-              "do not explain more than", 100.0 * self.sensitivity_stats['rv_q'], "% of the residual variance",
+              "do not explain more than", round(100.0 * self.sensitivity_stats['rv_q'],digits), "% of the residual variance",
               "of both the treatment and the outcome are not strong enough to bring the point estimate to", h0, ".\n")
 
         print("-- Robustness Value,", "q =", self.q, ",", "alpha =", self.alpha, ": unobserved confounders (orthogonal "
-              "to the covariates) that explain more than", 100.0 * self.sensitivity_stats['rv_qa'], "% of the residual "
+              "to the covariates) that explain more than", round(100.0 * self.sensitivity_stats['rv_qa'],digits), "% of the residual "
               "variance of both the treatment and the outcome are strong enough to bring the estimate to a range where "
               "it is no longer 'statistically different' from", h0, "(a bias of", 100.0 * self.q, "% of the original "
               "estimate), at the significance level of alpha =", self.alpha, ".", "Conversely, unobserved confounders "
-              "that do not explain more than", 100.0 * self.sensitivity_stats['rv_qa'], "% of the residual variance",
+              "that do not explain more than", round(100.0 * self.sensitivity_stats['rv_qa'],digits), "% of the residual variance",
               "of both the treatment and the outcome are not strong enough to bring the estimate to a range where "
               "it is no longer 'statistically different' from", h0, ", at the significance level of alpha =",
               self.alpha, ".\n")

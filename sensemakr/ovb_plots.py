@@ -31,7 +31,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
         sys.exit('Error: "sensitivity_of" argument is required and must be "estimate" or "t-value".')
     if sense_obj is not None:
         # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
-        treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, estimate_threshold, t_threshold = \
+        treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, estimate_threshold, t_threshold,benchmark_covariates, kd,ky = \
             extract_from_sense_obj(sense_obj)
     elif model is not None and treatment is not None:
         estimate, se, dof, r2dz_x, r2yz_dx = extract_from_model(
@@ -113,9 +113,10 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
             kd=[kd]
         if(ky is None):
             ky=kd
-        bound_label=[]
-        for i in range(len(kd)):
-            bound_label.append( ovb_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
+        if bound_label is None:
+            bound_label=[]
+            for i in range(len(kd)):
+                bound_label.append( ovb_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
         if(np.isscalar(r2dz_x)):
             bound_label.append( ovb_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
         elif(len(r2dz_x)>len(kd)):
@@ -208,7 +209,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
                      xlab=None, ylab=None, list_par=None):
     if sense_obj is not None:
         # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
-        treatment, estimate, se, dof, r2dz_x, dum, bound_label, reduce, estimate_threshold, t_threshold = \
+        treatment, estimate, se, dof, r2dz_x, dum, bound_label, reduce, estimate_threshold, t_threshold,benchmark_covariates,kd,ky = \
             extract_from_sense_obj(sense_obj)
     elif model is not None and treatment is not None:
         estimate, se, dof, r2dz_x, dum = extract_from_model(
@@ -280,7 +281,9 @@ def extract_from_sense_obj(sense_obj):
     alpha = sense_obj.alpha
     se = sense_obj.se
     dof = sense_obj.dof
-
+    benchmark_covariates=sense_obj.benchmark_covariates
+    kd=sense_obj.kd
+    ky=sense_obj.ky
     if reduce:
         thr = estimate * (1 - q)
     else:
@@ -295,7 +298,7 @@ def extract_from_sense_obj(sense_obj):
         r2dz_x = sense_obj.bounds['r2dz_x']
         r2yz_dx = sense_obj.bounds['r2yz_dx']
         bound_label = sense_obj.bounds['bound_label']
-    return treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
+    return treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr, benchmark_covariates,kd,ky
 
 
 # Extracts estimate, standard error, degrees of freedom, and parial R^2 values from a specified model+treatment pair
@@ -327,10 +330,10 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
                 r2yz_dx=r2dz_x
             if(np.isscalar(r2dz_x)):
                 bounds = pd.DataFrame(data={'r2dz_x': [r2dz_x], 'r2yz_dx': [r2yz_dx]})
-                bounds = bounds.append(bench_bounds).reset_index()
+                bounds = bench_bounds.append(bounds).reset_index()
             else:
                 bounds = pd.DataFrame(data={'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx})
-                bounds = bounds.append(bench_bounds).reset_index()
+                bounds = bench_bounds.append(bounds).reset_index()
     return estimate, se, dof, bounds['r2dz_x'], bounds['r2yz_dx']
 
 
