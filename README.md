@@ -26,7 +26,7 @@ from sensemakr import bias_functions
 from sensemakr import ovb_bounds
 from sensemakr import ovb_plots
 from sensemakr import sensemakr
-from sensemakr import darfur
+from sensemakr import data
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 import numpy as np
@@ -36,7 +36,7 @@ import pandas as pd
 
 ```python
 # loads data
-darfur = darfur.load_darfur()
+darfur = data.load_darfur()
 darfur.head()
 ```
 
@@ -201,11 +201,11 @@ s.summary()
     
     Verbal interpretation of sensitivity statistics:
     
-    -- Partial R2 of the treatment with the outcome: an extreme confounder (orthogonal to the covariates)  that explains 100% of the residual variance of the outcome, would need to explain at least 2.187309334110975 % of the residual variance of the treatment to fully account for the observed estimated effect.
+    -- Partial R2 of the treatment with the outcome: an extreme confounder (orthogonal to the covariates)  that explains 100% of the residual variance of the outcome, would need to explain at least 2.187 % of the residual variance of the treatment to fully account for the observed estimated effect.
     
-    -- Robustness Value, q = 1.0 : unobserved confounders (orthogonal to the covariates) that  explain more than 13.877635389358836 % of the residual variance of both the treatment and the outcome are strong enough to bring the point estimate to 0.0 (a bias of 100.0 % of the original estimate). Conversely, unobserved confounders that do not explain more than 13.877635389358836 % of the residual variance of both the treatment and the outcome are not strong enough to bring the point estimate to 0.0 .
+    -- Robustness Value, q = 1.0 : unobserved confounders (orthogonal to the covariates) that  explain more than 13.878 % of the residual variance of both the treatment and the outcome are strong enough to bring the point estimate to 0.0 (a bias of 100.0 % of the original estimate). Conversely, unobserved confounders that do not explain more than 13.878 % of the residual variance of both the treatment and the outcome are not strong enough to bring the point estimate to 0.0 .
     
-    -- Robustness Value, q = 1.0 , alpha = 0.05 : unobserved confounders (orthogonal to the covariates) that explain more than 7.625796554485742 % of the residual variance of both the treatment and the outcome are strong enough to bring the estimate to a range where it is no longer 'statistically different' from 0.0 (a bias of 100.0 % of the original estimate), at the significance level of alpha = 0.05 . Conversely, unobserved confounders that do not explain more than 7.625796554485742 % of the residual variance of both the treatment and the outcome are not strong enough to bring the estimate to a range where it is no longer 'statistically different' from 0.0 , at the significance level of alpha = 0.05 .
+    -- Robustness Value, q = 1.0 , alpha = 0.05 : unobserved confounders (orthogonal to the covariates) that explain more than 7.626 % of the residual variance of both the treatment and the outcome are strong enough to bring the estimate to a range where it is no longer 'statistically different' from 0.0 (a bias of 100.0 % of the original estimate), at the significance level of alpha = 0.05 . Conversely, unobserved confounders that do not explain more than 7.626 % of the residual variance of both the treatment and the outcome are not strong enough to bring the estimate to a range where it is no longer 'statistically different' from 0.0 , at the significance level of alpha = 0.05 .
     
     Bounds on omitted variable bias:
     --The table below shows the maximum strength of unobserved confounders with association with the treatment and the outcome bounded by a multiple of the observed explanatory power of the chosen benchmark covariate(s).
