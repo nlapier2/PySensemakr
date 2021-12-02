@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="Python" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sensemakr.sensitivity_stats &mdash; Pysensemakr  documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'',
+              LANGUAGE:'Python',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Pysensemakr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">sensemakr</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pysensemakr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>sensemakr.sensitivity_stats</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sensemakr.sensitivity_stats</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Computes the sensitivity statistics: robustness value, partial R2, and Cohen&#39;s f2; plus helper functions</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">t</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="robustness_value"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.robustness_value">[docs]</a><span class="k">def</span> <span class="nf">robustness_value</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_statistic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the robustness value of a regression coefficient. The robustness value describes the</span>
+<span class="sd">    minimum strength of association (parameterized in terms of partial R2) that omitted variables would need to have</span>
+<span class="sd">    both with the treatment and with the outcome to change the estimated coefficient by a certain amount</span>
+<span class="sd">    (for instance, to bring it down to zero).</span>
+
+<span class="sd">    For instance, a robustness value of 1% means that an unobserved confounder that explain 1% of the residual variance</span>
+<span class="sd">    of the outcome and 1% of the residual variance of the treatment is strong enough to explain away the estimated</span>
+<span class="sd">    effect. Whereas a robustness value of 90% means that any unobserved confounder that explain less than 90% of the</span>
+<span class="sd">    residual variance of both the outcome and the treatment assignment cannot fully account for the observed effect.</span>
+<span class="sd">    You may also compute robustness value taking into account sampling uncertainty.</span>
+<span class="sd">    See details in Cinelli and Hazlett (2020).</span>
+
+<span class="sd">    The function robustness_value can take as input a statsmodels OLSResults object</span>
+<span class="sd">        or you may directly pass the t-value and degrees of freedom.</span>
+
+<span class="sd">    Reference:</span>
+<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
+<span class="sd">        Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    # load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import pandas as pd</span>
+<span class="sd">    darfur = pd.read_csv(&#39;data/darfur.csv&#39;)</span>
+
+<span class="sd">    # fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import statsmodels.formula.api as smf</span>
+<span class="sd">    model = smf.ols(formula=&#39;peacefactor ~</span>
+<span class="sd">        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">    fitted_model = model.fit()</span>
+
+<span class="sd">    from sensemakr import sensitivity_stats</span>
+<span class="sd">    ## robustness value of directly harmed q =1 (reduce estimate to zero)</span>
+<span class="sd">    sensitivity_stats.robustness_value(model = fitted_model, covariates = &quot;directlyharmed&quot;)</span>
+
+<span class="sd">    ## robustness value of directly harmed q = 1/2 (reduce estimate in half)</span>
+<span class="sd">    sensitivity_stats.robustness_value(model = fitted_model, covariates = &quot;directlyharmed&quot;, q = 1/2)</span>
+
+<span class="sd">    ## robustness value of directly harmed q = 1/2, alpha = 0.05</span>
+<span class="sd">    ## (reduce estimate in half, with 95% confidence)</span>
+<span class="sd">    sensitivity_stats.robustness_value(model = fitted_model, covariates = &quot;directlyharmed&quot;, q = 1/2, alpha = 0.05)</span>
+
+<span class="sd">    # you can also provide the statistics directly</span>
+<span class="sd">    sensitivity_stats.robustness_value(t_statistic = 4.18445, dof = 783)</span>
+
+<span class="sd">    Required parameters: either model or t_statistic and dof.</span>
+<span class="sd">    :param model: a statsmodels OLSResults object containing the restricted regression</span>
+<span class="sd">    :param t_statistic: a float with the t_statistic for the restricted model regression</span>
+<span class="sd">    :param dof: an int with the degrees of freedom of the restricted regression</span>
+<span class="sd">    :param q: a float with the percent to reduce the point estimate by for the robustness value RV_q</span>
+<span class="sd">    :param alpha: a float with the significance level for the robustness value RV_qa to render the</span>
+<span class="sd">        estimate not significant</span>
+<span class="sd">    :return: a numpy array with the robustness value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t_statistic</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: robustness_value requires either a statsmodels OLSResults object &#39;</span>
+                 <span class="s1">&#39;or a t-statistic and degrees of freedom.&#39;</span><span class="p">)</span>
+    <span class="n">check_q</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">check_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model_data</span> <span class="o">=</span> <span class="n">model_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="n">covariates</span><span class="p">)</span>
+        <span class="n">t_statistic</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;t_statistics&#39;</span><span class="p">]</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;dof&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">t_statistic</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">t_statistic</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">t_statistic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">t_statistic</span><span class="p">)</span>
+
+    <span class="n">fq</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t_statistic</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dof</span><span class="p">))</span>  <span class="c1"># Cohen&#39;s f for given q value</span>
+    <span class="n">f_crit</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dof</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dof</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># computes critical f</span>
+    <span class="n">fqa</span> <span class="o">=</span> <span class="n">fq</span> <span class="o">-</span> <span class="n">f_crit</span>  <span class="c1"># f for q and alpha values</span>
+
+    <span class="n">rv</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fqa</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">fqa</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">-</span> <span class="n">fqa</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># constraint binding case</span>
+    <span class="n">rvx</span> <span class="o">=</span> <span class="p">(</span><span class="n">fq</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">f_crit</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">fq</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># constraint not binding case</span>
+
+    <span class="c1"># combined results</span>
+    <span class="n">rv_out</span> <span class="o">=</span> <span class="n">rv</span>
+    <span class="n">rv_out</span><span class="p">[</span><span class="n">fqa</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">rv_out</span><span class="p">[(</span><span class="n">fqa</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">fq</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">f_crit</span><span class="p">)]</span> <span class="o">=</span> <span class="n">rvx</span><span class="p">[(</span><span class="n">fqa</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">fq</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">f_crit</span><span class="p">)]</span>
+
+    <span class="c1"># set attributes and return</span>
+    <span class="c1"># rv_out[&#39;q&#39;] = q</span>
+    <span class="c1"># rv_out[&#39;alpha&#39;] = alpha</span>
+    <span class="k">return</span> <span class="n">rv_out</span></div>
+
+
+<div class="viewcode-block" id="partial_r2"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.partial_r2">[docs]</a><span class="k">def</span> <span class="nf">partial_r2</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_statistic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the partial R2 for a linear regression model. The partial R2 describes how much of the</span>
+<span class="sd">    residual variance of the outcome (after partialing out the other covariates) a covariate explains.</span>
+
+<span class="sd">    The partial R2 can be used as an extreme-scenario sensitivity analysis to omitted variables.</span>
+<span class="sd">    Considering an unobserved confounder that explains 100% of the residual variance of the outcome,</span>
+<span class="sd">    the partial R2 describes how strongly associated with the treatment this unobserved confounder would need to be</span>
+<span class="sd">    in order to explain away the estimated effect.</span>
+<span class="sd">    For details see Cinelli and Hazlett (2020).</span>
+
+<span class="sd">    Reference:</span>
+<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
+<span class="sd">        Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">    This function takes as input a statsmodels OLSResults object or you may pass directly t-value &amp; degrees of freedom.</span>
+
+<span class="sd">    For partial R2 of groups of covariates, check group_partial_r2.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    # load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import pandas as pd</span>
+<span class="sd">    darfur = pd.read_csv(&#39;data/darfur.csv&#39;)</span>
+
+<span class="sd">    # fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import statsmodels.formula.api as smf</span>
+<span class="sd">    model = smf.ols(formula=&#39;peacefactor ~</span>
+<span class="sd">        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">    fitted_model = model.fit()</span>
+
+<span class="sd">    # load this module</span>
+<span class="sd">    from sensemakr import sensitivity_stats</span>
+
+<span class="sd">    # partial R2 of directly harmed with peacefactor</span>
+<span class="sd">    sensitivity_stats.partial_r2(model = fitted_model, covariates = &quot;directlyharmed&quot;)</span>
+
+<span class="sd">    # partial R2 of female with peacefactor</span>
+<span class="sd">    sensitivity_stats.partial_r2(model = fitted_model, covariates = &quot;female&quot;)</span>
+
+<span class="sd">    # you can also provide the statistics directly</span>
+<span class="sd">    sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)</span>
+
+<span class="sd">    Required parameters: either model or t_statistic and dof.</span>
+<span class="sd">    :param model: a statsmodels OLSResults object containing the restricted regression</span>
+<span class="sd">    :param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof</span>
+<span class="sd">        from the model. If not specified, defaults to all variables.</span>
+<span class="sd">    :param t_statistic: a float with the t_statistic for the restricted model regression</span>
+<span class="sd">    :param dof: an int with the degrees of freedom of the restricted regression</span>
+<span class="sd">    :return: a float with the computed partial R^2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t_statistic</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: partial_r2 requires either a statsmodels OLSResults object &#39;</span>
+                 <span class="s1">&#39;or a t-statistic and degrees of freedom.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model_data</span> <span class="o">=</span> <span class="n">model_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="n">covariates</span><span class="p">)</span>
+        <span class="n">t_statistic</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;t_statistics&#39;</span><span class="p">]</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;dof&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">t_statistic</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">t_statistic</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">dof</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># extracts float</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">t_statistic</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">t_statistic</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">dof</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="partial_f2"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.partial_f2">[docs]</a><span class="k">def</span> <span class="nf">partial_f2</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_statistic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the partial (Cohen&#39;s) f2 for a linear regression model. The partial (Cohen&#39;s) f2 is a</span>
+<span class="sd">    common measure of effect size (a transformation of the partial R2) that can also be used directly</span>
+<span class="sd">    for sensitivity analysis using a bias factor table.</span>
+<span class="sd">    For details see Cinelli and Hazlett (2020).</span>
+
+<span class="sd">    Reference:</span>
+<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
+<span class="sd">        Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">    This function takes as input a statsmodels OLSResults object or you may pass directly t-value &amp; degrees of freedom.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    # load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import pandas as pd</span>
+<span class="sd">    darfur = pd.read_csv(&#39;data/darfur.csv&#39;)</span>
+
+<span class="sd">    # fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import statsmodels.formula.api as smf</span>
+<span class="sd">    model = smf.ols(formula=&#39;peacefactor ~</span>
+<span class="sd">        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">    fitted_model = model.fit()</span>
+
+<span class="sd">    # load this module</span>
+<span class="sd">    from sensemakr import sensitivity_stats</span>
+
+<span class="sd">    # partial f2 of directly harmed with peacefactor</span>
+<span class="sd">    sensitivity_stats.partial_f2(model = fitted_model, covariates = &quot;directlyharmed&quot;)</span>
+
+<span class="sd">    # partial f2 of female with peacefactor</span>
+<span class="sd">    sensitivity_stats.partial_f2(model = fitted_model, covariates = &quot;female&quot;)</span>
+
+<span class="sd">    # you can also provide the statistics directly</span>
+<span class="sd">    sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783)</span>
+
+<span class="sd">    Required parameters: either model or t_statistic and dof.</span>
+<span class="sd">    :param model: a statsmodels OLSResults object containing the restricted regression</span>
+<span class="sd">    :param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof</span>
+<span class="sd">        from the model. If not specified, defaults to all variables.</span>
+<span class="sd">    :param t_statistic: a float with the t_statistic for the restricted model regression</span>
+<span class="sd">    :param dof: an int with the degrees of freedom of the restricted regression</span>
+<span class="sd">    :return: a float with the computed partial f^2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t_statistic</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: partial_f2 requires either a statsmodels OLSResults object &#39;</span>
+                 <span class="s1">&#39;or a t-statistic and degrees of freedom.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model_data</span> <span class="o">=</span> <span class="n">model_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="n">covariates</span><span class="p">)</span>
+        <span class="n">t_statistic</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;t_statistics&#39;</span><span class="p">]</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;dof&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">t_statistic</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">dof</span></div>
+
+
+<div class="viewcode-block" id="partial_f"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.partial_f">[docs]</a><span class="k">def</span> <span class="nf">partial_f</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_statistic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This is the square root of the partial_f2 function described above. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">partial_f2</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">covariates</span><span class="p">,</span> <span class="n">t_statistic</span><span class="p">,</span> <span class="n">dof</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="group_partial_r2"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.group_partial_r2">[docs]</a><span class="k">def</span> <span class="nf">group_partial_r2</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_statistic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Partial R2 of groups of covariates in a linear regression model</span>
+
+<span class="sd">    This function computes the partial R2 of a group of covariates in a linear regression model. Multivariate version</span>
+<span class="sd">        of the partial_r2 function; see that for more details.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    # load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import pandas as pd</span>
+<span class="sd">    darfur = pd.read_csv(&#39;data/darfur.csv&#39;)</span>
+
+<span class="sd">    # fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import statsmodels.formula.api as smf</span>
+<span class="sd">    model = smf.ols(formula=&#39;peacefactor ~</span>
+<span class="sd">        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">    fitted_model = model.fit()</span>
+
+<span class="sd">    from sensemakr import sensitivity_stats</span>
+<span class="sd">    sensitivity_stats.group_partial_r2(model = fitted_model, covariates = [&quot;female&quot;, &quot;pastvoted&quot;])</span>
+
+
+<span class="sd">    Required parameters: either model or f_statistic, p, and dof.</span>
+<span class="sd">    :param model: a statsmodels OLSResults object containing the restricted regression</span>
+<span class="sd">    :param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof</span>
+<span class="sd">        from the model. If not specified, defaults to all variables.</span>
+<span class="sd">    :param f_statistic: a float with the f_statistic for the restricted model regression</span>
+<span class="sd">    :param p: an int with the number of parameters in the model</span>
+<span class="sd">    :param dof: an int with the degrees of freedom of the restricted regression</span>
+<span class="sd">    :return: a float with the computed group partial R^2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">covariates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">f_statistic</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">p</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: group_partial_r2 requires either a statsmodels OLSResults object and covariates or an &#39;</span>
+                 <span class="s1">&#39;f-statistic, number of parameters, and degrees of freedom.&#39;</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">((</span><span class="n">f_statistic</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">p</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">params</span>
+        <span class="n">check_covariates</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">exog_names</span><span class="p">,</span> <span class="n">covariates</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">covariates</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">partial_r2</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="n">covariates</span><span class="p">,</span> <span class="n">t_statistic</span><span class="o">=</span><span class="n">f_statistic</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cov_params</span><span class="p">()</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">covariates</span><span class="p">,</span> <span class="p">:][</span><span class="n">covariates</span><span class="p">]</span>  <span class="c1"># variance-covariance matrix</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">df_resid</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">f_statistic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">values</span><span class="p">)),</span> <span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">f_statistic</span> <span class="o">*</span> <span class="n">p</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_statistic</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="n">dof</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r2</span></div>
+
+
+<div class="viewcode-block" id="sensitivity_stats"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.sensitivity_stats">[docs]</a><span class="k">def</span> <span class="nf">sensitivity_stats</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.</span>
+<span class="sd">    See those function descriptions above for more details.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    # load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import pandas as pd</span>
+<span class="sd">    darfur = pd.read_csv(&#39;data/darfur.csv&#39;)</span>
+
+<span class="sd">    # fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    import statsmodels.formula.api as smf</span>
+<span class="sd">    model = smf.ols(formula=&#39;peacefactor ~</span>
+<span class="sd">        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">    fitted_model = model.fit()</span>
+
+<span class="sd">    from sensemakr import sensitivity_stats</span>
+<span class="sd">    ## sensitivity stats for directly harmed</span>
+<span class="sd">    sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = &quot;directlyharmed&quot;)</span>
+
+<span class="sd">    ## you can  also pass the numeric values directly</span>
+<span class="sd">    sensitivity_stats.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783)</span>
+
+<span class="sd">    Reference:</span>
+<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
+<span class="sd">        Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+
+<span class="sd">    Required parameters: either model and treatment, or estimate, se, and dof.</span>
+<span class="sd">    :param model: a statsmodels OLSResults object containing the restricted regression</span>
+<span class="sd">    :param treatment: a string with treatment variable name</span>
+<span class="sd">    :param estimate: a float with the coefficient estimate of the restricted regression</span>
+<span class="sd">    :param se: a float with the standard error of the restricted regression</span>
+<span class="sd">    :param dof: an int with the degrees of freedom of the restricted regression</span>
+<span class="sd">    :param q: a float with the percent to reduce the point estimate by for the robustness value RV_q</span>
+<span class="sd">    :param alpha: a float with the significance level for the robustness value RV_qa to render the</span>
+<span class="sd">        estimate not significant</span>
+<span class="sd">    :param reduce: whether to reduce or increase the estimate due to confounding</span>
+<span class="sd">    :return: a Pandas DataFrame containing the following quantities:</span>
+<span class="sd">        * treatment: a string with the name of the treatment variable</span>
+<span class="sd">        * estimate: a float with the estimated effect of the treatment</span>
+<span class="sd">        * se: a float with the estimated standard error of the treatment effect</span>
+<span class="sd">        * t_statistics: a float with  the t-value of the treatment</span>
+<span class="sd">        * r2yd.x: a float with the partial R2 of the treatment and the outcome, see details in partial_r2</span>
+<span class="sd">        * rv_q: a float the robustness value of the treatment, see details in robustness_value</span>
+<span class="sd">        * rv_qa: a float with the robustness value of the treatment considering statistical significance,</span>
+<span class="sd">            see details in robustness_value</span>
+<span class="sd">        * f2yd_x: a float with the partial (Cohen&#39;s) f2 of the treatment with the outcome, see details in partial_f2</span>
+<span class="sd">        * dof: an int with the degrees of freedom of the model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">treatment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">estimate</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">se</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: sensitivity_stats requires either a statsmodels OLSResults object and treatment name or an &#39;</span>
+                 <span class="s1">&#39;estimate, standard error, and degrees of freedom.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">treatment</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: must provide only one treatment variable.&#39;</span><span class="p">)</span>
+        <span class="n">model_data</span> <span class="o">=</span> <span class="n">model_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="n">treatment</span><span class="p">)</span>
+        <span class="n">estimate</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;estimate&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">se</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;se&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;dof&#39;</span><span class="p">])</span>
+
+    <span class="n">check_q</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">check_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="n">check_se</span><span class="p">(</span><span class="n">se</span><span class="p">)</span>
+    <span class="n">check_dof</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">reduce</span><span class="p">:</span>
+        <span class="n">h0</span> <span class="o">=</span> <span class="n">estimate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">q</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">h0</span> <span class="o">=</span> <span class="n">estimate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">q</span><span class="p">)</span>
+    <span class="n">original_t</span> <span class="o">=</span> <span class="n">estimate</span> <span class="o">/</span> <span class="n">se</span>
+    <span class="n">t_statistic</span> <span class="o">=</span> <span class="p">(</span><span class="n">estimate</span> <span class="o">-</span> <span class="n">h0</span><span class="p">)</span> <span class="o">/</span> <span class="n">se</span>
+    <span class="n">r2yd_x</span> <span class="o">=</span> <span class="n">partial_r2</span><span class="p">(</span><span class="n">t_statistic</span><span class="o">=</span><span class="n">original_t</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">)</span>
+    <span class="n">rv_q</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">robustness_value</span><span class="p">(</span><span class="n">t_statistic</span><span class="o">=</span><span class="n">original_t</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rv_qa</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">robustness_value</span><span class="p">(</span><span class="n">t_statistic</span><span class="o">=</span><span class="n">original_t</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">f2yd_x</span> <span class="o">=</span> <span class="n">partial_f2</span><span class="p">(</span><span class="n">t_statistic</span><span class="o">=</span><span class="n">original_t</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">)</span>
+    <span class="n">sensitivity_stats_df</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;estimate&#39;</span><span class="p">:</span> <span class="n">estimate</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">:</span> <span class="n">se</span><span class="p">,</span> <span class="s1">&#39;t_statistic&#39;</span><span class="p">:</span> <span class="n">t_statistic</span><span class="p">,</span>
+                            <span class="s1">&#39;r2yd_x&#39;</span><span class="p">:</span> <span class="n">r2yd_x</span><span class="p">,</span> <span class="s1">&#39;rv_q&#39;</span><span class="p">:</span> <span class="n">rv_q</span><span class="p">,</span> <span class="s1">&#39;rv_qa&#39;</span><span class="p">:</span> <span class="n">rv_qa</span><span class="p">,</span> <span class="s1">&#39;f2yd_x&#39;</span><span class="p">:</span> <span class="n">f2yd_x</span><span class="p">,</span> <span class="s1">&#39;dof&#39;</span><span class="p">:</span> <span class="n">dof</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">sensitivity_stats_df</span></div>
+
+
+<span class="c1"># Helper function for quickly extracting properties from a model, allowing specification of a subset of covariates</span>
+<div class="viewcode-block" id="model_helper"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.model_helper">[docs]</a><span class="k">def</span> <span class="nf">model_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Internal function for extracting info from a statsmodels OLSResults object and returning it in a dict.&quot;&quot;&quot;</span>
+    <span class="n">error_if_no_dof</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># check to make sure there aren&#39;t zero residual degrees of freedom for this model</span>
+    <span class="k">if</span> <span class="n">covariates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">covariates</span> <span class="o">=</span> <span class="n">check_covariates</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">exog_names</span><span class="p">,</span> <span class="n">covariates</span><span class="p">)</span>
+        <span class="n">used_variables</span> <span class="o">=</span> <span class="n">covariates</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">used_variables</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">exog_names</span>  <span class="c1"># use all variables if no covariates specified</span>
+    <span class="n">model_info</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;covariates&#39;</span><span class="p">:</span> <span class="n">used_variables</span><span class="p">,</span>
+        <span class="s1">&#39;estimate&#39;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">used_variables</span><span class="p">],</span>
+        <span class="s1">&#39;se&#39;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">bse</span><span class="p">[</span><span class="n">used_variables</span><span class="p">],</span>
+        <span class="s1">&#39;t_statistics&#39;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">tvalues</span><span class="p">[</span><span class="n">used_variables</span><span class="p">],</span>
+        <span class="s1">&#39;dof&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">df_resid</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">model_info</span></div>
+
+
+<span class="c1"># Variable validators for sensitivity stats and sensemakr</span>
+
+<div class="viewcode-block" id="check_r2"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.check_r2">[docs]</a><span class="k">def</span> <span class="nf">check_r2</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Ensures that r2dz_x and r2yz_dx are numpy scalars or arrays &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">r2dz_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">r2dz_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">r2dz_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">r2yz_dx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">r2yz_dx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">r2yz_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">r2yz_dx</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">r2yz_dx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">r2yz_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r2yz_dx</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">[</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Partial R^2 must be a number or array of numbers between zero and one.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">)</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">r</span><span class="p">)):</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Partial R^2 must be a number or array of numbers between zero and one.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span></div>
+
+
+<div class="viewcode-block" id="check_q"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.check_q">[docs]</a><span class="k">def</span> <span class="nf">check_q</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Ensures that q, the percent reduction to the point estimate for RV_q, is a float or int greater than 0. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">q</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: the q parameter must be a single number greater than 0. q was: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">q</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="check_alpha"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.check_alpha">[docs]</a><span class="k">def</span> <span class="nf">check_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Ensures that alpha, the significance level for RV_qa, is a float between 0 and 1. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">float</span> <span class="ow">or</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">alpha</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: alpha must be between 0 and 1. alpha was: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="check_se"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.check_se">[docs]</a><span class="k">def</span> <span class="nf">check_se</span><span class="p">(</span><span class="n">se</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Ensures that standard error is a float greater than zero. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">se</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">se</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">se</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Standard error provided must be a single non-negative number. SE was: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">se</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="check_dof"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.check_dof">[docs]</a><span class="k">def</span> <span class="nf">check_dof</span><span class="p">(</span><span class="n">dof</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Ensures that the degrees of freedom for a regression is a positive integer. &quot;&quot;&quot;</span>
+    <span class="n">dof</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span> <span class="ow">and</span> <span class="n">dof</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">int</span> <span class="ow">or</span> <span class="n">dof</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: degrees of freedom provided must be a single positive integer. DOF was: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dof</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="error_if_no_dof"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.error_if_no_dof">[docs]</a><span class="k">def</span> <span class="nf">error_if_no_dof</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; For a given statsmodels OLSResults object, ensure that its degrees of freedom is not zero. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">df_resid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: There are 0 residual degrees of freedom in the regression model provided.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_covariates"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensitivity_stats.check_covariates">[docs]</a><span class="k">def</span> <span class="nf">check_covariates</span><span class="p">(</span><span class="n">all_names</span><span class="p">,</span> <span class="n">covariates</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Ensure that all provided covariates are strings and are in the regression model. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">covariates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">covariates</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">covariates</span> <span class="o">=</span> <span class="p">[</span><span class="n">covariates</span><span class="p">]</span>  <span class="c1"># make into a list if it&#39;s only a single string</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">covariates</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: Treatment and covariates names must be strings.&#39;</span><span class="p">)</span>
+        <span class="n">not_found</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">covariates</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_names</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">not_found</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Variables not found in model: &#39;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_found</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">covariates</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

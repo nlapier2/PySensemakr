@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="Python" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sensemakr.sensemakr &mdash; Pysensemakr  documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'',
+              LANGUAGE:'Python',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Pysensemakr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">sensemakr</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pysensemakr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>sensemakr.sensemakr</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sensemakr.sensemakr</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Sensemakr: extending omitted variable bias</span>
+
+<span class="sd">####</span>
+<span class="sd">NOTE: This is a Python version of the original R sensemakr package, which can be found here:</span>
+<span class="sd">https://github.com/carloscinelli/sensemakr</span>
+<span class="sd">R&#39;s linear model (&quot;lm&quot;) and data.frame objects most naturally translate into statsmodels OLS/OLSResults and pandas</span>
+<span class="sd">    DataFrame/Series objects, so we have used those in the python version. These packages are not universally familiar</span>
+<span class="sd">    to python users, but they were the most straightforward and faithful way to translate the R package into Python.</span>
+<span class="sd">    Examples are included below to demonstrate how to use these objects to run this package successfully.</span>
+<span class="sd">There are some features of the original package that have not yet been implemented. For instance, R&#39;s notion of</span>
+<span class="sd">    &quot;formulas&quot; for linear models are less used by and less familiar to python programmers, and thus have not yet been</span>
+<span class="sd">    included in the Python version. This could change if there is sufficient demand.</span>
+<span class="sd">####</span>
+
+<span class="sd">The sensemakr package implements a suite of sensitivity analysis tools that makes it easier to</span>
+<span class="sd">understand the impact of omitted variables in linear regression models, as discussed in Cinelli and Hazlett (2020).</span>
+
+<span class="sd">This package defines a class called Sensemakr, which computes the most common sensitivity analysis results.</span>
+<span class="sd">After creating an object of the Sensemakr class, you may directly use the plot and print methods of the object.</span>
+
+<span class="sd">You may also use the other sensitivity functions of the package directly, such as the functions for sensitivity plots</span>
+<span class="sd">(ovb_contour_plot, ovb_extreme_plot) the functions for computing bias-adjusted estimates and t-values</span>
+<span class="sd">(adjusted_estimate, adjusted_t), the functions for computing the robustness value and partial R2 (robustness_value,</span>
+<span class="sd">partial_r2),  or the functions for bounding the strength of unobserved confounders (ovb_bounds), among others.</span>
+
+<span class="sd">More information can be found on the help documentation and related papers.</span>
+
+<span class="sd">Reference:</span>
+<span class="sd">Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
+<span class="sd">    Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">Examples:</span>
+
+<span class="sd"># load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">import pandas as pd</span>
+<span class="sd">darfur = pd.read_csv(&#39;data/darfur.csv&#39;)</span>
+
+<span class="sd"># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">import statsmodels.formula.api as smf</span>
+<span class="sd">model = smf.ols(formula=&#39;peacefactor ~ \</span>
+<span class="sd">    directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">fitted_model = model.fit()</span>
+
+<span class="sd"># runs sensemakr for sensitivity analysis</span>
+<span class="sd">from sensemakr import sensemakr</span>
+<span class="sd">sensitivity = sensemakr.Sensemakr(</span>
+<span class="sd">    fitted_model, treatment = &quot;directlyharmed&quot;, benchmark_covariates = &quot;female&quot;, kd = [1, 2, 3])</span>
+
+<span class="sd"># description of results</span>
+<span class="sd">sensitivity.summary()</span>
+
+<span class="sd">#### plot bias contour of point estimate</span>
+<span class="sd">###plot(sensitivity)</span>
+
+<span class="sd">#### plot bias contour of t-value</span>
+<span class="sd">###plot(sensitivity, sensitivity_of = &quot;t-value&quot;)</span>
+
+<span class="sd">#### plot extreme scenario</span>
+<span class="sd">###plot(sensitivity, type = &quot;extreme&quot;)</span>
+
+<span class="sd"># Pandas DataFrame with sensitivity statistics</span>
+<span class="sd">sensitivity.sensitivity_stats</span>
+
+<span class="sd"># Pandas DataFrame with bounds on the strength of confounders</span>
+<span class="sd">sensitivity.bounds</span>
+
+<span class="sd">### Using sensitivity functions directly ###</span>
+<span class="sd">from sensemakr import sensitivity_stats</span>
+<span class="sd">from sensemakr import ovb_bounds</span>
+<span class="sd">from sensemakr import bias_functions</span>
+
+<span class="sd"># robustness value of directly harmed q = 1 (reduce estimate to zero)</span>
+<span class="sd">sensitivity_stats.robustness_value(model = fitted_model, covariates = &#39;directlyharmed&#39;)</span>
+
+<span class="sd"># robustness value of directly harmed q = 1/2 (reduce estimate in half)</span>
+<span class="sd">sensitivity_stats.robustness_value(model = fitted_model, covariates = &#39;directlyharmed&#39;, q = 0.5)</span>
+
+<span class="sd"># robustness value of directly harmed q = 1/2, alpha = 0.05</span>
+<span class="sd">sensitivity_stats.robustness_value(model = fitted_model, covariates = &#39;directlyharmed&#39;, q = 0.5, alpha = 0.05)</span>
+
+<span class="sd"># partial R2 of directly harmed with peacefactor</span>
+<span class="sd">sensitivity_stats.partial_r2(model = fitted_model, covariates = &quot;directlyharmed&quot;)</span>
+
+<span class="sd"># partial R2 of female with peacefactor</span>
+<span class="sd">sensitivity_stats.partial_r2(model = fitted_model, covariates = &quot;female&quot;)</span>
+
+<span class="sd"># pandas DataFrame with sensitivity statistics</span>
+<span class="sd">sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = &quot;directlyharmed&quot;)</span>
+
+<span class="sd"># bounds on the strength of confounders using female and age</span>
+<span class="sd">ovb_bounds.ovb_bounds(model = fitted_model, treatment = &quot;directlyharmed&quot;,</span>
+<span class="sd">    benchmark_covariates = [&quot;female&quot;, &quot;age&quot;], kd = [1, 2, 3])</span>
+
+<span class="sd"># adjusted estimate given hypothetical strength of confounder</span>
+<span class="sd">bias_functions.adjusted_estimate(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.1, r2yz_dx = 0.1)</span>
+
+<span class="sd"># adjusted t-value given hypothetical strength of confounder</span>
+<span class="sd">bias_functions.adjusted_t(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.1, r2yz_dx = 0.1)</span>
+
+<span class="sd">#### bias contour plot directly from model</span>
+<span class="sd">###ovb_contour_plot(fitted_model, treatment = &quot;directlyharmed&quot;, benchmark_covariates = &quot;female&quot;, kd = [1, 2, 3])</span>
+
+<span class="sd">#### extreme scenario plot directly from model</span>
+<span class="sd">###ovb_extreme_plot(model, treatment = &quot;directlyharmed&quot;, benchmark_covariates = &quot;female&quot;, kd = [1, 2, 3], lim = 0.05)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">t</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">sensitivity_stats</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">bias_functions</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">ovb_bounds</span>
+
+
+<div class="viewcode-block" id="Sensemakr"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensemakr.Sensemakr">[docs]</a><span class="k">class</span> <span class="nc">Sensemakr</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sensitivity analysis to unobserved confounders</span>
+
+<span class="sd">    This function performs sensitivity analysis to omitted variables as discussed in Cinelli and Hazlett (2020).</span>
+<span class="sd">    It returns an object of class Sensemakr with several pre-computed sensitivity statistics for reporting.</span>
+<span class="sd">    After creating the object, you may directly use the plot and summary methods of the returned object.</span>
+
+<span class="sd">    Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly,</span>
+<span class="sd">    such as the functions for sensitivity plots (ovb_contour_plot, ovb_extreme_plot), the functions for</span>
+<span class="sd">    computing bias-adjusted estimates and t-values (adjusted_estimate, adjusted_t), the functions for computing the</span>
+<span class="sd">    robustness value and partial R2 (robustness_value, partial_r2),  or the functions for bounding the strength</span>
+<span class="sd">    of unobserved confounders (ovb_bounds), among others.</span>
+
+<span class="sd">    @param ... arguments passed to other methods. First argument should either be</span>
+<span class="sd">    (i)  an lm model with the outcome regression (argument model); or</span>
+<span class="sd">    (ii) the numerical estimated value of the coefficient, along with the numeric values of standard errors and</span>
+<span class="sd">         degrees of freedom (arguments estimate, se and df).</span>
+
+
+<span class="sd">    Reference:</span>
+<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
+<span class="sd">        Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    # loads dataset</span>
+<span class="sd">    data(&quot;darfur&quot;)</span>
+
+<span class="sd">    # runs regression model</span>
+<span class="sd">    model &lt;- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +</span>
+<span class="sd">                             pastvoted + hhsize_darfur + female + village, data = darfur)</span>
+
+<span class="sd">    # runs sensemakr for sensitivity analysis</span>
+<span class="sd">    sensitivity &lt;- sensemakr(model, treatment = &quot;directlyharmed&quot;,</span>
+<span class="sd">                                   benchmark_covariates = &quot;female&quot;,</span>
+<span class="sd">                                   kd = [1, 2, 3])</span>
+<span class="sd">    # short description of results</span>
+<span class="sd">    sensitivity</span>
+
+<span class="sd">    # long description of results</span>
+<span class="sd">    summary(sensitivity)</span>
+
+<span class="sd">    # plot bias contour of point estimate</span>
+<span class="sd">    plot(sensitivity)</span>
+
+<span class="sd">    # plot bias contour of t-value</span>
+<span class="sd">    plot(sensitivity, sensitivity_of = &quot;t-value&quot;)</span>
+
+<span class="sd">    # plot extreme scenario</span>
+<span class="sd">    plot(sensitivity, type = &quot;extreme&quot;)</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    An object of class Sensemakr, containing:</span>
+<span class="sd">        sensitivity_stats: A Pandas DataFrame with the sensitivity statistics for the treatment variable,</span>
+<span class="sd">                           as computed by the function sensitivity_stats.</span>
+<span class="sd">        bounds: A pandas DataFrame with bounds on the strength of confounding according to some benchmark covariates,</span>
+<span class="sd">                as computed by the function ovb_bounds.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">benchmark_covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kd</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">ky</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r2dxj_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r2yxj_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bound_label</span><span class="o">=</span><span class="s2">&quot;Manual Bound&quot;</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The constructor for a Sensemakr object. Parameter descriptions are below. For usage and info, see the</span>
+<span class="sd">        description of the class above.</span>
+
+<span class="sd">        Required parameters: model and treatment, or estimate, se, and dof</span>
+<span class="sd">        :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided</span>
+<span class="sd">        :param treatment: a string with the name of the &quot;treatment&quot; variable, e.g. the independent variable of interest</span>
+<span class="sd">        :param estimate: a float with the estimate of the coefficient for the independent variable of interest</span>
+<span class="sd">        :param se: a float with the standard error of the regression</span>
+<span class="sd">        :param dof: an int with the degrees of freedom of the regression</span>
+<span class="sd">        :param benchmark_covariates: a string or list of strings with</span>
+<span class="sd">            the names of the variables to use for benchmark bounding</span>
+<span class="sd">        :param kd: a float or list of floats with each being a multiple of the strength of association between a</span>
+<span class="sd">            benchmark variable and the treatment variable to test with benchmark bounding</span>
+<span class="sd">        :param ky: same as kd except measured in terms of strength of association with the outcome variable</span>
+<span class="sd">        :param q: a float with the percent to reduce the point estimate by for the robustness value RV_q</span>
+<span class="sd">        :param alpha: a float with the significance level for the robustness value RV_qa to render the</span>
+<span class="sd">            estimate not significant</span>
+<span class="sd">        :param r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
+<span class="sd">            with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out. In this case, you are manually</span>
+<span class="sd">            specifying a putative confounder&#39;s strength rather than benchmarking.</span>
+<span class="sd">        :param r2yz_dx: a float or list of floats with the  partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
+<span class="sd">            with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and treatment variable &quot;d&quot; partialed out.</span>
+<span class="sd">            In this case, you are manually specifying a putative confounder&#39;s strength rather than benchmarking.</span>
+<span class="sd">        :param r2dxj_x: float with the partial R2 of covariate Xj with the treatment D</span>
+<span class="sd">            (after partialling out the effect of the remaining covariates X, excluding Xj).</span>
+<span class="sd">        :param r2yxj_dx: float with the partial R2 of covariate Xj with the outcome Y</span>
+<span class="sd">            (after partialling out the effect of the remaining covariates X, excluding Xj).</span>
+<span class="sd">        :param bound_label: a string what to call the name of a bounding variable, for printing and plotting purposes</span>
+<span class="sd">        :param reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">treatment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">estimate</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">se</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: Sensemakr object requires either a statsmodels OLSResults object and treatment name or an &#39;</span>
+                     <span class="s1">&#39;estimate, standard error, and degrees of freedom.&#39;</span><span class="p">)</span>
+        <span class="c1"># Set this object&#39;s attributes based on user input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_covariates</span> <span class="o">=</span> <span class="n">benchmark_covariates</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">kd</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kd</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kd</span> <span class="o">=</span> <span class="n">kd</span>
+        <span class="k">if</span> <span class="n">ky</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ky</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kd</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">ky</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ky</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ky</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ky</span> <span class="o">=</span> <span class="n">ky</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span> <span class="o">=</span> <span class="n">r2dz_x</span>
+        <span class="k">if</span> <span class="n">r2yz_dx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span> <span class="o">=</span> <span class="n">r2yz_dx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r2dxj_x</span> <span class="o">=</span> <span class="n">r2dxj_x</span>
+        <span class="k">if</span> <span class="n">r2yxj_dx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r2yxj_dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2dxj_x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r2yxj_dx</span> <span class="o">=</span> <span class="n">r2yxj_dx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bound_label</span> <span class="o">=</span> <span class="n">bound_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reduce</span> <span class="o">=</span> <span class="n">reduce</span>
+
+        <span class="c1"># Compute sensitivity statistics for this model</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treatment</span> <span class="o">=</span> <span class="n">treatment</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span> <span class="o">=</span> <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+                                                                         <span class="n">q</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;estimate&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;se&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">df_resid</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="n">estimate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span> <span class="o">=</span> <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">(</span><span class="n">estimate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span>
+                                                                         <span class="n">q</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">)</span>
+            <span class="c1">#self.estimate = estimate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">se</span> <span class="o">=</span> <span class="n">se</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="n">dof</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treatment</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
+        <span class="k">if</span> <span class="n">reduce</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">h0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">h0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
+
+        <span class="c1"># Compute omitted variable bias (ovb) bounds</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span> <span class="o">=</span> <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">check_r2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">)</span>
+                <span class="c1"># Compute adjusted parameter estimate, standard error, and t statistic</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_estimate</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_estimate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+                                                                          <span class="n">r2dz_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span>
+                                                                          <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_se</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_se</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+                                                              <span class="n">r2dz_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_t</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_t</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+                                                            <span class="n">r2dz_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span>
+                                                            <span class="n">h0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h0</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span> <span class="o">=</span> <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">check_r2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">)</span>
+                <span class="c1"># Compute adjusted parameter estimate, standard error, and t statistic</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_estimate</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_estimate</span><span class="p">(</span><span class="n">estimate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">se</span><span class="p">,</span>
+                                                                          <span class="n">dof</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+                                                                          <span class="n">r2dz_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span>
+                                                                          <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_se</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_se</span><span class="p">(</span><span class="n">se</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+                                                              <span class="n">r2dz_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_t</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_t</span><span class="p">(</span><span class="n">estimate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">,</span>
+                                                            <span class="n">treatment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span>
+                                                            <span class="n">r2yz_dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h0</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">)</span>
+
+            <span class="c1"># Compute confidence interval</span>
+            <span class="n">se_multiple</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">)</span>  <span class="c1"># number of SEs within CI based on alpha</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_lower_CI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_estimate</span> <span class="o">-</span> <span class="n">se_multiple</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_se</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_upper_CI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_estimate</span> <span class="o">+</span> <span class="n">se_multiple</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_se</span>
+
+            <span class="c1"># Place results in a DataFrame</span>
+            <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">)):</span>
+	            <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;r2dz_x&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span>
+	                                             <span class="s1">&#39;r2yz_dx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span>
+	                                             <span class="s1">&#39;bound_label&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_label</span><span class="p">,</span>
+	                                             <span class="s1">&#39;treatment&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_estimate&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_estimate</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_se&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_se</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_t&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_t</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_lower_CI&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_lower_CI</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_upper_CI&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_upper_CI</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;r2dz_x&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span>
+	                                             <span class="s1">&#39;r2yz_dx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span>
+	                                             <span class="s1">&#39;bound_label&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_label</span><span class="p">,</span>
+	                                             <span class="s1">&#39;treatment&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_estimate&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_estimate</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_se&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_se</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_t&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_t</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_lower_CI&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_lower_CI</span><span class="p">,</span>
+	                                             <span class="s1">&#39;adjusted_upper_CI&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjusted_upper_CI</span><span class="p">},</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_covariates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span> <span class="o">=</span> <span class="n">ovb_bounds</span><span class="o">.</span><span class="n">ovb_bounds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span>
+                                                      <span class="n">benchmark_covariates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">benchmark_covariates</span><span class="p">,</span> <span class="n">kd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kd</span><span class="p">,</span>
+                                                      <span class="n">ky</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ky</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h0</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2dxj_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_covariates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_covariates</span> <span class="o">=</span> <span class="s1">&#39;manual_benchmark&#39;</span>
+            <span class="c1"># bound_label = ovb_bounds.label_maker(benchmark_covariate=self.benchmark_covariates, kd=kd, ky=ky)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span> <span class="o">=</span> <span class="n">ovb_bounds</span><span class="o">.</span><span class="n">ovb_partial_r2_bound</span><span class="p">(</span><span class="n">r2dxj_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dxj_x</span><span class="p">,</span> <span class="n">r2yxj_dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r2yxj_dx</span><span class="p">,</span> <span class="n">kd</span><span class="o">=</span><span class="n">kd</span><span class="p">,</span> <span class="n">ky</span><span class="o">=</span><span class="n">ky</span><span class="p">,</span><span class="n">benchmark_covariates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">benchmark_covariates</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;r2dz_x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;r2yz_dx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_estimate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_estimate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">,</span><span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_se&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_se</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span><span class="n">se</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">se</span><span class="p">,</span><span class="n">dof</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bias_functions</span><span class="o">.</span><span class="n">adjusted_t</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span><span class="n">se</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">se</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">,</span><span class="n">dof</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">)</span>
+                <span class="n">se_multiple</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">))</span>  <span class="c1"># number of SEs within CI based on alpha</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_lower_CI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_estimate&#39;</span><span class="p">]</span> <span class="o">-</span> \
+                    <span class="n">se_multiple</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_se&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_upper_CI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_estimate&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">se_multiple</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">[</span><span class="s1">&#39;adjusted_se&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bench_bounds</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Sensemakr.summary"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.sensemakr.Sensemakr.summary">[docs]</a>    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digits</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print a summary of the sensitivity results for a Sensemakr object, including robustness value, extreme</span>
+<span class="sd">        confounding scenario, and benchmark bounding. digits is the number of digits to round numbers to; default is 3.</span>
+<span class="sd">        Following the example above, if you have a Sensemakr object called sensitivity, call this method using</span>
+<span class="sd">        sensitivity.summary(). To round to 5 digits instead of 3, call sensitivity.summary(digits=5).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">:</span>
+            <span class="n">h0</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">),</span> <span class="n">digits</span><span class="p">)</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="s2">&quot;reduce&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">h0</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">),</span> <span class="n">digits</span><span class="p">)</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="s2">&quot;increase&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sensitivity Analysis to Unobserved Confounding</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1">#model_formula = self.model.model.endog_names + &#39; ~ &#39; + &#39; + &#39;.join(self.model.model.exog_names)</span>
+            <span class="c1">#print(&quot;Model Formula: &quot; + model_formula + &quot;\n&quot;)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model Formula: &quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">formula</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Null hypothesis: q =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;and reduce =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- This means we are considering biases that&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="s2">&quot;the absolute value of the current estimate.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- The null hypothesis deemed problematic is H0:tau =&quot;</span><span class="p">,</span> <span class="n">h0</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unadjusted Estimates of &#39;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">treatment</span><span class="p">,</span> <span class="s2">&quot;&#39;:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Coef. estimate:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">digits</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Standard Error:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;se&#39;</span><span class="p">],</span> <span class="n">digits</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  t-value:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;t_statistic&#39;</span><span class="p">],</span> <span class="n">digits</span><span class="p">),</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sensitivity Statistics:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Partial R2 of treatment with outcome:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;r2yd_x&#39;</span><span class="p">],</span> <span class="n">digits</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Robustness Value, q =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;rv_q&#39;</span><span class="p">],</span> <span class="n">digits</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Robustness Value, q =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;alpha =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span>
+              <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;rv_qa&#39;</span><span class="p">],</span> <span class="n">digits</span><span class="p">),</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Verbal interpretation of sensitivity statistics:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Partial R2 of the treatment with the outcome: an extreme confounder (orthogonal to the covariates) &quot;</span><span class="p">,</span>
+              <span class="s2">&quot;that explains 100</span><span class="si">% o</span><span class="s2">f the residual variance of the outcome, would need to explain at least&quot;</span><span class="p">,</span>
+              <span class="nb">round</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;r2yd_x&#39;</span><span class="p">],</span><span class="n">digits</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the residual variance of the treatment &quot;</span>
+                                                        <span class="s2">&quot;to fully account for the observed estimated effect.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Robustness Value,&quot;</span><span class="p">,</span> <span class="s2">&quot;q =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;: unobserved confounders (orthogonal to the covariates) that &quot;</span><span class="p">,</span>
+              <span class="s2">&quot;explain more than&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;rv_q&#39;</span><span class="p">],</span><span class="n">digits</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the residual variance&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;of both the treatment and the outcome are strong enough to bring the point estimate to&quot;</span><span class="p">,</span> <span class="n">h0</span><span class="p">,</span>
+              <span class="s2">&quot;(a bias of&quot;</span><span class="p">,</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the original estimate). Conversely, unobserved confounders that &quot;</span>
+              <span class="s2">&quot;do not explain more than&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;rv_q&#39;</span><span class="p">],</span><span class="n">digits</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the residual variance&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;of both the treatment and the outcome are not strong enough to bring the point estimate to&quot;</span><span class="p">,</span> <span class="n">h0</span><span class="p">,</span> <span class="s2">&quot;.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Robustness Value,&quot;</span><span class="p">,</span> <span class="s2">&quot;q =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="s2">&quot;: unobserved confounders (orthogonal &quot;</span>
+              <span class="s2">&quot;to the covariates) that explain more than&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;rv_qa&#39;</span><span class="p">],</span><span class="n">digits</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the residual &quot;</span>
+              <span class="s2">&quot;variance of both the treatment and the outcome are strong enough to bring the estimate to a range where &quot;</span>
+              <span class="s2">&quot;it is no longer &#39;statistically different&#39; from&quot;</span><span class="p">,</span> <span class="n">h0</span><span class="p">,</span> <span class="s2">&quot;(a bias of&quot;</span><span class="p">,</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the original &quot;</span>
+              <span class="s2">&quot;estimate), at the significance level of alpha =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;Conversely, unobserved confounders &quot;</span>
+              <span class="s2">&quot;that do not explain more than&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitivity_stats</span><span class="p">[</span><span class="s1">&#39;rv_qa&#39;</span><span class="p">],</span><span class="n">digits</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the residual variance&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;of both the treatment and the outcome are not strong enough to bring the estimate to a range where &quot;</span>
+              <span class="s2">&quot;it is no longer &#39;statistically different&#39; from&quot;</span><span class="p">,</span> <span class="n">h0</span><span class="p">,</span> <span class="s2">&quot;, at the significance level of alpha =&quot;</span><span class="p">,</span>
+              <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="s2">&quot;.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bounds on omitted variable bias:</span><span class="se">\n</span><span class="s2">--The table below shows the maximum strength of unobserved confounders&quot;</span>
+                  <span class="s2">&quot; with association with the treatment and the outcome bounded by a multiple of the observed explanatory&quot;</span>
+                  <span class="s2">&quot; power of the chosen benchmark covariate(s).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

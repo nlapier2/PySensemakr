@@ -123,7 +123,7 @@ class Sensemakr:
     It returns an object of class Sensemakr with several pre-computed sensitivity statistics for reporting.
     After creating the object, you may directly use the plot and summary methods of the returned object.
 
-    Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly, 
+    Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly,
     such as the functions for sensitivity plots (ovb_contour_plot, ovb_extreme_plot), the functions for
     computing bias-adjusted estimates and t-values (adjusted_estimate, adjusted_t), the functions for computing the
     robustness value and partial R2 (robustness_value, partial_r2),  or the functions for bounding the strength
@@ -248,9 +248,11 @@ class Sensemakr:
             self.se = self.sensitivity_stats['se']
             self.dof = self.model.df_resid
         else:
+            self.model=None
+            self.estimate = estimate
             self.sensitivity_stats = sensitivity_stats.sensitivity_stats(estimate=self.estimate, se=se, dof=dof,
                                                                          q=self.q, alpha=self.alpha, reduce=self.reduce)
-            self.estimate = estimate
+            #self.estimate = estimate
             self.se = se
             self.dof = dof
             self.treatment = 'D'
@@ -293,43 +295,54 @@ class Sensemakr:
             self.adjusted_upper_CI = self.adjusted_estimate + se_multiple * self.adjusted_se
 
             # Place results in a DataFrame
-            self.bounds = pd.DataFrame(data={'r2dz_x': self.r2dz_x,
-                                             'r2yz_dx': self.r2yz_dx,
-                                             'bound_label': self.bound_label,
-                                             'treatment': self.treatment,
-                                             'adjusted_estimate': self.adjusted_estimate,
-                                             'adjusted_se': self.adjusted_se,
-                                             'adjusted_t': self.adjusted_t,
-                                             'adjusted_lower_CI': self.adjusted_lower_CI,
-                                             'adjusted_upper_CI': self.adjusted_upper_CI})
+            if(not np.isscalar(self.r2dz_x)):
+	            self.bounds = pd.DataFrame(data={'r2dz_x': self.r2dz_x,
+	                                             'r2yz_dx': self.r2yz_dx,
+	                                             'bound_label': self.bound_label,
+	                                             'treatment': self.treatment,
+	                                             'adjusted_estimate': self.adjusted_estimate,
+	                                             'adjusted_se': self.adjusted_se,
+	                                             'adjusted_t': self.adjusted_t,
+	                                             'adjusted_lower_CI': self.adjusted_lower_CI,
+	                                             'adjusted_upper_CI': self.adjusted_upper_CI})
+            else:
+                self.bounds = pd.DataFrame(data={'r2dz_x': self.r2dz_x,
+	                                             'r2yz_dx': self.r2yz_dx,
+	                                             'bound_label': self.bound_label,
+	                                             'treatment': self.treatment,
+	                                             'adjusted_estimate': self.adjusted_estimate,
+	                                             'adjusted_se': self.adjusted_se,
+	                                             'adjusted_t': self.adjusted_t,
+	                                             'adjusted_lower_CI': self.adjusted_lower_CI,
+	                                             'adjusted_upper_CI': self.adjusted_upper_CI},index=[0])
 
         if self.benchmark_covariates is not None and self.model is not None:
             self.bench_bounds = ovb_bounds.ovb_bounds(self.model, self.treatment,
                                                       benchmark_covariates=self.benchmark_covariates, kd=self.kd,
                                                       ky=self.ky, alpha=self.alpha, h0=self.h0, reduce=self.reduce)
         elif self.r2dxj_x is not None and self.estimate is not None:
-            self.benchmark_covariates = 'manual_benchmark'
+            if self.benchmark_covariates is None:
+                self.benchmark_covariates = 'manual_benchmark'
             # bound_label = ovb_bounds.label_maker(benchmark_covariate=self.benchmark_covariates, kd=kd, ky=ky)
-            bench_bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x=self.r2dxj_x, r2yxj_dx=self.r2yxj_dx, kd=kd, ky=ky)
-            bench_bounds['adjusted_estimate'] = bias_functions.adjusted_estimate(self.r2dz_x, self.r2yz_dx,
-                                                                                 estimate=self.estimate, se=self.se,
-                                                                                 reduce=self.reduce)
-            bench_bounds['adjusted_se'] = bias_functions.adjusted_estimate(self.r2dz_x, self.r2yz_dx,
-                                                                           se=self.se, reduce=self.reduce)
-            bench_bounds['adjusted_t'] = bias_functions.adjusted_t(self.r2dz_x, self.r2yz_dx, estimate=self.estimate,
-                                                                   se=self.se, reduce=self.reduce)
-            se_multiple = abs(t.ppf(alpha / 2, model.model.df_resid))  # number of SEs within CI based on alpha
-            bench_bounds['adjusted_lower_CI'] = bench_bounds['adjusted_estimate'] - \
-                se_multiple * bench_bounds['adjusted_se']
-            bench_bounds['adjusted_upper_CI'] = bench_bounds['adjusted_estimate'] + \
-                se_multiple * bench_bounds['adjusted_se']
+            self.bench_bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x=self.r2dxj_x, r2yxj_dx=self.r2yxj_dx, kd=kd, ky=ky,benchmark_covariates=self.benchmark_covariates)
+            if (self.bench_bounds is not None):
+                self.r2dz_x=self.bench_bounds['r2dz_x'].values
+                self.r2yz_dx=self.bench_bounds['r2yz_dx'].values
+                self.bench_bounds['adjusted_estimate'] = bias_functions.adjusted_estimate(self.r2dz_x, self.r2yz_dx, estimate=self.estimate, se=self.se, dof=self.dof,reduce=self.reduce)
+                self.bench_bounds['adjusted_se'] = bias_functions.adjusted_se(self.r2dz_x, self.r2yz_dx,se=self.se,dof=self.dof)
+                self.bench_bounds['adjusted_t'] = bias_functions.adjusted_t(self.r2dz_x, self.r2yz_dx, estimate=self.estimate,se=self.se, reduce=self.reduce,dof=self.dof)
+                se_multiple = abs(t.ppf(alpha / 2, self.dof))  # number of SEs within CI based on alpha
+                self.bench_bounds['adjusted_lower_CI'] = self.bench_bounds['adjusted_estimate'] - \
+                    se_multiple * self.bench_bounds['adjusted_se']
+                self.bench_bounds['adjusted_upper_CI'] = self.bench_bounds['adjusted_estimate'] + \
+                    se_multiple * self.bench_bounds['adjusted_se']
         else:
             self.bench_bounds = None
 
         if self.bounds is None:
             self.bounds = self.bench_bounds
         else:
-            self.bounds.append(self.bench_bounds)
+            self.bounds = self.bounds.append(self.bench_bounds).reset_index()
 
     def summary(self, digits=3):
         """
@@ -347,8 +360,9 @@ class Sensemakr:
 
         print("Sensitivity Analysis to Unobserved Confounding\n")
         if self.model is not None:
-            model_formula = self.model.model.endog_names + ' ~ ' + ' + '.join(self.model.model.exog_names)
-            print("Model Formula: " + model_formula + "\n")
+            #model_formula = self.model.model.endog_names + ' ~ ' + ' + '.join(self.model.model.exog_names)
+            #print("Model Formula: " + model_formula + "\n")
+            print("Model Formula: "+self.model.model.formula+"\n")
         print("Null hypothesis: q =", self.q, "and reduce =", self.reduce, "\n")
         print("-- This means we are considering biases that", direction, "the absolute value of the current estimate.")
         print("-- The null hypothesis deemed problematic is H0:tau =", h0, "\n")
@@ -367,22 +381,22 @@ class Sensemakr:
         print("Verbal interpretation of sensitivity statistics:\n")
         print("-- Partial R2 of the treatment with the outcome: an extreme confounder (orthogonal to the covariates) ",
               "that explains 100% of the residual variance of the outcome, would need to explain at least",
-              100.0 * self.sensitivity_stats['r2yd_x'], "% of the residual variance of the treatment "
+              round(100.0 * self.sensitivity_stats['r2yd_x'],digits), "% of the residual variance of the treatment "
                                                         "to fully account for the observed estimated effect.\n")
 
         print("-- Robustness Value,", "q =", self.q, ": unobserved confounders (orthogonal to the covariates) that ",
-              "explain more than", 100.0 * self.sensitivity_stats['rv_q'], "% of the residual variance",
+              "explain more than", round(100.0 * self.sensitivity_stats['rv_q'],digits), "% of the residual variance",
               "of both the treatment and the outcome are strong enough to bring the point estimate to", h0,
               "(a bias of", 100.0 * self.q, "% of the original estimate). Conversely, unobserved confounders that "
-              "do not explain more than", 100.0 * self.sensitivity_stats['rv_q'], "% of the residual variance",
+              "do not explain more than", round(100.0 * self.sensitivity_stats['rv_q'],digits), "% of the residual variance",
               "of both the treatment and the outcome are not strong enough to bring the point estimate to", h0, ".\n")
 
         print("-- Robustness Value,", "q =", self.q, ",", "alpha =", self.alpha, ": unobserved confounders (orthogonal "
-              "to the covariates) that explain more than", 100.0 * self.sensitivity_stats['rv_qa'], "% of the residual "
+              "to the covariates) that explain more than", round(100.0 * self.sensitivity_stats['rv_qa'],digits), "% of the residual "
               "variance of both the treatment and the outcome are strong enough to bring the estimate to a range where "
               "it is no longer 'statistically different' from", h0, "(a bias of", 100.0 * self.q, "% of the original "
               "estimate), at the significance level of alpha =", self.alpha, ".", "Conversely, unobserved confounders "
-              "that do not explain more than", 100.0 * self.sensitivity_stats['rv_qa'], "% of the residual variance",
+              "that do not explain more than", round(100.0 * self.sensitivity_stats['rv_qa'],digits), "% of the residual variance",
               "of both the treatment and the outcome are not strong enough to bring the estimate to a range where "
               "it is no longer 'statistically different' from", h0, ", at the significance level of alpha =",
               self.alpha, ".\n")
@@ -392,4 +406,3 @@ class Sensemakr:
                   " with association with the treatment and the outcome bounded by a multiple of the observed explanatory"
                   " power of the chosen benchmark covariate(s).\n")
             print(self.bounds)
-

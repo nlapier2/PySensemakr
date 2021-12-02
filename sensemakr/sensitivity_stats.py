@@ -11,21 +11,21 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     minimum strength of association (parameterized in terms of partial R2) that omitted variables would need to have
     both with the treatment and with the outcome to change the estimated coefficient by a certain amount
     (for instance, to bring it down to zero).
-    
+
     For instance, a robustness value of 1% means that an unobserved confounder that explain 1% of the residual variance
     of the outcome and 1% of the residual variance of the treatment is strong enough to explain away the estimated
     effect. Whereas a robustness value of 90% means that any unobserved confounder that explain less than 90% of the
     residual variance of both the outcome and the treatment assignment cannot fully account for the observed effect.
     You may also compute robustness value taking into account sampling uncertainty.
     See details in Cinelli and Hazlett (2020).
-    
+
     The function robustness_value can take as input a statsmodels OLSResults object
         or you may directly pass the t-value and degrees of freedom.
 
     Reference:
     Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
         Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-    
+
     Examples:
 
     # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
@@ -41,14 +41,14 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     from sensemakr import sensitivity_stats
     ## robustness value of directly harmed q =1 (reduce estimate to zero)
     sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed")
-    
+
     ## robustness value of directly harmed q = 1/2 (reduce estimate in half)
     sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2)
-    
+
     ## robustness value of directly harmed q = 1/2, alpha = 0.05
     ## (reduce estimate in half, with 95% confidence)
     sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2, alpha = 0.05)
-    
+
     # you can also provide the statistics directly
     sensitivity_stats.robustness_value(t_statistic = 4.18445, dof = 783)
 
@@ -96,7 +96,7 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     """
     This function computes the partial R2 for a linear regression model. The partial R2 describes how much of the
     residual variance of the outcome (after partialing out the other covariates) a covariate explains.
-    
+
     The partial R2 can be used as an extreme-scenario sensitivity analysis to omitted variables.
     Considering an unobserved confounder that explains 100% of the residual variance of the outcome,
     the partial R2 describes how strongly associated with the treatment this unobserved confounder would need to be
@@ -106,11 +106,11 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     Reference:
     Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
         Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-    
+
     This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
-    
+
     For partial R2 of groups of covariates, check group_partial_r2.
-    
+
     Examples:
     # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
     import pandas as pd
@@ -130,7 +130,7 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
 
     # partial R2 of female with peacefactor
     sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")
-    
+
     # you can also provide the statistics directly
     sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)
 
@@ -250,22 +250,22 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     if (model is None or covariates is None) and (f_statistic is None or p is None or dof is None):
         sys.exit('Error: group_partial_r2 requires either a statsmodels OLSResults object and covariates or an '
                  'f-statistic, number of parameters, and degrees of freedom.')
-
-    params = model.params
-    check_covariates(model.model.exog_names, covariates)
-    params = params[covariates]
-    if np.isscalar(params):
-        return partial_r2(model=model, covariates=covariates, t_statistic=f_statistic, dof=dof)
-    v = model.cov_params().loc[covariates, :][covariates]  # variance-covariance matrix
-    dof = model.df_resid
-    p = len(params)
-    f = np.matmul(np.matmul(params.values.T, np.linalg.inv(v.values)), params.values) / p
-    r2 = f * p / (f * p + dof)
+    if((f_statistic is None or p is None or dof is None)):
+        params = model.params
+        check_covariates(model.model.exog_names, covariates)
+        params = params[covariates]
+        if np.isscalar(params):
+            return partial_r2(model=model, covariates=covariates, t_statistic=f_statistic, dof=dof)
+        v = model.cov_params().loc[covariates, :][covariates]  # variance-covariance matrix
+        dof = model.df_resid
+        p = len(params)
+        f_statistic = np.matmul(np.matmul(params.values.T, np.linalg.inv(v.values)), params.values) / p
+    r2 = f_statistic * p / (f_statistic * p + dof)
     return r2
 
 
-def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=None, q=1, alpha=1.0, reduce=True):
-    """    
+def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=None, q=1, alpha=0.05, reduce=True):
+    """
     Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
     See those function descriptions above for more details.
 
@@ -283,7 +283,7 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
     from sensemakr import sensitivity_stats
     ## sensitivity stats for directly harmed
     sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = "directlyharmed")
-    
+
     ## you can  also pass the numeric values directly
     sensitivity_stats.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783)
 
@@ -383,7 +383,7 @@ def check_r2(r2dz_x, r2yz_dx):
             sys.exit('Partial R^2 must be a number or array of numbers between zero and one.')
         elif not np.isscalar(r):
             r = np.array(r)
-            if not(all(np.issubdtype(i, np.number) and 0 < i < 1 for i in r)):
+            if not(all(np.issubdtype(i, np.number) and 0 <= i <= 1 for i in r)):
                 sys.exit('Partial R^2 must be a number or array of numbers between zero and one.')
     return r2dz_x, r2yz_dx
 
@@ -402,7 +402,7 @@ def check_alpha(alpha):
 
 def check_se(se):
     """ Ensures that standard error is a float greater than zero. """
-    if type(se) is not float or se < 0:
+    if (type(se) is not float and type(se) is not int) or se < 0:
         sys.exit('Standard error provided must be a single non-negative number. SE was: ' + str(se))
 
 

@@ -10,6 +10,7 @@ import pandas as pd
 
 
 plot_env = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'sensitivity_of': None, 'treatment': None}
+# plot_env_ext = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'treatment': None}
 
 
 def plot(sense_obj, plot_type):
@@ -21,7 +22,7 @@ def plot(sense_obj, plot_type):
         sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')
 
 
-def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=None, estimate=None, se=None, dof=None,
+def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, treatment=None, estimate=None, se=None, dof=None,
                      benchmark_covariates=None, kd=1, ky=None, r2dz_x=None, r2yz_dx=None, bound_label=None,
                      reduce=True, estimate_threshold=0, t_threshold=2, lim=None, lim_y=None,
                      col_contour="black", col_thr_line="red", label_text=True, label_bump_x=None, label_bump_y=None,
@@ -30,7 +31,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=
         sys.exit('Error: "sensitivity_of" argument is required and must be "estimate" or "t-value".')
     if sense_obj is not None:
         # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
-        treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, estimate_threshold, t_threshold = \
+        treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, estimate_threshold, t_threshold,benchmark_covariates, kd,ky = \
             extract_from_sense_obj(sense_obj)
     elif model is not None and treatment is not None:
         estimate, se, dof, r2dz_x, r2yz_dx = extract_from_model(
@@ -108,6 +109,19 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of=None, model=None, treatment=
     # add bounds
     if r2dz_x is not None:
         r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+        if(np.isscalar(kd)):
+            kd=[kd]
+        if(ky is None):
+            ky=kd
+        if bound_label is None:
+            bound_label=[]
+            for i in range(len(kd)):
+                bound_label.append( ovb_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
+        if(np.isscalar(r2dz_x)):
+            bound_label.append( ovb_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
+        elif(len(r2dz_x)>len(kd)):
+            for i in range(len(r2dz_x)-len(kd)):
+                bound_label.append( ovb_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
         add_bound_to_contour(r2dz_x=r2dz_x, r2yz_dx=r2yz_dx, bound_value=bound_value, bound_label=bound_label,
                              sensitivity_of=sensitivity_of, label_text=label_text, label_bump_x=label_bump_x,
                              label_bump_y=label_bump_y, round_dig=round_dig)
@@ -138,14 +152,18 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     if sensitivity_of is None:
         sensitivity_of = plot_env['sensitivity_of']
     if label_bump_x is None:
-        label_bump_x = plot_env['lim'] / 15.0
+        label_bump_x = plot_env['lim'] / 30.0
     if label_bump_y is None:
-        label_bump_y = plot_env['lim_y'] / 15.0
+        label_bump_y = plot_env['lim_y'] /30.0
     if reduce is None:
         reduce = plot_env['reduce']
-    if ky is None:
-        ky = kd
 
+    if(np.isscalar(kd)):
+        kd=[kd]
+    if(ky is None):
+        ky=kd
+    if(np.isscalar(ky)):
+        ky=[ky]
     if model is not None:
         if treatment != plot_env['treatment']:
             print('Warning: treatment variable provided does not equal treatment of previous contour plot.')
@@ -153,23 +171,27 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         bounds = ovb_bounds.ovb_bounds(model=model, treatment=treatment, benchmark_covariates=benchmark_covariates,
                                        kd=kd, ky=ky, adjusted_estimates=True, reduce=reduce)
         if sensitivity_of == 'estimate':
-            bound_value = bounds['adjusted_estimate']
+            bound_value = bounds['adjusted_estimate'].copy()
         else:
-            bound_value = bounds['adjusted_t']
-        if bound_label is not None:
-            bound_label = bounds['bound_label']
+            bound_value = bounds['adjusted_t'].copy()
+        if bound_label is None:
+            bound_label = bounds['bound_label'].copy()
+
     if bounds is not None:
         r2dz_x = bounds['r2dz_x']
         r2yz_dx = bounds['r2yz_dx']
 
-    if type(r2dz_x) is int or type(r2dz_x) is float:
+    if np.isscalar(r2dz_x):
         r2dz_x = [r2dz_x]
-    if type(r2yz_dx) is int or type(r2yz_dx) is float:
+    if np.isscalar(r2yz_dx):
         r2yz_dx = [r2yz_dx]
+    if np.isscalar(bound_value):
+        bound_value = [bound_value]
+
     for i in range(len(r2dz_x)):
         plt.scatter(r2dz_x[i], r2yz_dx[i], c='red', marker='D', edgecolors='black')
         if label_text:
-            if bound_value is not None and bound_value[i] is not None:
+            if bound_value is not None and bound_label is not None:
                 bound_value[i] = round(bound_value[i], round_dig)
                 label = str(bound_label[i]) + '\n(' + str(bound_value[i]) + ')'
             else:
@@ -177,8 +199,77 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
             plt.annotate(label, (r2dz_x[i] + label_bump_x, r2yz_dx[i] + label_bump_y))
 
 
-def ovb_extreme_plot(sense_obj):  # not yet implemented
-    return sense_obj
+
+
+
+
+def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, se=None, dof=None,
+                     benchmark_covariates=None, kd=1,ky=None, r2dz_x=None, r2yz_dx=[1, 0.75, 0.5],
+                     reduce=True, threshold=0, lim=None, lim_y=None,
+                     xlab=None, ylab=None, list_par=None):
+    if sense_obj is not None:
+        # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
+        treatment, estimate, se, dof, r2dz_x, dum, bound_label, reduce, estimate_threshold, t_threshold,benchmark_covariates,kd,ky = \
+            extract_from_sense_obj(sense_obj)
+    elif model is not None and treatment is not None:
+        estimate, se, dof, r2dz_x, dum = extract_from_model(
+            model, treatment, benchmark_covariates, kd, None, r2dz_x, r2yz_dx)
+    elif estimate is None or se is None or dof is None:
+        sys.exit('Error: must provide a Sensemakr object, a statsmodels OLSResults object and treatment, or'
+                 'an estimate, standard error, and degrees of freedom.')
+    estimate, r2dz_x,r2yz_dx,lim,list_par = check_params_extreme(
+        estimate, r2dz_x, r2yz_dx, lim, list_par)
+
+    r2d_values = np.arange(0, lim, 0.001)
+
+    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    for i in range(len(r2yz_dx)):
+        y=bias_functions.adjusted_estimate(r2d_values, r2yz_dx[i],
+                   estimate=estimate, se=se, dof=dof)
+        # Initialize Plot
+        if(i==0):
+            ax.plot(r2d_values,y,label='%s%%' % int(round(r2yz_dx[i]*100)),linewidth=1.5, linestyle="solid",color='black')
+            ax.axhline(y=threshold,color='r',linestyle='--')
+            lim_y1=np.max(y)+np.abs(np.max(y))/15
+            lim_y2=np.min(y)-np.abs(np.min(y))/15
+
+            # Add rugs
+            if(r2dz_x is not None):
+                if(np.isscalar(r2dz_x)):
+                    r2dz_x=[r2dz_x]
+                for rug in r2dz_x:
+                    ax.axvline(x=rug,ymin=0, ymax=0.022,color='r',linewidth=2.5, linestyle="solid")
+        else:
+            ax.plot(r2d_values,y,label='%s%%' % int(round(r2yz_dx[i]*100)),linewidth=np.abs(2.1-0.5*i), linestyle="--",color='black')
+
+    # Set font size
+    params = {'axes.labelsize': 14,
+          'axes.titlesize': 14,
+          'legend.title_fontsize':14,
+          'legend.fontsize':14,
+          'xtick.labelsize':12,
+          'ytick.labelsize':12}
+    plt.rcParams.update(params)
+    
+    ax.legend(ncol=len(r2yz_dx),frameon=False)
+    ax.get_legend().set_title(r"Partial $R^2$ of confounder(s) with the outcome")
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    # Plot labeling and limit-setting
+    if xlab is None:
+        xlab = r"Partial $R^2$ of confounder(s) with the treatment"
+    if ylab is None:
+        ylab = r"Adjusted effect estimate"
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.xlim(-(lim / 35.0), lim+(lim / 35.0))
+    if lim_y is None:
+        plt.ylim(lim_y2 , lim_y1)
+    else:
+        plt.ylim(-(lim_y / 15.0), lim_y)
+    plt.tight_layout()
+
 
 
 # Extracts sensitivity and bounding parameters from a given Sensemakr object
@@ -190,7 +281,9 @@ def extract_from_sense_obj(sense_obj):
     alpha = sense_obj.alpha
     se = sense_obj.se
     dof = sense_obj.dof
-
+    benchmark_covariates=sense_obj.benchmark_covariates
+    kd=sense_obj.kd
+    ky=sense_obj.ky
     if reduce:
         thr = estimate * (1 - q)
     else:
@@ -205,7 +298,7 @@ def extract_from_sense_obj(sense_obj):
         r2dz_x = sense_obj.bounds['r2dz_x']
         r2yz_dx = sense_obj.bounds['r2yz_dx']
         bound_label = sense_obj.bounds['bound_label']
-    return treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
+    return treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr, benchmark_covariates,kd,ky
 
 
 # Extracts estimate, standard error, degrees of freedom, and parial R^2 values from a specified model+treatment pair
@@ -233,8 +326,14 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
         if r2dz_x is None:
             bounds = bench_bounds
         else:
-            bounds = pd.DataFrame(data={'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx})
-            bounds.append(bench_bounds)
+            if(r2yz_dx is None):
+                r2yz_dx=r2dz_x
+            if(np.isscalar(r2dz_x)):
+                bounds = pd.DataFrame(data={'r2dz_x': [r2dz_x], 'r2yz_dx': [r2yz_dx]})
+                bounds = bench_bounds.append(bounds).reset_index()
+            else:
+                bounds = pd.DataFrame(data={'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx})
+                bounds = bench_bounds.append(bounds).reset_index()
     return estimate, se, dof, bounds['r2dz_x'], bounds['r2yz_dx']
 
 
@@ -278,6 +377,31 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
     if list_par is None:
         list_par = {'mar': [4, 4, 1, 1]}
     return estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par
+
+# Checks to make sure given parameters are valid and sets some default parameter values if not specified by the user
+def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim, list_par):
+    check_estimate(estimate)
+
+    r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+
+    if lim is None:
+        if r2dz_x is None:
+            lim = 0.1
+        else:
+            lim = min(np.max(np.append(r2dz_x * 1.2, 0.1)), 1 - 10 ** -12)
+            #lim = min(np.max(list(r2dz_x * 1.2) + [0.4]), 1 - 10 ** -12)
+
+    if lim > 1.0:
+        lim = 1 - 10 ** -12
+        print('Warning: Contour limit larger than 1 was set to 1.')
+    elif lim < 0:
+        lim = 0.4
+        print('Warning: Contour limit less than 0 was set to 0.4.')
+
+    if list_par is None:
+        list_par = {'mar': [4, 4, 1, 1]}
+    return estimate, r2dz_x, r2yz_dx, lim, list_par
+
 
 
 # Parameter validators
