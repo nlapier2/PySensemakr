@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="Python" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sensemakr package &mdash; Pysensemakr  documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'Python',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="sensemakr" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Pysensemakr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">sensemakr</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">sensemakr package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sensemakr.bias_functions">sensemakr.bias_functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sensemakr.data">sensemakr.data module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sensemakr.ovb_bounds">sensemakr.ovb_bounds module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sensemakr.ovb_plots">sensemakr.ovb_plots module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sensemakr.sensemakr">sensemakr.sensemakr module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sensemakr.sensitivity_stats">sensemakr.sensitivity_stats module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sensemakr">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Pysensemakr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">sensemakr</a> &raquo;</li>
+      <li>sensemakr package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/sensemakr.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="sensemakr-package">
+<h1>sensemakr package<a class="headerlink" href="#sensemakr-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-sensemakr.bias_functions">
+<span id="sensemakr-bias-functions-module"></span><h2>sensemakr.bias_functions module<a class="headerlink" href="#module-sensemakr.bias_functions" title="Permalink to this headline">¶</a></h2>
+<p>Compute bias-adjusted estimates, standard-errors, and t-values</p>
+<p>All methods in the script below have similar purposes and parameters, so they are all described here.</p>
+<p>These functions compute bias adjusted estimates (adjusted_estimate), standard-errors (adjusted_se),
+and t-values (adjusted_t), given a hypothetical strength of the confounder in the partial R2 parameterization.</p>
+<p>The functions work either with a statsmodels OLSResults object, or directly passing in numerical inputs, such as the
+current coefficient estimate, standard error and degrees of freedom.</p>
+<p>They return a numpy array with the adjusted estimate, standard error, or t-value for each partial R^2 passed in.</p>
+<p>Internally, we also have functions defined to compute the bias and relative_bias, given the same arguments. We also
+define internal functions to compute the bias function and relative bias function for the partial R^2 parameters.</p>
+<p>Finally, in the python version of the package, there is a param_check method which validates all the parameters, since
+they are roughly the same for each method.</p>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p>Example:
+# load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')</p>
+<p># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~</p>
+<blockquote>
+<div>directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)</div></blockquote>
+<p>fitted_model = model.fit()</p>
+<p># import this module
+import bias_functions</p>
+<p># computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+bias_functions.adjusted_estimate(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.05, r2yz_dx = 0.05)</p>
+<p># computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+bias_functions.adjusted_se(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.05, r2yz_dx = 0.05)</p>
+<p># computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+bias_functions.adjusted_t(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.05, r2yz_dx = 0.05)</p>
+<p># Alternatively, pass in numerical values directly.
+bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)</p>
+<p>bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)</p>
+<p>bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)</p>
+<p>Required parameters:
+For all methods, r2dz_x and r2yz_dx are required. For all methods other than bf, either model and treatment
+or estimate, se, and dof are also required, except adjused_se and bias which do not accept the estimate parameter.</p>
+<p>List of parameters:
+r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</p>
+<blockquote>
+<div>with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out.</div></blockquote>
+<dl class="docutils">
+<dt>r2yz_dx: a float or list of floats with the  partial R^2 of a putative unobserved confounder &quot;z&quot;</dt>
+<dd>with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and treatment variable &quot;d&quot; partialed out.</dd>
+</dl>
+<p>model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
+treatment: a string with the name of the &quot;treatment&quot; variable, e.g. the independent variable of interest
+estimate: a float with the unadjusted estimate of the coefficient for the independent variable of interest
+se: a float with the unadjusted standard error of the regression
+dof: an int with the degrees of freedom of the regression
+reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding</p>
+<p>Parameters only used in param_check:
+function_name: string with the name of the calling function, used to print the function name in error messages
+estimate_is_param: flag for whether estimate should be a required parameter for the calling function
+reduce_is_param: flag for whether reduce is a parameter for the calling function</p>
+<dl class="function">
+<dt id="sensemakr.bias_functions.adjusted_estimate">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">adjusted_estimate</code><span class="sig-paren">(</span><em>r2dz_x</em>, <em>r2yz_dx</em>, <em>model=None</em>, <em>treatment=None</em>, <em>estimate=None</em>, <em>se=None</em>, <em>dof=None</em>, <em>reduce=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#adjusted_estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.adjusted_estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the bias-adjusted coefficient estimate. See description at top for details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.bias_functions.adjusted_partial_r2">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">adjusted_partial_r2</code><span class="sig-paren">(</span><em>r2dz_x</em>, <em>r2yz_dx</em>, <em>model=None</em>, <em>treatment=None</em>, <em>estimate=None</em>, <em>se=None</em>, <em>dof=None</em>, <em>reduce=True</em>, <em>h0=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#adjusted_partial_r2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.adjusted_partial_r2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the bias-adjusted partial R^2, based on adjusted_t. See description at top for details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.bias_functions.adjusted_se">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">adjusted_se</code><span class="sig-paren">(</span><em>r2dz_x</em>, <em>r2yz_dx</em>, <em>model=None</em>, <em>treatment=None</em>, <em>se=None</em>, <em>dof=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#adjusted_se"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.adjusted_se" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the bias-adjusted regression standard error. See description at top for details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.bias_functions.adjusted_t">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">adjusted_t</code><span class="sig-paren">(</span><em>r2dz_x</em>, <em>r2yz_dx</em>, <em>model=None</em>, <em>treatment=None</em>, <em>estimate=None</em>, <em>se=None</em>, <em>dof=None</em>, <em>reduce=True</em>, <em>h0=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#adjusted_t"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.adjusted_t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute bias-adjusted t-statistic, adjusted_estimate - h0 / adjusted_se. See description at top for details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.bias_functions.bf">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">bf</code><span class="sig-paren">(</span><em>r2dz_x</em>, <em>r2yz_dx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#bf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.bf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the bias function for the partial R^2 parameters. See description at top for details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.bias_functions.bias">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">bias</code><span class="sig-paren">(</span><em>r2dz_x</em>, <em>r2yz_dx</em>, <em>model=None</em>, <em>treatment=None</em>, <em>se=None</em>, <em>dof=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the omitted variable bias for the partial R^2 parameterization. See description at top for details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.bias_functions.param_check">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">param_check</code><span class="sig-paren">(</span><em>function_name</em>, <em>r2dz_x</em>, <em>r2yz_dx</em>, <em>model=None</em>, <em>treatment=None</em>, <em>estimate=None</em>, <em>se=None</em>, <em>dof=None</em>, <em>reduce=True</em>, <em>estimate_is_param=True</em>, <em>reduce_is_param=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#param_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.param_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method that checks whether the required parameters have been passed in and have valid values.
+Also extracts data from a statsmodels OLSResults object (if one is given) for use in numerical formulae.
+See description at top for details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.bias_functions.rel_bias">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">rel_bias</code><span class="sig-paren">(</span><em>r_est</em>, <em>est</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#rel_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.rel_bias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.bias_functions.relative_bias">
+<code class="descclassname">sensemakr.bias_functions.</code><code class="descname">relative_bias</code><span class="sig-paren">(</span><em>r2dz_x</em>, <em>r2yz_dx</em>, <em>model=None</em>, <em>treatment=None</em>, <em>estimate=None</em>, <em>se=None</em>, <em>dof=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/bias_functions.html#relative_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.bias_functions.relative_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the relative bias for the partial R^2 parameterization. See description at top for details.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sensemakr.data">
+<span id="sensemakr-data-module"></span><h2>sensemakr.data module<a class="headerlink" href="#module-sensemakr.data" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="sensemakr.data.load_darfur">
+<code class="descclassname">sensemakr.data.</code><code class="descname">load_darfur</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/data.html#load_darfur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.data.load_darfur" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-sensemakr.ovb_bounds">
+<span id="sensemakr-ovb-bounds-module"></span><h2>sensemakr.ovb_bounds module<a class="headerlink" href="#module-sensemakr.ovb_bounds" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="sensemakr.ovb_bounds.label_maker">
+<code class="descclassname">sensemakr.ovb_bounds.</code><code class="descname">label_maker</code><span class="sig-paren">(</span><em>benchmark_covariate</em>, <em>kd</em>, <em>ky</em>, <em>digits=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_bounds.html#label_maker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_bounds.label_maker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string created by appending the covariate name to the multiplier(s) ky and (if applicable) kd.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_bounds.ovb_bounds">
+<code class="descclassname">sensemakr.ovb_bounds.</code><code class="descname">ovb_bounds</code><span class="sig-paren">(</span><em>model</em>, <em>treatment</em>, <em>benchmark_covariates=None</em>, <em>kd=1</em>, <em>ky=None</em>, <em>alpha=0.05</em>, <em>h0=0</em>, <em>reduce=True</em>, <em>bound='partial r2'</em>, <em>adjusted_estimates=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_bounds.html#ovb_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_bounds.ovb_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
+The main generic function is ovb_bounds, which can compute both the bounds on the strength of confounding
+as well as the adjusted estimates, standard errors, t-values and confidence intervals.</p>
+<p>Other functions that compute only the bounds on the strength of confounding are also provided. These functions
+may be useful when computing benchmarks for using only summary statistics from papers you see in print.</p>
+<p>Currently it implements only the bounds based on partial R2. Other bounds will be implemented soon.</p>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p>Examples:
+# load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')</p>
+<p># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~         directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+fitted_model = model.fit()</p>
+<p># bounds on the strength of confounders 1, 2, or 3 times as strong as female
+# and 1,2, or 3 times as strong as pastvoted
+from sensemakr import ovb_bounds
+ovb_bounds.ovb_bounds(model = fitted_model, treatment = &quot;directlyharmed&quot;,</p>
+<blockquote>
+<div>benchmark_covariates = [&quot;female&quot;, &quot;pastvoted&quot;], kd = [1, 2, 3])</div></blockquote>
+<p>Required parameters: model and treatment
+:param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
+:param treatment: a string with the name of the &quot;treatment&quot; variable, e.g. the independent variable of interest
+:param benchmark_covariates: a string or list of strings with names of the variables to use for benchmark bounding
+:param kd: a float or list of floats with each being a multiple of the strength of association between a</p>
+<blockquote>
+<div>benchmark variable and the treatment variable to test with benchmark bounding</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ky</strong> -- same as kd except measured in terms of strength of association with the outcome variable</li>
+<li><strong>alpha</strong> -- a float with the significance level for the robustness value RV_qa to render the
+estimate not significant</li>
+<li><strong>h0</strong> -- a float with the null hypothesis effect size; defaults to 0</li>
+<li><strong>reduce</strong> -- whether to reduce (True, default) or increase (False) the estimate due to putative confounding</li>
+<li><strong>bound</strong> -- type of bound to perform; as of now, only partial R^2 bounding is allowed</li>
+<li><strong>adjusted_estimates</strong> -- whether to compute bias-adjusted estimates, standard errors, and t-statistics</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>A Pandas DataFrame containing the following variables:
+* treatment: the name of the provided treatment variable
+* bound_label: a string created by label_maker to serve as a label for the bound for printing &amp; plotting purposes
+* r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</p>
+<blockquote>
+<div><p>with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out, as implied by z being kd-times
+as strong as the benchmark_covariates</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>r2yz_dx: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</dt>
+<dd>with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and the treatment variable &quot;d&quot; partialed out,
+as implied by z being ky-times as strong as the benchmark_covariates</dd>
+</dl>
+</li>
+<li>adjusted_estimate: the bias-adjusted estimate adjusted for a confounder with the given r2dz_x and r2yz_dx above</li>
+<li>adjusted_se: the bias-adjusted standard error adjusted for a confounder with the given r2dz_x and r2yz_dx above</li>
+<li>adjusted_t: the bias-adjusted t-statistic adjusted for a confounder with the given r2dz_x and r2yz_dx above</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_bounds.ovb_partial_r2_bound">
+<code class="descclassname">sensemakr.ovb_bounds.</code><code class="descname">ovb_partial_r2_bound</code><span class="sig-paren">(</span><em>model=None</em>, <em>treatment=None</em>, <em>r2dxj_x=None</em>, <em>r2yxj_dx=None</em>, <em>benchmark_covariates=None</em>, <em>kd=1</em>, <em>ky=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_bounds.html#ovb_partial_r2_bound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_bounds.ovb_partial_r2_bound" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function <cite>ovb_partial_r2_bound()</cite> returns only a Pandas DataFrame with the bounds on the strength of the
+unobserved confounder. Adjusted estimates, standard errors and t-values (among other quantities) need to be computed
+manually by the user using those bounds with the functions adjusted_estimate, adjusted_se and adjusted_t.</p>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p># Suppose you didn't have access to the data, but only to
+# the treatment and outcome regression tables.
+# You can still compute the bounds.</p>
+<p># first import the necessary libraries
+from sensemakr import sensitivity_stats
+from sensemakr import bias_functions
+from sensemakr import ovb_bounds</p>
+<p># Use the t statistic of female in the outcome regression
+# to compute the partial R2 of female with the outcome.
+r2yxj_dx = sensitivity_stats.partial_r2(t_statistic = -9.789, dof = 783)</p>
+<p># Use the t-value of female in the <em>treatment</em> regression
+# to compute the partial R2 of female with the treatment
+r2dxj_x = sensitivity_stats.partial_r2(t_statistic = -2.680, dof = 783)</p>
+<p>#### Compute manually bounds on the strength of confounders 1, 2, or 3
+#### times as strong as female
+###bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,
+###                              kd = [1, 2, 3], ky = [1, 3, 3], bound_label = &quot;[1, 2, 3]x female&quot;)
+#### Compute manually adjusted estimates
+###bound_values = bias_functions.adjusted_estimate(estimate = 0.0973, se = 0.0232, dof = 783,
+###                                 r2dz_x = bounds['r2dz_x'], r2yz_dx = bounds['r2yz_dx'])</p>
+<p>#### Plot contours and bounds
+###ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)
+###add_bound_to_contour(bounds, bound_value = bound_values)</p>
+<p>Required parameters: model and treatment or r2dxj_x and r2yxj_dx
+:param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
+:param treatment: a string with the name of the &quot;treatment&quot; variable, e.g. the independent variable of interest
+:param r2dxj_x: float with the partial R2 of covariate Xj with the treatment D</p>
+<blockquote>
+<div>(after partialling out the effect of the remaining covariates X, excluding Xj).</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>r2yxj_dx</strong> -- float with the partial R2 of covariate Xj with the outcome Y
+(after partialling out the effect of the remaining covariates X, excluding Xj).</li>
+<li><strong>benchmark_covariates</strong> -- a string or list of strings with names of the variables to use for benchmark bounding</li>
+<li><strong>kd</strong> -- a float or list of floats with each being a multiple of the strength of association between a
+benchmark variable and the treatment variable to test with benchmark bounding</li>
+<li><strong>ky</strong> -- same as kd except measured in terms of strength of association with the outcome variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>A Pandas DataFrame containing the following variables:
+* bound_label: a string created by label_maker to serve as a label for the bound for printing &amp; plotting purposes
+* r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</p>
+<blockquote>
+<div><p>with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out, as implied by z being kd-times
+as strong as the benchmark_covariates</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>r2yz_dx: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</dt>
+<dd>with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and the treatment variable &quot;d&quot; partialed out,
+as implied by z being ky-times as strong as the benchmark_covariates</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sensemakr.ovb_plots">
+<span id="sensemakr-ovb-plots-module"></span><h2>sensemakr.ovb_plots module<a class="headerlink" href="#module-sensemakr.ovb_plots" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="sensemakr.ovb_plots.add_bound_to_contour">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">add_bound_to_contour</code><span class="sig-paren">(</span><em>model=None</em>, <em>benchmark_covariates=None</em>, <em>kd=1</em>, <em>ky=None</em>, <em>reduce=None</em>, <em>treatment=None</em>, <em>bounds=None</em>, <em>r2dz_x=None</em>, <em>r2yz_dx=None</em>, <em>bound_value=None</em>, <em>bound_label=None</em>, <em>sensitivity_of=None</em>, <em>label_text=True</em>, <em>label_bump_x=None</em>, <em>label_bump_y=None</em>, <em>round_dig=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#add_bound_to_contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.add_bound_to_contour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.check_estimate">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">check_estimate</code><span class="sig-paren">(</span><em>estimate</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#check_estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.check_estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure that the estimate is a single floating point number.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.check_multipliers">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">check_multipliers</code><span class="sig-paren">(</span><em>ky</em>, <em>kd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#check_multipliers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.check_multipliers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure ky and kd are both numbers or equal-length lists of numbers.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.check_params">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">check_params</code><span class="sig-paren">(</span><em>estimate</em>, <em>r2dz_x</em>, <em>r2yz_dx</em>, <em>lim</em>, <em>lim_y</em>, <em>label_bump_x</em>, <em>label_bump_y</em>, <em>asp</em>, <em>list_par</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#check_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.check_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.check_params_extreme">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">check_params_extreme</code><span class="sig-paren">(</span><em>estimate</em>, <em>r2dz_x</em>, <em>r2yz_dx</em>, <em>lim</em>, <em>list_par</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#check_params_extreme"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.check_params_extreme" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.extract_from_model">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">extract_from_model</code><span class="sig-paren">(</span><em>model</em>, <em>treatment</em>, <em>benchmark_covariates</em>, <em>kd</em>, <em>ky</em>, <em>r2dz_x</em>, <em>r2yz_dx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#extract_from_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.extract_from_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.extract_from_sense_obj">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">extract_from_sense_obj</code><span class="sig-paren">(</span><em>sense_obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#extract_from_sense_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.extract_from_sense_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.ovb_contour_plot">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">ovb_contour_plot</code><span class="sig-paren">(</span><em>sense_obj=None</em>, <em>sensitivity_of='estimate'</em>, <em>model=None</em>, <em>treatment=None</em>, <em>estimate=None</em>, <em>se=None</em>, <em>dof=None</em>, <em>benchmark_covariates=None</em>, <em>kd=1</em>, <em>ky=None</em>, <em>r2dz_x=None</em>, <em>r2yz_dx=None</em>, <em>bound_label=None</em>, <em>reduce=True</em>, <em>estimate_threshold=0</em>, <em>t_threshold=2</em>, <em>lim=None</em>, <em>lim_y=None</em>, <em>col_contour='black'</em>, <em>col_thr_line='red'</em>, <em>label_text=True</em>, <em>label_bump_x=None</em>, <em>label_bump_y=None</em>, <em>xlab=None</em>, <em>ylab=None</em>, <em>asp=None</em>, <em>list_par=None</em>, <em>plot_margin_fraction=0.05</em>, <em>round_dig=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#ovb_contour_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.ovb_contour_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.ovb_extreme_plot">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">ovb_extreme_plot</code><span class="sig-paren">(</span><em>sense_obj=None, model=None, treatment=None, estimate=None, se=None, dof=None, benchmark_covariates=None, kd=1, ky=None, r2dz_x=None, r2yz_dx=[1, 0.75, 0.5], reduce=True, threshold=0, lim=None, lim_y=None, xlab=None, ylab=None, list_par=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#ovb_extreme_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.ovb_extreme_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.ovb_plots.plot">
+<code class="descclassname">sensemakr.ovb_plots.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>sense_obj</em>, <em>plot_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/ovb_plots.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.ovb_plots.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-sensemakr.sensemakr">
+<span id="sensemakr-sensemakr-module"></span><h2>sensemakr.sensemakr module<a class="headerlink" href="#module-sensemakr.sensemakr" title="Permalink to this headline">¶</a></h2>
+<p>Sensemakr: extending omitted variable bias</p>
+<dl class="docutils">
+<dt>R's linear model (&quot;lm&quot;) and data.frame objects most naturally translate into statsmodels OLS/OLSResults and pandas</dt>
+<dd>DataFrame/Series objects, so we have used those in the python version. These packages are not universally familiar
+to python users, but they were the most straightforward and faithful way to translate the R package into Python.
+Examples are included below to demonstrate how to use these objects to run this package successfully.</dd>
+<dt>There are some features of the original package that have not yet been implemented. For instance, R's notion of</dt>
+<dd>&quot;formulas&quot; for linear models are less used by and less familiar to python programmers, and thus have not yet been
+included in the Python version. This could change if there is sufficient demand.</dd>
+</dl>
+<hr class="docutils" />
+<p>The sensemakr package implements a suite of sensitivity analysis tools that makes it easier to
+understand the impact of omitted variables in linear regression models, as discussed in Cinelli and Hazlett (2020).</p>
+<p>This package defines a class called Sensemakr, which computes the most common sensitivity analysis results.
+After creating an object of the Sensemakr class, you may directly use the plot and print methods of the object.</p>
+<p>You may also use the other sensitivity functions of the package directly, such as the functions for sensitivity plots
+(ovb_contour_plot, ovb_extreme_plot) the functions for computing bias-adjusted estimates and t-values
+(adjusted_estimate, adjusted_t), the functions for computing the robustness value and partial R2 (robustness_value,
+partial_r2),  or the functions for bounding the strength of unobserved confounders (ovb_bounds), among others.</p>
+<p>More information can be found on the help documentation and related papers.</p>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p>Examples:</p>
+<p># load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')</p>
+<p># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~     directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+fitted_model = model.fit()</p>
+<p># runs sensemakr for sensitivity analysis
+from sensemakr import sensemakr
+sensitivity = sensemakr.Sensemakr(</p>
+<blockquote>
+<div>fitted_model, treatment = &quot;directlyharmed&quot;, benchmark_covariates = &quot;female&quot;, kd = [1, 2, 3])</div></blockquote>
+<p># description of results
+sensitivity.summary()</p>
+<p>#### plot bias contour of point estimate
+###plot(sensitivity)</p>
+<p>#### plot bias contour of t-value
+###plot(sensitivity, sensitivity_of = &quot;t-value&quot;)</p>
+<p>#### plot extreme scenario
+###plot(sensitivity, type = &quot;extreme&quot;)</p>
+<p># Pandas DataFrame with sensitivity statistics
+sensitivity.sensitivity_stats</p>
+<p># Pandas DataFrame with bounds on the strength of confounders
+sensitivity.bounds</p>
+<p>### Using sensitivity functions directly ###
+from sensemakr import sensitivity_stats
+from sensemakr import ovb_bounds
+from sensemakr import bias_functions</p>
+<p># robustness value of directly harmed q = 1 (reduce estimate to zero)
+sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed')</p>
+<p># robustness value of directly harmed q = 1/2 (reduce estimate in half)
+sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed', q = 0.5)</p>
+<p># robustness value of directly harmed q = 1/2, alpha = 0.05
+sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed', q = 0.5, alpha = 0.05)</p>
+<p># partial R2 of directly harmed with peacefactor
+sensitivity_stats.partial_r2(model = fitted_model, covariates = &quot;directlyharmed&quot;)</p>
+<p># partial R2 of female with peacefactor
+sensitivity_stats.partial_r2(model = fitted_model, covariates = &quot;female&quot;)</p>
+<p># pandas DataFrame with sensitivity statistics
+sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = &quot;directlyharmed&quot;)</p>
+<p># bounds on the strength of confounders using female and age
+ovb_bounds.ovb_bounds(model = fitted_model, treatment = &quot;directlyharmed&quot;,</p>
+<blockquote>
+<div>benchmark_covariates = [&quot;female&quot;, &quot;age&quot;], kd = [1, 2, 3])</div></blockquote>
+<p># adjusted estimate given hypothetical strength of confounder
+bias_functions.adjusted_estimate(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.1, r2yz_dx = 0.1)</p>
+<p># adjusted t-value given hypothetical strength of confounder
+bias_functions.adjusted_t(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.1, r2yz_dx = 0.1)</p>
+<p>#### bias contour plot directly from model
+###ovb_contour_plot(fitted_model, treatment = &quot;directlyharmed&quot;, benchmark_covariates = &quot;female&quot;, kd = [1, 2, 3])</p>
+<p>#### extreme scenario plot directly from model
+###ovb_extreme_plot(model, treatment = &quot;directlyharmed&quot;, benchmark_covariates = &quot;female&quot;, kd = [1, 2, 3], lim = 0.05)</p>
+<dl class="class">
+<dt id="sensemakr.sensemakr.Sensemakr">
+<em class="property">class </em><code class="descclassname">sensemakr.sensemakr.</code><code class="descname">Sensemakr</code><span class="sig-paren">(</span><em>model=None</em>, <em>treatment=None</em>, <em>estimate=None</em>, <em>se=None</em>, <em>dof=None</em>, <em>benchmark_covariates=None</em>, <em>kd=1</em>, <em>ky=None</em>, <em>q=1</em>, <em>alpha=0.05</em>, <em>r2dz_x=None</em>, <em>r2yz_dx=None</em>, <em>r2dxj_x=None</em>, <em>r2yxj_dx=None</em>, <em>bound_label='Manual Bound'</em>, <em>reduce=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensemakr.html#Sensemakr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensemakr.Sensemakr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Sensitivity analysis to unobserved confounders</p>
+<p>This function performs sensitivity analysis to omitted variables as discussed in Cinelli and Hazlett (2020).
+It returns an object of class Sensemakr with several pre-computed sensitivity statistics for reporting.
+After creating the object, you may directly use the plot and summary methods of the returned object.</p>
+<p>Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly,
+such as the functions for sensitivity plots (ovb_contour_plot, ovb_extreme_plot), the functions for
+computing bias-adjusted estimates and t-values (adjusted_estimate, adjusted_t), the functions for computing the
+robustness value and partial R2 (robustness_value, partial_r2),  or the functions for bounding the strength
+of unobserved confounders (ovb_bounds), among others.</p>
+<p>&#64;param ... arguments passed to other methods. First argument should either be
+(i)  an lm model with the outcome regression (argument model); or
+(ii) the numerical estimated value of the coefficient, along with the numeric values of standard errors and</p>
+<blockquote>
+<div>degrees of freedom (arguments estimate, se and df).</div></blockquote>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p>Examples:
+# loads dataset
+data(&quot;darfur&quot;)</p>
+<p># runs regression model
+model &lt;- lm(peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +</p>
+<blockquote>
+<div>pastvoted + hhsize_darfur + female + village, data = darfur)</div></blockquote>
+<p># runs sensemakr for sensitivity analysis
+sensitivity &lt;- sensemakr(model, treatment = &quot;directlyharmed&quot;,</p>
+<blockquote>
+<div>benchmark_covariates = &quot;female&quot;,
+kd = [1, 2, 3])</div></blockquote>
+<p># short description of results
+sensitivity</p>
+<p># long description of results
+summary(sensitivity)</p>
+<p># plot bias contour of point estimate
+plot(sensitivity)</p>
+<p># plot bias contour of t-value
+plot(sensitivity, sensitivity_of = &quot;t-value&quot;)</p>
+<p># plot extreme scenario
+plot(sensitivity, type = &quot;extreme&quot;)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>An object of class Sensemakr, containing:</dt>
+<dd><dl class="first last docutils">
+<dt>sensitivity_stats: A Pandas DataFrame with the sensitivity statistics for the treatment variable,</dt>
+<dd>as computed by the function sensitivity_stats.</dd>
+<dt>bounds: A pandas DataFrame with bounds on the strength of confounding according to some benchmark covariates,</dt>
+<dd>as computed by the function ovb_bounds.</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="sensemakr.sensemakr.Sensemakr.summary">
+<code class="descname">summary</code><span class="sig-paren">(</span><em>digits=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensemakr.html#Sensemakr.summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensemakr.Sensemakr.summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print a summary of the sensitivity results for a Sensemakr object, including robustness value, extreme
+confounding scenario, and benchmark bounding. digits is the number of digits to round numbers to; default is 3.
+Following the example above, if you have a Sensemakr object called sensitivity, call this method using
+sensitivity.summary(). To round to 5 digits instead of 3, call sensitivity.summary(digits=5).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sensemakr.sensitivity_stats">
+<span id="sensemakr-sensitivity-stats-module"></span><h2>sensemakr.sensitivity_stats module<a class="headerlink" href="#module-sensemakr.sensitivity_stats" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.check_alpha">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">check_alpha</code><span class="sig-paren">(</span><em>alpha</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#check_alpha"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.check_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures that alpha, the significance level for RV_qa, is a float between 0 and 1.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.check_covariates">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">check_covariates</code><span class="sig-paren">(</span><em>all_names</em>, <em>covariates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#check_covariates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.check_covariates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that all provided covariates are strings and are in the regression model.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.check_dof">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">check_dof</code><span class="sig-paren">(</span><em>dof</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#check_dof"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.check_dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures that the degrees of freedom for a regression is a positive integer.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.check_q">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">check_q</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#check_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.check_q" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures that q, the percent reduction to the point estimate for RV_q, is a float or int greater than 0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.check_r2">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">check_r2</code><span class="sig-paren">(</span><em>r2dz_x</em>, <em>r2yz_dx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#check_r2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.check_r2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures that r2dz_x and r2yz_dx are numpy scalars or arrays</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.check_se">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">check_se</code><span class="sig-paren">(</span><em>se</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#check_se"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.check_se" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures that standard error is a float greater than zero.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.error_if_no_dof">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">error_if_no_dof</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#error_if_no_dof"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.error_if_no_dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given statsmodels OLSResults object, ensure that its degrees of freedom is not zero.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.group_partial_r2">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">group_partial_r2</code><span class="sig-paren">(</span><em>model=None</em>, <em>covariates=None</em>, <em>f_statistic=None</em>, <em>p=None</em>, <em>dof=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#group_partial_r2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.group_partial_r2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partial R2 of groups of covariates in a linear regression model</p>
+<dl class="docutils">
+<dt>This function computes the partial R2 of a group of covariates in a linear regression model. Multivariate version</dt>
+<dd>of the partial_r2 function; see that for more details.</dd>
+</dl>
+<p>Examples:
+# load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')</p>
+<p># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~</p>
+<blockquote>
+<div>directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)</div></blockquote>
+<p>fitted_model = model.fit()</p>
+<p>from sensemakr import sensitivity_stats
+sensitivity_stats.group_partial_r2(model = fitted_model, covariates = [&quot;female&quot;, &quot;pastvoted&quot;])</p>
+<p>Required parameters: either model or f_statistic, p, and dof.
+:param model: a statsmodels OLSResults object containing the restricted regression
+:param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof</p>
+<blockquote>
+<div>from the model. If not specified, defaults to all variables.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>f_statistic</strong> -- a float with the f_statistic for the restricted model regression</li>
+<li><strong>p</strong> -- an int with the number of parameters in the model</li>
+<li><strong>dof</strong> -- an int with the degrees of freedom of the restricted regression</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a float with the computed group partial R^2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.model_helper">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">model_helper</code><span class="sig-paren">(</span><em>model</em>, <em>covariates=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#model_helper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.model_helper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal function for extracting info from a statsmodels OLSResults object and returning it in a dict.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.partial_f">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">partial_f</code><span class="sig-paren">(</span><em>model=None</em>, <em>covariates=None</em>, <em>t_statistic=None</em>, <em>dof=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#partial_f"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.partial_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the square root of the partial_f2 function described above.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.partial_f2">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">partial_f2</code><span class="sig-paren">(</span><em>model=None</em>, <em>covariates=None</em>, <em>t_statistic=None</em>, <em>dof=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#partial_f2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.partial_f2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function computes the partial (Cohen's) f2 for a linear regression model. The partial (Cohen's) f2 is a
+common measure of effect size (a transformation of the partial R2) that can also be used directly
+for sensitivity analysis using a bias factor table.
+For details see Cinelli and Hazlett (2020).</p>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p>This function takes as input a statsmodels OLSResults object or you may pass directly t-value &amp; degrees of freedom.</p>
+<p>Examples:
+# load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')</p>
+<p># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~</p>
+<blockquote>
+<div>directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)</div></blockquote>
+<p>fitted_model = model.fit()</p>
+<p># load this module
+from sensemakr import sensitivity_stats</p>
+<p># partial f2 of directly harmed with peacefactor
+sensitivity_stats.partial_f2(model = fitted_model, covariates = &quot;directlyharmed&quot;)</p>
+<p># partial f2 of female with peacefactor
+sensitivity_stats.partial_f2(model = fitted_model, covariates = &quot;female&quot;)</p>
+<p># you can also provide the statistics directly
+sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783)</p>
+<p>Required parameters: either model or t_statistic and dof.
+:param model: a statsmodels OLSResults object containing the restricted regression
+:param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof</p>
+<blockquote>
+<div>from the model. If not specified, defaults to all variables.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t_statistic</strong> -- a float with the t_statistic for the restricted model regression</li>
+<li><strong>dof</strong> -- an int with the degrees of freedom of the restricted regression</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a float with the computed partial f^2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.partial_r2">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">partial_r2</code><span class="sig-paren">(</span><em>model=None</em>, <em>covariates=None</em>, <em>t_statistic=None</em>, <em>dof=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#partial_r2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.partial_r2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function computes the partial R2 for a linear regression model. The partial R2 describes how much of the
+residual variance of the outcome (after partialing out the other covariates) a covariate explains.</p>
+<p>The partial R2 can be used as an extreme-scenario sensitivity analysis to omitted variables.
+Considering an unobserved confounder that explains 100% of the residual variance of the outcome,
+the partial R2 describes how strongly associated with the treatment this unobserved confounder would need to be
+in order to explain away the estimated effect.
+For details see Cinelli and Hazlett (2020).</p>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p>This function takes as input a statsmodels OLSResults object or you may pass directly t-value &amp; degrees of freedom.</p>
+<p>For partial R2 of groups of covariates, check group_partial_r2.</p>
+<p>Examples:
+# load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')</p>
+<p># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~</p>
+<blockquote>
+<div>directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)</div></blockquote>
+<p>fitted_model = model.fit()</p>
+<p># load this module
+from sensemakr import sensitivity_stats</p>
+<p># partial R2 of directly harmed with peacefactor
+sensitivity_stats.partial_r2(model = fitted_model, covariates = &quot;directlyharmed&quot;)</p>
+<p># partial R2 of female with peacefactor
+sensitivity_stats.partial_r2(model = fitted_model, covariates = &quot;female&quot;)</p>
+<p># you can also provide the statistics directly
+sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)</p>
+<p>Required parameters: either model or t_statistic and dof.
+:param model: a statsmodels OLSResults object containing the restricted regression
+:param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof</p>
+<blockquote>
+<div>from the model. If not specified, defaults to all variables.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t_statistic</strong> -- a float with the t_statistic for the restricted model regression</li>
+<li><strong>dof</strong> -- an int with the degrees of freedom of the restricted regression</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a float with the computed partial R^2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.robustness_value">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">robustness_value</code><span class="sig-paren">(</span><em>model=None</em>, <em>covariates=None</em>, <em>t_statistic=None</em>, <em>dof=None</em>, <em>q=1</em>, <em>alpha=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#robustness_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.robustness_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function computes the robustness value of a regression coefficient. The robustness value describes the
+minimum strength of association (parameterized in terms of partial R2) that omitted variables would need to have
+both with the treatment and with the outcome to change the estimated coefficient by a certain amount
+(for instance, to bring it down to zero).</p>
+<p>For instance, a robustness value of 1% means that an unobserved confounder that explain 1% of the residual variance
+of the outcome and 1% of the residual variance of the treatment is strong enough to explain away the estimated
+effect. Whereas a robustness value of 90% means that any unobserved confounder that explain less than 90% of the
+residual variance of both the outcome and the treatment assignment cannot fully account for the observed effect.
+You may also compute robustness value taking into account sampling uncertainty.
+See details in Cinelli and Hazlett (2020).</p>
+<dl class="docutils">
+<dt>The function robustness_value can take as input a statsmodels OLSResults object</dt>
+<dd>or you may directly pass the t-value and degrees of freedom.</dd>
+</dl>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p>Examples:</p>
+<p># load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')</p>
+<p># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~</p>
+<blockquote>
+<div>directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)</div></blockquote>
+<p>fitted_model = model.fit()</p>
+<p>from sensemakr import sensitivity_stats
+## robustness value of directly harmed q =1 (reduce estimate to zero)
+sensitivity_stats.robustness_value(model = fitted_model, covariates = &quot;directlyharmed&quot;)</p>
+<p>## robustness value of directly harmed q = 1/2 (reduce estimate in half)
+sensitivity_stats.robustness_value(model = fitted_model, covariates = &quot;directlyharmed&quot;, q = 1/2)</p>
+<p>## robustness value of directly harmed q = 1/2, alpha = 0.05
+## (reduce estimate in half, with 95% confidence)
+sensitivity_stats.robustness_value(model = fitted_model, covariates = &quot;directlyharmed&quot;, q = 1/2, alpha = 0.05)</p>
+<p># you can also provide the statistics directly
+sensitivity_stats.robustness_value(t_statistic = 4.18445, dof = 783)</p>
+<p>Required parameters: either model or t_statistic and dof.
+:param model: a statsmodels OLSResults object containing the restricted regression
+:param t_statistic: a float with the t_statistic for the restricted model regression
+:param dof: an int with the degrees of freedom of the restricted regression
+:param q: a float with the percent to reduce the point estimate by for the robustness value RV_q
+:param alpha: a float with the significance level for the robustness value RV_qa to render the</p>
+<blockquote>
+<div>estimate not significant</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a numpy array with the robustness value</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sensemakr.sensitivity_stats.sensitivity_stats">
+<code class="descclassname">sensemakr.sensitivity_stats.</code><code class="descname">sensitivity_stats</code><span class="sig-paren">(</span><em>model=None</em>, <em>treatment=None</em>, <em>estimate=None</em>, <em>se=None</em>, <em>dof=None</em>, <em>q=1</em>, <em>alpha=0.05</em>, <em>reduce=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sensemakr/sensitivity_stats.html#sensitivity_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sensemakr.sensitivity_stats.sensitivity_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
+See those function descriptions above for more details.</p>
+<p>Examples:
+# load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import pandas as pd
+darfur = pd.read_csv('data/darfur.csv')</p>
+<p># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)
+import statsmodels.formula.api as smf
+model = smf.ols(formula='peacefactor ~</p>
+<blockquote>
+<div>directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)</div></blockquote>
+<p>fitted_model = model.fit()</p>
+<p>from sensemakr import sensitivity_stats
+## sensitivity stats for directly harmed
+sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = &quot;directlyharmed&quot;)</p>
+<p>## you can  also pass the numeric values directly
+sensitivity_stats.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783)</p>
+<p>Reference:
+Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</p>
+<blockquote>
+<div>Journal of the Royal Statistical Society, Series B (Statistical Methodology).</div></blockquote>
+<p>Required parameters: either model and treatment, or estimate, se, and dof.
+:param model: a statsmodels OLSResults object containing the restricted regression
+:param treatment: a string with treatment variable name
+:param estimate: a float with the coefficient estimate of the restricted regression
+:param se: a float with the standard error of the restricted regression
+:param dof: an int with the degrees of freedom of the restricted regression
+:param q: a float with the percent to reduce the point estimate by for the robustness value RV_q
+:param alpha: a float with the significance level for the robustness value RV_qa to render the</p>
+<blockquote>
+<div>estimate not significant</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>reduce</strong> -- whether to reduce or increase the estimate due to confounding</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a Pandas DataFrame containing the following quantities:
+* treatment: a string with the name of the treatment variable
+* estimate: a float with the estimated effect of the treatment
+* se: a float with the estimated standard error of the treatment effect
+* t_statistics: a float with  the t-value of the treatment
+* r2yd.x: a float with the partial R2 of the treatment and the outcome, see details in partial_r2
+* rv_q: a float the robustness value of the treatment, see details in robustness_value
+* rv_qa: a float with the robustness value of the treatment considering statistical significance,<blockquote>
+<div>see details in robustness_value</div></blockquote>
+<ul class="simple">
+<li>f2yd_x: a float with the partial (Cohen's) f2 of the treatment with the outcome, see details in partial_f2</li>
+<li>dof: an int with the degrees of freedom of the model</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sensemakr">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sensemakr" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="sensemakr" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

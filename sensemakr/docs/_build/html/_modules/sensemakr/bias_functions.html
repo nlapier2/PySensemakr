@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="Python" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sensemakr.bias_functions &mdash; Pysensemakr  documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'',
+              LANGUAGE:'Python',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Pysensemakr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">sensemakr</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pysensemakr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>sensemakr.bias_functions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sensemakr.bias_functions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Compute bias-adjusted estimates, standard-errors, and t-values</span>
+
+<span class="sd">All methods in the script below have similar purposes and parameters, so they are all described here.</span>
+
+<span class="sd">These functions compute bias adjusted estimates (adjusted_estimate), standard-errors (adjusted_se),</span>
+<span class="sd">and t-values (adjusted_t), given a hypothetical strength of the confounder in the partial R2 parameterization.</span>
+
+<span class="sd">The functions work either with a statsmodels OLSResults object, or directly passing in numerical inputs, such as the</span>
+<span class="sd">current coefficient estimate, standard error and degrees of freedom.</span>
+
+<span class="sd">They return a numpy array with the adjusted estimate, standard error, or t-value for each partial R^2 passed in.</span>
+
+<span class="sd">Internally, we also have functions defined to compute the bias and relative_bias, given the same arguments. We also</span>
+<span class="sd">define internal functions to compute the bias function and relative bias function for the partial R^2 parameters.</span>
+
+<span class="sd">Finally, in the python version of the package, there is a param_check method which validates all the parameters, since</span>
+<span class="sd">they are roughly the same for each method.</span>
+
+<span class="sd">Reference:</span>
+<span class="sd">Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
+<span class="sd">    Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">Example:</span>
+<span class="sd"># load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">import pandas as pd</span>
+<span class="sd">darfur = pd.read_csv(&#39;data/darfur.csv&#39;)</span>
+
+<span class="sd"># fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">import statsmodels.formula.api as smf</span>
+<span class="sd">model = smf.ols(formula=&#39;peacefactor ~</span>
+<span class="sd">    directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">fitted_model = model.fit()</span>
+
+<span class="sd"># import this module</span>
+<span class="sd">import bias_functions</span>
+
+<span class="sd"># computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05</span>
+<span class="sd">bias_functions.adjusted_estimate(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.05, r2yz_dx = 0.05)</span>
+
+<span class="sd"># computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05</span>
+<span class="sd">bias_functions.adjusted_se(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.05, r2yz_dx = 0.05)</span>
+
+<span class="sd"># computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05</span>
+<span class="sd">bias_functions.adjusted_t(model = fitted_model, treatment = &quot;directlyharmed&quot;, r2dz_x = 0.05, r2yz_dx = 0.05)</span>
+
+<span class="sd"># Alternatively, pass in numerical values directly.</span>
+<span class="sd">bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)</span>
+
+<span class="sd">bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)</span>
+
+<span class="sd">bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)</span>
+
+<span class="sd">Required parameters:</span>
+<span class="sd">For all methods, r2dz_x and r2yz_dx are required. For all methods other than bf, either model and treatment</span>
+<span class="sd">or estimate, se, and dof are also required, except adjused_se and bias which do not accept the estimate parameter.</span>
+
+<span class="sd">List of parameters:</span>
+<span class="sd">r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
+<span class="sd">            with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out.</span>
+<span class="sd">r2yz_dx: a float or list of floats with the  partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
+<span class="sd">            with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and treatment variable &quot;d&quot; partialed out.</span>
+<span class="sd">model: a fitted statsmodels OLSResults object for the restricted regression model you have provided</span>
+<span class="sd">treatment: a string with the name of the &quot;treatment&quot; variable, e.g. the independent variable of interest</span>
+<span class="sd">estimate: a float with the unadjusted estimate of the coefficient for the independent variable of interest</span>
+<span class="sd">se: a float with the unadjusted standard error of the regression</span>
+<span class="sd">dof: an int with the degrees of freedom of the regression</span>
+<span class="sd">reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding</span>
+
+<span class="sd">Parameters only used in param_check:</span>
+<span class="sd">function_name: string with the name of the calling function, used to print the function name in error messages</span>
+<span class="sd">estimate_is_param: flag for whether estimate should be a required parameter for the calling function</span>
+<span class="sd">reduce_is_param: flag for whether reduce is a parameter for the calling function</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">sensitivity_stats</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="adjusted_estimate"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.adjusted_estimate">[docs]</a><span class="k">def</span> <span class="nf">adjusted_estimate</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compute the bias-adjusted coefficient estimate. See description at top for details. &quot;&quot;&quot;</span>
+    <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">dof</span> <span class="o">=</span> <span class="n">param_check</span><span class="p">(</span><span class="s1">&#39;adjusted_estimate&#39;</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                                     <span class="n">treatment</span><span class="o">=</span><span class="n">treatment</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="n">estimate</span><span class="p">,</span>
+                                                     <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="n">reduce</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reduce</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">estimate</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">estimate</span><span class="p">)</span> <span class="o">-</span> <span class="n">bias</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">estimate</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">estimate</span><span class="p">)</span> <span class="o">+</span> <span class="n">bias</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="adjusted_se"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.adjusted_se">[docs]</a><span class="k">def</span> <span class="nf">adjusted_se</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compute the bias-adjusted regression standard error. See description at top for details. &quot;&quot;&quot;</span>
+    <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">dof</span> <span class="o">=</span> <span class="n">param_check</span><span class="p">(</span><span class="s1">&#39;adjusted_se&#39;</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="n">treatment</span><span class="p">,</span>
+                                                     <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">estimate_is_param</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reduce_is_param</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">new_se</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r2yz_dx</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r2dz_x</span><span class="p">))</span> <span class="o">*</span> <span class="n">se</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dof</span> <span class="o">/</span> <span class="p">(</span><span class="n">dof</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">new_se</span></div>
+
+
+<div class="viewcode-block" id="adjusted_t"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.adjusted_t">[docs]</a><span class="k">def</span> <span class="nf">adjusted_t</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compute bias-adjusted t-statistic, adjusted_estimate - h0 / adjusted_se. See description at top for details. &quot;&quot;&quot;</span>
+    <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">dof</span> <span class="o">=</span> <span class="n">param_check</span><span class="p">(</span><span class="s1">&#39;adjusted_t&#39;</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="n">treatment</span><span class="p">,</span>
+                                                     <span class="n">estimate</span><span class="o">=</span><span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="n">reduce</span><span class="p">)</span>
+    <span class="n">new_estimate</span> <span class="o">=</span> <span class="n">adjusted_estimate</span><span class="p">(</span><span class="n">estimate</span><span class="o">=</span><span class="n">estimate</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="o">=</span><span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="o">=</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="n">reduce</span><span class="p">)</span>
+    <span class="n">new_t</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_estimate</span> <span class="o">-</span> <span class="n">h0</span><span class="p">)</span> <span class="o">/</span> <span class="n">adjusted_se</span><span class="p">(</span><span class="n">r2yz_dx</span><span class="o">=</span><span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="o">=</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_t</span>  <span class="c1"># , h0</span></div>
+
+
+<div class="viewcode-block" id="adjusted_partial_r2"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.adjusted_partial_r2">[docs]</a><span class="k">def</span> <span class="nf">adjusted_partial_r2</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compute the bias-adjusted partial R^2, based on adjusted_t. See description at top for details. &quot;&quot;&quot;</span>
+    <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">dof</span> <span class="o">=</span> <span class="n">param_check</span><span class="p">(</span><span class="s1">&#39;adjusted_partial_r2&#39;</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                                     <span class="n">treatment</span><span class="o">=</span><span class="n">treatment</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="n">estimate</span><span class="p">,</span>
+                                                     <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="n">reduce</span><span class="p">)</span>
+    <span class="n">new_t</span> <span class="o">=</span> <span class="n">adjusted_t</span><span class="p">(</span><span class="n">estimate</span><span class="o">=</span><span class="n">estimate</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="o">=</span><span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="o">=</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="n">reduce</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="n">h0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">partial_r2</span><span class="p">(</span><span class="n">t_statistic</span><span class="o">=</span><span class="n">new_t</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bias"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.bias">[docs]</a><span class="k">def</span> <span class="nf">bias</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compute the omitted variable bias for the partial R^2 parameterization. See description at top for details. &quot;&quot;&quot;</span>
+    <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">dof</span> <span class="o">=</span> <span class="n">param_check</span><span class="p">(</span><span class="s1">&#39;bias&#39;</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="n">treatment</span><span class="p">,</span>
+                                                     <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">estimate_is_param</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reduce_is_param</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">bias_val</span> <span class="o">=</span> <span class="n">bf</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">)</span> <span class="o">*</span> <span class="n">se</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span>  <span class="c1"># numpy array</span>
+    <span class="k">return</span> <span class="n">bias_val</span></div>
+
+
+<div class="viewcode-block" id="relative_bias"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.relative_bias">[docs]</a><span class="k">def</span> <span class="nf">relative_bias</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compute the relative bias for the partial R^2 parameterization. See description at top for details. &quot;&quot;&quot;</span>
+    <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">dof</span> <span class="o">=</span> <span class="n">param_check</span><span class="p">(</span><span class="s1">&#39;relative_bias&#39;</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="n">treatment</span><span class="p">,</span>
+                                                     <span class="n">estimate</span><span class="o">=</span><span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">,</span> <span class="n">reduce_is_param</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">t_statistic</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">estimate</span> <span class="o">/</span> <span class="n">se</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">partial_f</span><span class="p">(</span><span class="n">t_statistic</span><span class="o">=</span><span class="n">t_statistic</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">dof</span><span class="p">)</span>
+    <span class="n">bf_val</span> <span class="o">=</span> <span class="n">bf</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">bf_val</span> <span class="o">/</span> <span class="n">f</span>
+    <span class="k">return</span> <span class="n">q</span></div>
+
+
+<div class="viewcode-block" id="rel_bias"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.rel_bias">[docs]</a><span class="k">def</span> <span class="nf">rel_bias</span><span class="p">(</span><span class="n">r_est</span><span class="p">,</span> <span class="n">est</span><span class="p">):</span>
+    <span class="n">r_est</span><span class="p">,</span> <span class="n">est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r_est</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">est</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">r_est</span> <span class="o">-</span> <span class="n">est</span><span class="p">)</span> <span class="o">/</span> <span class="n">r_est</span></div>
+
+
+<div class="viewcode-block" id="bf"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.bf">[docs]</a><span class="k">def</span> <span class="nf">bf</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compute the bias function for the partial R^2 parameters. See description at top for details. &quot;&quot;&quot;</span>
+    <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r2yz_dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">r2yz_dx</span> <span class="o">*</span> <span class="n">r2dz_x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r2dz_x</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="param_check"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.bias_functions.param_check">[docs]</a><span class="k">def</span> <span class="nf">param_check</span><span class="p">(</span><span class="n">function_name</span><span class="p">,</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">se</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">estimate_is_param</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reduce_is_param</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper method that checks whether the required parameters have been passed in and have valid values.</span>
+<span class="sd">    Also extracts data from a statsmodels OLSResults object (if one is given) for use in numerical formulae.</span>
+<span class="sd">    See description at top for details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">estimate_is_param</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">treatment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">estimate</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">se</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: in addition to r2yz_dx &amp; r2dz_x, &#39;</span> <span class="o">+</span> <span class="n">function_name</span> <span class="o">+</span>
+                     <span class="s1">&#39; requires either a statsmodels OLSResults object and a treatment variable&#39;</span>
+                     <span class="s1">&#39; or the current estimate, standard error, and degrees of freedom.&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">treatment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">se</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dof</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: in addition to r2yz_dx &amp; r2dz_x, &#39;</span> <span class="o">+</span> <span class="n">function_name</span> <span class="o">+</span>
+                     <span class="s1">&#39; requires either a statsmodels OLSResults object and a treatment variable&#39;</span>
+                     <span class="s1">&#39; or the current standard error and degrees of freedom.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">treatment</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error in &#39;</span> <span class="o">+</span> <span class="n">function_name</span> <span class="o">+</span> <span class="s1">&#39; method: must provide only one treatment variable.&#39;</span><span class="p">)</span>
+        <span class="n">model_data</span> <span class="o">=</span> <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">model_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">covariates</span><span class="o">=</span><span class="n">treatment</span><span class="p">)</span>  <span class="c1"># extracts model data</span>
+        <span class="n">estimate</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;estimate&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># extract the raw float value</span>
+        <span class="n">se</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;se&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s1">&#39;dof&#39;</span><span class="p">])</span>
+    <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">check_se</span><span class="p">(</span><span class="n">se</span><span class="p">)</span>
+    <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">check_dof</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span>
+    <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span> <span class="o">=</span> <span class="n">sensitivity_stats</span><span class="o">.</span><span class="n">check_r2</span><span class="p">(</span><span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">estimate_is_param</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">estimate</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">estimate</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error in &#39;</span> <span class="o">+</span> <span class="n">function_name</span> <span class="o">+</span> <span class="s1">&#39; method: provided estimate must be a single number.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reduce_is_param</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">reduce</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error in &#39;</span> <span class="o">+</span> <span class="n">function_name</span> <span class="o">+</span> <span class="s1">&#39; method: reduce must be True or False boolean value.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r2dz_x</span><span class="p">,</span> <span class="n">r2yz_dx</span><span class="p">,</span> <span class="n">estimate</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">dof</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
