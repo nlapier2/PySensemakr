@@ -9,9 +9,9 @@ Welcome to Pysensemakr's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-   notebooks/the_risks_of_informal_benchmarking
+   
    notebooks/example
+   notebooks/the_risks_of_informal_benchmarking
    modules
 
 Indices and tables
