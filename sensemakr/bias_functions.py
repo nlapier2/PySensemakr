@@ -35,7 +35,7 @@ Fit a statsmodels OLSResults object ("fitted_model")
 
 Import this module
 
->>> import bias_functions
+>>> from sensemakr import bias_functions
 
 Computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 
