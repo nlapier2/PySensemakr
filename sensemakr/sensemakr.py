@@ -31,6 +31,7 @@ Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omit
     Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 
 Examples:
+--------
 
 # load example dataset and fit a statsmodels OLSResults object ("fitted_model")
 import pandas as pd

@@ -33,6 +33,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # ones.
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.coverage',
+    'sphinx.ext.mathjax',
     'sphinx.ext.imgmath',
     'sphinx.ext.viewcode',
     'nbsphinx',
@@ -170,5 +171,12 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+def skip_functions(app,what,name,obj,skip,options):
+    exclusions=[]
+    exclusions.append(name.startswith('label_maker'))
+    exclude=name in exclusions
+    return True if exclude else None
 
 
+def setup(app):
+    app.connect('autodoc-skip-member',skip_functions)

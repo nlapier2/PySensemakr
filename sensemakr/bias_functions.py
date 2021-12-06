@@ -1,5 +1,5 @@
 """
-Compute bias-adjusted estimates, standard-errors, and t-values
+Compute bias-adjusted estimates, standard-errors, and t-values.
 
 All methods in the script below have similar purposes and parameters, so they are all described here.
 
@@ -9,68 +9,87 @@ and t-values (adjusted_t), given a hypothetical strength of the confounder in th
 The functions work either with a statsmodels OLSResults object, or directly passing in numerical inputs, such as the
 current coefficient estimate, standard error and degrees of freedom.
 
-They return a numpy array with the adjusted estimate, standard error, or t-value for each partial R^2 passed in.
+They return a numpy array with the adjusted estimate, standard error, or t-value for each partial :math:R^2' passed in.
 
 Internally, we also have functions defined to compute the bias and relative_bias, given the same arguments. We also
-define internal functions to compute the bias function and relative bias function for the partial R^2 parameters.
+define internal functions to compute the bias function and relative bias function for the partial :math:'R^2' parameters.
 
 Finally, in the python version of the package, there is a param_check method which validates all the parameters, since
 they are roughly the same for each method.
 
 Reference:
-Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 
 Example:
-# load example dataset and fit a statsmodels OLSResults object ("fitted_model")
-import pandas as pd
-darfur = pd.read_csv('data/darfur.csv')
+--------
+Load example dataset and fit a statsmodels OLSResults object ("fitted_model")
 
-# fit a statsmodels OLSResults object ("fitted_model")
-import statsmodels.formula.api as smf
-model = smf.ols(formula='peacefactor ~
+>>> from sensemakr import data
+>>> darfur = data.load_darfur()
+
+Fit a statsmodels OLSResults object ("fitted_model")
+
+>>> import statsmodels.formula.api as smf
+>>> model = smf.ols(formula='peacefactor ~
     directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
-fitted_model = model.fit()
+>>> fitted_model = model.fit()
 
-# import this module
-import bias_functions
+Import this module
 
-# computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
-bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+>>> import bias_functions
 
-# computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
-bias_functions.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+Computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 
-# computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
-bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+>>> bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
 
-# Alternatively, pass in numerical values directly.
-bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+Computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 
-bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+>>> bias_functions.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
 
-bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+Computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 
-Required parameters:
+>>> bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+
+Alternatively, pass in numerical values directly.
+
+>>> bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+
+>>> bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+
+>>> bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+
+Parameters:
+--------
 For all methods, r2dz_x and r2yz_dx are required. For all methods other than bf, either model and treatment
 or estimate, se, and dof are also required, except adjused_se and bias which do not accept the estimate parameter.
 
 List of parameters:
-r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
-            with the treatment variable "d", with observed covariates "x" partialed out.
-r2yz_dx: a float or list of floats with the  partial R^2 of a putative unobserved confounder "z"
-            with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
-model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
-treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest
-estimate: a float with the unadjusted estimate of the coefficient for the independent variable of interest
-se: a float with the unadjusted standard error of the regression
-dof: an int with the degrees of freedom of the regression
-reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+^^^^
+r2dz_x : 
+    a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+r2yz_dx : 
+    a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+model : 
+    a fitted statsmodels OLSResults object for the restricted regression model you have provided
+treatment : 
+    a string with the name of the "treatment" variable, e.g. the independent variable of interest
+estimate : 
+    a float with the unadjusted estimate of the coefficient for the independent variable of interest
+se : 
+    a float with the unadjusted standard error of the regression
+dof : 
+    an int with the degrees of freedom of the regression
+reduce : 
+    whether to reduce (True, default) or increase (False) the estimate due to putative confounding
 
 Parameters only used in param_check:
-function_name: string with the name of the calling function, used to print the function name in error messages
-estimate_is_param: flag for whether estimate should be a required parameter for the calling function
-reduce_is_param: flag for whether reduce is a parameter for the calling function
+^^^^
+function_name : 
+    string with the name of the calling function, used to print the function name in error messages
+estimate_is_param : 
+    flag for whether estimate should be a required parameter for the calling function
+reduce_is_param : 
+    flag for whether reduce is a parameter for the calling function
 """
 
 
@@ -137,6 +156,7 @@ def relative_bias(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se
 
 
 def rel_bias(r_est, est):
+    """ Compute the relative bias for any estimator and the truth value. """
     r_est, est = np.array(r_est), np.array(est)
     return (r_est - est) / r_est
 
