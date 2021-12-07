@@ -1,3 +1,19 @@
+"""
+Description:
+------------
+Sensitivity analysis plots for sensemakr. This module provides the contour and extreme scenario sensitivity
+plots of the sensitivity analysis results obtained with the function Sensemakr or model or maunually input statistics.
+
+Reference:
+----------
+
+Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+Example:
+------------
+See specific functions below.
+"""
 # Code for producing sensitivity contour plots and other plots
 import matplotlib.pyplot as plt
 from . import sensitivity_stats
@@ -14,6 +30,47 @@ plot_env = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'sensitivity_of': None, 't
 
 
 def plot(sense_obj, plot_type):
+    """
+    **Description:**
+    This function provides the contour and extreme scenario sensitivity
+    plots of the sensitivity analysis results obtained with the function Sensemakr. They are basically dispatchers
+    to the core plot functions ovb_contour_plot and ovb_extreme_plot.
+
+    This function takes as input a sensemakr object and one of the plot type "contour" or "extreme".
+
+    **Examples:**
+
+    Load example dataset:
+
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+
+    Fit a statsmodels OLSResults object ("fitted_model"):
+
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+
+    Runs sensemakr for sensitivity analysis
+
+    >>> from sensemakr import sensemakr
+    >>> sensitivity = sensemakr.Sensemakr(
+            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+
+    Plot bias contour of point estimate
+
+    >>> plot(sensitivity,plot_type='contour')
+
+    Plot extreme scenario
+
+    >>> plot(sensitivity, plot_type = "extreme")
+
+    :param sense_obj: a sensemakr object
+    :param plot_type: either "extreme" or "contour"
+
+    :return: a plot for the corresponding plot type
+    """
     if plot_type == 'contour':
         ovb_contour_plot(sense_obj=sense_obj)
     elif plot_type == 'extreme':
@@ -27,6 +84,93 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
                      reduce=True, estimate_threshold=0, t_threshold=2, lim=None, lim_y=None,
                      col_contour="black", col_thr_line="red", label_text=True, label_bump_x=None, label_bump_y=None,
                      xlab=None, ylab=None, asp=None, list_par=None, plot_margin_fraction=0.05, round_dig=3):
+    """
+    **Description:**
+    Contour plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
+    and the covariates used for benchmarking the strength of unobserved confounding.
+
+    The horizontal axis of the plot shows hypothetical values of the partial R2 of the unobserved confounder(s) with the treatment.
+    The vertical axis shows hypothetical values of the partial R2 of the unobserved confounder(s) with the outcome.
+    The contour levels represent the adjusted estimates (or t-values) of the treatment effect.
+
+    The reference points are the bounds on the partial R2 of the unobserved confounder if it were k times ''as strong'' as the observed covariate used for benchmarking (see arguments kd and ky).
+    The dotted red line show the chosen critical threshold (for instance, zero): confounders with such strength (or stronger) are sufficient to invalidate the research conclusions.
+    All results are exact for single confounders and conservative for multiple/nonlinear confounders.
+
+    See Cinelli and Hazlett (2020) for details.
+
+    **Reference:**
+
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+    **Examples:**
+
+    Load example dataset:
+
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+
+    Fit a statsmodels OLSResults object ("fitted_model"):
+
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+
+    Runs sensemakr for sensitivity analysis
+
+    >>> from sensemakr import sensemakr
+    >>> sensitivity = sensemakr.Sensemakr(
+            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+
+    Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
+
+    >>> from sensemakr import ovb_plots
+    >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+
+    Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates kd=[1,2,3].
+
+    >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
+
+    Plot contour of the fitted model with manual benchmark
+
+    >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
+
+    Plot contour of the sensemakr object
+
+    >>> ovb_plots.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
+
+    :param sense_obj: a sensemakr object
+    :param sensitivity_of: either "estimate" or "t-value"
+    :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    :param treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    :param estimate: a float with the estimate of the coefficient for the independent variable of interest
+    :param se: a float with the standard error of the regression
+    :param dof: an int with the degrees of freedom of the regression
+    :param benchmark_covariates: a string or list of strings with
+     the names of the variables to use for benchmark bounding
+    :param kd: a float or list of floats with each being a multiple of the strength of association between a
+     benchmark variable and the treatment variable to test with benchmark bounding
+    :param ky: same as kd except measured in terms of strength of association with the outcome variable
+    :param r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+     with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
+     as strong as the benchmark_covariates
+    :param r2yz_dx: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+     with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
+     as implied by z being ky-times as strong as the benchmark_covariates
+    :param reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default=True
+    :param estimate_threshold: threshold line to emphasize when drawing estimate, default=0
+    :param t_threshold: threshold line to emphasize when drawing t-value, default=2
+    :param xlab: x-axis label text
+    :param ylab: y-axis label text
+    :param round_dig: rounding digit of the display numbers, default=3
+    :param col_contour: color of the contour line, default="black"
+    :param col_thr_line: color of the threshold line, default="red"
+
+    :return: a contour plot of omitted variable bias for the corresponding model/sense_obj.
+    """
+
     if sensitivity_of not in ["estimate", "t-value"]:
         sys.exit('Error: "sensitivity_of" argument is required and must be "estimate" or "t-value".')
     if sense_obj is not None:
@@ -141,6 +285,62 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
 def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, reduce=None,
                          treatment=None, bounds=None, r2dz_x=None, r2yz_dx=None, bound_value=None, bound_label=None,
                          sensitivity_of=None, label_text=True, label_bump_x=None, label_bump_y=None, round_dig=3):
+    """
+    **Description:**
+    Add bound label to the contour plot of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
+    and the covariates used for benchmarking the strength of unobserved confounding.
+
+    The reference points are the bounds on the partial R2 of the unobserved confounder if it were k times ''as strong'' as the observed covariate used for benchmarking (see arguments kd and ky).
+
+    **Examples:**
+
+    Load example dataset:
+
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+
+    Fit a statsmodels OLSResults object ("fitted_model"):
+
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+
+    Runs sensemakr for sensitivity analysis
+
+    >>> from sensemakr import sensemakr
+    >>> sensitivity = sensemakr.Sensemakr(
+            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+
+    Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
+
+    >>> from sensemakr import ovb_plots
+    >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+
+    Add bound to contour.
+
+    >>> ovb_plots.add_bound_to_contour(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[2,3])
+
+    :param sensitivity_of: either "estimate" or "t-value"
+    :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    :param treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    :param benchmark_covariates: a string or list of strings with
+     the names of the variables to use for benchmark bounding
+    :param kd: a float or list of floats with each being a multiple of the strength of association between a
+     benchmark variable and the treatment variable to test with benchmark bounding
+    :param ky: same as kd except measured in terms of strength of association with the outcome variable
+    :param r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+     with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
+     as strong as the benchmark_covariates
+    :param r2yz_dx: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+     with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
+     as implied by z being ky-times as strong as the benchmark_covariates
+    :param bound_value: the value of the reference point
+    :param bound_label: a string that label the reference point
+    :param round_dig: rounding digit of the display numbers, default=3
+
+    :return: add a bound label to the existing contour plot.
+    """
     if (model is None or benchmark_covariates is None) and bounds is None and (r2dz_x is None or r2yz_dx is None):
         sys.exit('Error: add_bound_to_contour requires either a statsmodels OLSResults object and names of benchmark '
                  'covariates, or a Pandas DataFrame with bounding information, '
@@ -207,6 +407,88 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
                      benchmark_covariates=None, kd=1,ky=None, r2dz_x=None, r2yz_dx=[1, 0.75, 0.5],
                      reduce=True, threshold=0, lim=None, lim_y=None,
                      xlab=None, ylab=None, list_par=None):
+    """
+    **Description:**
+
+    Extreme scenario plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
+    and the covariates used for benchmarking the strength of unobserved confounding.
+
+    The horizontal axis shows the partial R2 of the unobserved confounder(s) with the treatment. The vertical axis shows the adjusted treatment effect estimate.
+    The partial R2 of the confounder with the outcome is represented by different curves for each scenario, as given by the parameter r2yz_dx.
+    The red marks on horizontal axis are bounds on the partial R2 of the unobserved confounder kd times as strong as the covariates used for benchmarking.
+    The dotted red line represent the threshold for the effect estimate deemed to be problematic (for instance, zero).
+
+    See Cinelli and Hazlett (2020) for details.
+
+    **Reference:**
+
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+    **Examples:**
+
+    Load example dataset:
+
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+
+    Fit a statsmodels OLSResults object ("fitted_model"):
+
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+
+    Runs sensemakr for sensitivity analysis
+
+    >>> from sensemakr import sensemakr
+    >>> sensitivity = sensemakr.Sensemakr(
+            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+
+    Plot extreme value of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
+
+    >>> from sensemakr import ovb_plots
+    >>> ovb_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+
+    Plot extreme value of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates kd=[1,2].
+
+    >>> ovb_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2])
+
+    Plot extreme value of the fitted model with manual benchmark
+
+    >>> ovb_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
+
+    Plot extreme value of the sensemakr object
+
+    >>> ovb_plots.ovb_plots.ovb_extreme_plot(sense_obj=sensitivity)
+
+    :param sense_obj: a sensemakr object
+    :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    :param treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    :param estimate: a float with the estimate of the coefficient for the independent variable of interest
+    :param se: a float with the standard error of the regression
+    :param dof: an int with the degrees of freedom of the regression
+    :param benchmark_covariates: a string or list of strings with
+     the names of the variables to use for benchmark bounding
+    :param kd: a float or list of floats with each being a multiple of the strength of association between a
+     benchmark variable and the treatment variable to test with benchmark bounding
+    :param ky: same as kd except measured in terms of strength of association with the outcome variable
+    :param r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+     with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
+     as strong as the benchmark_covariates
+    :param r2yz_dx: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+     with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
+     as implied by z being ky-times as strong as the benchmark_covariates, default=[1,0.75,0.5]
+    :param reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default=True
+    :param threshold: threshold line to emphasize when drawing estimate, default=0
+    :param xlab: x-axis label text
+    :param ylab: y-axis label text
+    :param lim: range of x-axis
+    :param lim_y: range of y-axis
+
+    :return: an extreme value plot of omitted variable bias for the corresponding model/sense_obj.
+    """
+
     if sense_obj is not None:
         # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
         treatment, estimate, se, dof, r2dz_x, dum, bound_label, reduce, estimate_threshold, t_threshold,benchmark_covariates,kd,ky = \
@@ -250,7 +532,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
           'xtick.labelsize':12,
           'ytick.labelsize':12}
     plt.rcParams.update(params)
-    
+
     ax.legend(ncol=len(r2yz_dx),frameon=False)
     ax.get_legend().set_title(r"Partial $R^2$ of confounder(s) with the outcome")
     ax.spines['top'].set_visible(False)
@@ -274,6 +556,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
 
 # Extracts sensitivity and bounding parameters from a given Sensemakr object
 def extract_from_sense_obj(sense_obj):
+    """ This is a helper function to extract parameters from sensemakr object. """
     treatment = sense_obj.treatment
     estimate = sense_obj.estimate
     q = sense_obj.q
@@ -303,6 +586,7 @@ def extract_from_sense_obj(sense_obj):
 
 # Extracts estimate, standard error, degrees of freedom, and parial R^2 values from a specified model+treatment pair
 def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r2yz_dx):
+    """ This is a helper function to extract parameters from model. """
     if ky is None:
         ky = kd
     check_multipliers(ky, kd)
@@ -339,6 +623,7 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
 
 # Checks to make sure given parameters are valid and sets some default parameter values if not specified by the user
 def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par):
+    """ This is a helper function to check plot arguments. """
     check_estimate(estimate)
     if r2yz_dx is None:
         r2yz_dx = r2dz_x
@@ -380,6 +665,7 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
 
 # Checks to make sure given parameters are valid and sets some default parameter values if not specified by the user
 def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim, list_par):
+    """ This is a helper function to check plot arguments. """
     check_estimate(estimate)
 
     r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)

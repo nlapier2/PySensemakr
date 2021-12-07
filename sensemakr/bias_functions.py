@@ -1,4 +1,6 @@
-r"""
+"""
+Description:
+------------
 Compute bias-adjusted estimates, standard-errors, and t-values.
 
 All methods in the script below have similar purposes and parameters, so they are all described here.
@@ -9,19 +11,20 @@ and t-values (adjusted_t), given a hypothetical strength of the confounder in th
 The functions work either with a statsmodels OLSResults object, or directly passing in numerical inputs, such as the
 current coefficient estimate, standard error and degrees of freedom.
 
-They return a numpy array with the adjusted estimate, standard error, or t-value for each partial :math:R^2' passed in.
+They return a numpy array with the adjusted estimate, standard error, or t-value for each partial R2 passed in.
 
 Internally, we also have functions defined to compute the bias and relative_bias, given the same arguments. We also
-define internal functions to compute the bias function and relative bias function for the partial :math:'R^2' parameters.
+define internal functions to compute the bias function and relative bias function for the partial R2 parameters.
 
 Finally, in the python version of the package, there is a param_check method which validates all the parameters, since
 they are roughly the same for each method.
 
 Reference:
+------------
 Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 
 Example:
---------
+------------
 Load example dataset and fit a statsmodels OLSResults object ("fitted_model")
 
 >>> from sensemakr import data
@@ -58,36 +61,36 @@ Alternatively, pass in numerical values directly.
 >>> bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
 
 Parameters:
---------
+------------
 For all methods, r2dz_x and r2yz_dx are required. For all methods other than bf, either model and treatment
 or estimate, se, and dof are also required, except adjused_se and bias which do not accept the estimate parameter.
 
 List of parameters:
-^^^^
-r2dz_x : 
+^^^^^^^^^^^^^^^^^^^^
+r2dz_x :
     a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
-r2yz_dx : 
+r2yz_dx :
     a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
-model : 
+model :
     a fitted statsmodels OLSResults object for the restricted regression model you have provided
-treatment : 
+treatment :
     a string with the name of the "treatment" variable, e.g. the independent variable of interest
-estimate : 
+estimate :
     a float with the unadjusted estimate of the coefficient for the independent variable of interest
-se : 
+se :
     a float with the unadjusted standard error of the regression
-dof : 
+dof :
     an int with the degrees of freedom of the regression
-reduce : 
+reduce :
     whether to reduce (True, default) or increase (False) the estimate due to putative confounding
 
 Parameters only used in param_check:
-^^^^
-function_name : 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function_name :
     string with the name of the calling function, used to print the function name in error messages
-estimate_is_param : 
+estimate_is_param :
     flag for whether estimate should be a required parameter for the calling function
-reduce_is_param : 
+reduce_is_param :
     flag for whether reduce is a parameter for the calling function
 """
 
@@ -117,7 +120,7 @@ def adjusted_se(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
 
 
 def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True, h0=0):
-    """ Compute bias-adjusted t-statistic, adjusted_estimate - h0 / adjusted_se. See description at top for details. """
+    """ Compute bias-adjusted t-statistic, (adjusted_estimate - h0) / adjusted_se. See description at top for details. """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_t', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      estimate=estimate, se=se, dof=dof, reduce=reduce)
     new_estimate = adjusted_estimate(estimate=estimate, r2yz_dx=r2yz_dx, r2dz_x=r2dz_x, se=se, dof=dof, reduce=reduce)
@@ -127,7 +130,7 @@ def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=No
 
 def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None,
                         reduce=True, h0=0):
-    """ Compute the bias-adjusted partial R^2, based on adjusted_t. See description at top for details. """
+    """ Compute the bias-adjusted partial R2, based on adjusted_t. See description at top for details. """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_partial_r2', r2dz_x, r2yz_dx, model=model,
                                                      treatment=treatment, estimate=estimate,
                                                      se=se, dof=dof, reduce=reduce)
@@ -136,7 +139,7 @@ def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=No
 
 
 def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
-    """ Compute the omitted variable bias for the partial R^2 parameterization. See description at top for details. """
+    """ Compute the omitted variable bias for the partial R2 parameterization. See description at top for details. """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      se=se, dof=dof, estimate_is_param=False, reduce_is_param=False)
     bias_val = bf(r2dz_x, r2yz_dx) * se * np.sqrt(dof)  # numpy array
@@ -144,7 +147,7 @@ def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
 
 
 def relative_bias(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None):
-    """ Compute the relative bias for the partial R^2 parameterization. See description at top for details. """
+    """ Compute the relative bias for the partial R2 parameterization. See description at top for details. """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('relative_bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      estimate=estimate, se=se, dof=dof, reduce_is_param=False)
     t_statistic = abs(estimate / se)
@@ -161,7 +164,7 @@ def rel_bias(r_est, est):
 
 
 def bf(r2dz_x, r2yz_dx):
-    """ Compute the bias function for the partial R^2 parameters. See description at top for details. """
+    """ Compute the bias function for the partial R2 parameters. See description at top for details. """
     r2dz_x, r2yz_dx = np.array(r2dz_x), np.array(r2yz_dx)
     return np.sqrt((r2yz_dx * r2dz_x) / (1 - r2dz_x))
 

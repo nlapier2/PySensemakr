@@ -1,42 +1,7 @@
-sensemakr package
+Pysensemakr package
 =================
 
-Submodules
-----------
-
-sensemakr\.bias\_functions module
----------------------------------
-
-.. automodule:: sensemakr.bias_functions
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-sensemakr\.data module
-----------------------
-
-.. automodule:: sensemakr.data
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-sensemakr\.ovb\_bounds module
------------------------------
-
-.. automodule:: sensemakr.ovb_bounds
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-sensemakr\.ovb\_plots module
-----------------------------
-
-.. automodule:: sensemakr.ovb_plots
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-sensemakr\.sensemakr module
+sensemakr\.sensemakr
 ---------------------------
 
 .. automodule:: sensemakr.sensemakr
@@ -44,19 +9,42 @@ sensemakr\.sensemakr module
     :undoc-members:
     :show-inheritance:
 
-sensemakr\.sensitivity\_stats module
-------------------------------------
+sensemakr\.bias\_functions
+---------------------------------
 
-.. automodule:: sensemakr.sensitivity_stats
+.. automodule:: sensemakr.bias_functions
     :members:
     :undoc-members:
     :show-inheritance:
 
+sensemakr\.data
+----------------------
 
-Module contents
----------------
+.. automodule:: sensemakr.data
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-.. automodule:: sensemakr
+sensemakr\.ovb\_bounds
+-----------------------------
+
+.. automodule:: sensemakr.ovb_bounds
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sensemakr\.ovb\_plots
+----------------------------
+
+.. automodule:: sensemakr.ovb_plots
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sensemakr\.sensitivity\_stats
+------------------------------------
+
+.. automodule:: sensemakr.sensitivity_stats
     :members:
     :undoc-members:
     :show-inheritance:
