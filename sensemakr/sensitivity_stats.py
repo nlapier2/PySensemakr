@@ -37,43 +37,6 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     The function robustness_value can take as input a statsmodels OLSResults object or you may directly pass
     the t-value and degrees of freedom.
 
-    **Reference:**
-
-    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-    **Examples:**
-
-    Load example dataset
-
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
-
-    Fit a statsmodels OLSResults object ("fitted_model")
-
-    >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
-    >>> fitted_model = model.fit()
-
-    >>> from sensemakr import sensitivity_stats
-
-    Robustness value of directly harmed q =1 (reduce estimate to zero):
-
-    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed")
-
-    Robustness value of directly harmed q = 1/2 (reduce estimate in half):
-
-    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2)
-
-    Robustness value of directly harmed q = 1/2, alpha = 0.05 (reduce estimate in half, with 95% confidence):
-
-    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2, alpha = 0.05)
-
-    You can also provide the statistics directly:
-
-    >>> sensitivity_stats.robustness_value(t_statistic = 4.18445, dof = 783)
-
     **Required parameters:** either model or t_statistic and dof.
 
     :param model: a statsmodels OLSResults object containing the restricted regression
@@ -82,6 +45,32 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     :param q: a float with the percent to reduce the point estimate by for the robustness value RV_q
     :param alpha: a float with the significance level for the robustness value RV_qa to render the estimate not significant
     :return: a numpy array with the robustness value
+
+    **Reference:**
+
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+    **Examples:**
+
+    >>> # Load example dataset
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+    >>> # Fit a statsmodels OLSResults object ("fitted_model")
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+    >>> from sensemakr import sensitivity_stats
+    >>> # Robustness value of directly harmed q =1 (reduce estimate to zero):
+    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed")
+    >>> # Robustness value of directly harmed q = 1/2 (reduce estimate in half):
+    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2)
+    >>> # Robustness value of directly harmed q = 1/2, alpha = 0.05 (reduce estimate in half, with 95% confidence):
+    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2, alpha = 0.05)
+    >>> # You can also provide the statistics directly:
+    >>> sensitivity_stats.robustness_value(t_statistic = 4.18445, dof = 783)
+
     """
     if model is None and (t_statistic is None or dof is None):
         sys.exit('Error: robustness_value requires either a statsmodels OLSResults object '
@@ -126,44 +115,6 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     in order to explain away the estimated effect.
     For details see Cinelli and Hazlett (2020).
 
-    **Reference:**
-
-    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-    This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
-    For partial R2 of groups of covariates, check group_partial_r2.
-
-    **Examples:**
-
-    Load example dataset:
-
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
-
-    Fit a statsmodels OLSResults object ("fitted_model"):
-
-    >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
-    >>> fitted_model = model.fit()
-
-    Load this module:
-
-    >>> from sensemakr import sensitivity_stats
-
-    Partial R2 of directly harmed with peacefactor:
-
-    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")
-
-    Partial R2 of female with peacefactor:
-
-    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")
-
-    You can also provide the statistics directly:
-
-    >>> sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)
-
     **Required parameters:** either model or t_statistic and dof.
 
     :param model: a statsmodels OLSResults object containing the restricted regression
@@ -173,6 +124,33 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     :param dof: an int with the degrees of freedom of the restricted regression
 
     :return: a float with the computed partial R^2
+
+    **Reference:**
+
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+    **Examples:**
+    This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
+    For partial R2 of groups of covariates, check group_partial_r2.
+
+    >>> # Load example dataset:
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+    >>> # Fit a statsmodels OLSResults object ("fitted_model"):
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+    >>> # Load this module:
+    >>> from sensemakr import sensitivity_stats
+    >>> # Partial R2 of directly harmed with peacefactor:
+    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")
+    >>> # Partial R2 of female with peacefactor:
+    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")
+    >>> # You can also provide the statistics directly:
+    >>> sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)
+
     """
     if model is None and (t_statistic is None or dof is None):
         sys.exit('Error: partial_r2 requires either a statsmodels OLSResults object '
@@ -201,44 +179,34 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
 
     This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
 
-    **Examples:**
-
-    Load example dataset:
-
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
-
-    Fit a statsmodels OLSResults object ("fitted_model"):
-
-    >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
-    >>> fitted_model = model.fit()
-
-    Load this module:
-
-    >>> from sensemakr import sensitivity_stats
-
-    Partial f2 of directly harmed with peacefactor:
-
-    >>> sensitivity_stats.partial_f2(model = fitted_model, covariates = "directlyharmed")
-
-    Partial f2 of female with peacefactor:
-
-    >>> sensitivity_stats.partial_f2(model = fitted_model, covariates = "female")
-
-    You can also provide the statistics directly:
-
-    >>> sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783)
-
     **Required parameters:** either model or (t_statistic and dof).
 
     :param model: a statsmodels OLSResults object containing the restricted regression
     :param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof
-        from the model. If not specified, defaults to all variables.
+     from the model. If not specified, defaults to all variables.
     :param t_statistic: a float with the t_statistic for the restricted model regression
     :param dof: an int with the degrees of freedom of the restricted regression
     :return: a float with the computed partial f^2
+
+    **Examples:**
+
+    >>> # Load example dataset:
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+    >>> # Fit a statsmodels OLSResults object ("fitted_model"):
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+    >>> # Load this module:
+    >>> from sensemakr import sensitivity_stats
+    >>> # Partial f2 of directly harmed with peacefactor:
+    >>> sensitivity_stats.partial_f2(model = fitted_model, covariates = "directlyharmed")
+    >>> # Partial f2 of female with peacefactor:
+    >>> sensitivity_stats.partial_f2(model = fitted_model, covariates = "female")
+    >>> # You can also provide the statistics directly:
+    >>> sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783)
+
     """
     if model is None and (t_statistic is None or dof is None):
         sys.exit('Error: partial_f2 requires either a statsmodels OLSResults object '
@@ -265,33 +233,30 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     This function computes the partial R2 of a group of covariates in a linear regression model. Multivariate version
     of the partial_r2 function; see that for more details.
 
-    **Examples:**
-
-    Load example dataset:
-
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
-
-    Fit a statsmodels OLSResults object ("fitted_model"):
-
-    >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
-    >>> fitted_model = model.fit()
-
-    >>> from sensemakr import sensitivity_stats
-    >>> sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"])
-
-
     **Required parameters:** either model or (f_statistic, p, and dof).
 
     :param model: a statsmodels OLSResults object containing the restricted regression
     :param covariates: a string or list of strings with the covariates used to compute the t_statistic and dof
-        from the model. If not specified, defaults to all variables.
+     from the model. If not specified, defaults to all variables.
     :param f_statistic: a float with the f_statistic for the restricted model regression
     :param p: an int with the number of parameters in the model
     :param dof: an int with the degrees of freedom of the restricted regression
+
     :return: a float with the computed group partial R^2
+
+    **Examples:**
+
+    >>> # Load example dataset:
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+    >>> # Fit a statsmodels OLSResults object ("fitted_model"):
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+    >>> from sensemakr import sensitivity_stats
+    >>> sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"])
+
     """
     if (model is None or covariates is None) and (f_statistic is None or p is None or dof is None):
         sys.exit('Error: group_partial_r2 requires either a statsmodels OLSResults object and covariates or an '
@@ -315,35 +280,6 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
     Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
     See those function descriptions above for more details.
 
-    **Examples:**
-    Load example dataset:
-
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
-
-    Fit a statsmodels OLSResults object ("fitted_model"):
-
-    >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
-    >>> fitted_model = model.fit()
-
-    >>> from sensemakr import sensitivity_stats
-
-    Sensitivity stats for directly harmed:
-
-    >>> sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = "directlyharmed")
-
-    You can  also pass the numeric values directly:
-
-    >>> sensitivity_stats.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783)
-
-    **Reference:**
-
-    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-
     **Required parameters:** either model and treatment, or (estimate, se, and dof).
 
     :param model: a statsmodels OLSResults object containing the restricted regression
@@ -366,6 +302,28 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
         * rv_qa : a float with the robustness value of the treatment considering statistical significance, see details in robustness_value
         * f2yd_x : a float with the partial (Cohen's) f2 of the treatment with the outcome, see details in partial_f2
         * dof : an int with the degrees of freedom of the model
+
+    **Examples:**
+    
+    >>> # Load example dataset:
+    >>> from sensemakr import data
+    >>> darfur = data.load_darfur()
+    >>> # Fit a statsmodels OLSResults object ("fitted_model"):
+    >>> import statsmodels.formula.api as smf
+    >>> model = smf.ols(formula='peacefactor ~
+                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> fitted_model = model.fit()
+    >>> from sensemakr import sensitivity_stats
+    >>> # Sensitivity stats for directly harmed:
+    >>> sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = "directlyharmed")
+    >>> # You can  also pass the numeric values directly:
+    >>> sensitivity_stats.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783)
+
+    **Reference:**
+
+    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
     """
     if (model is None or treatment is None) and (estimate is None or se is None or dof is None):
         sys.exit('Error: sensitivity_stats requires either a statsmodels OLSResults object and treatment name or an '

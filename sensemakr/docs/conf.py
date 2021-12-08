@@ -173,7 +173,7 @@ texinfo_documents = [
 
 def skip_functions(app,what,name,obj,skip,options):
     exclusions=[]
-    exclusions.append(name.startswith('check'))
+    exclusions.append(name.startswith('bias'))
     exclude=name in exclusions
     return True if exclude else None
 

@@ -1,5 +1,5 @@
 """
-Description:
+Description
 ------------
 Compute bias-adjusted estimates, standard-errors, and t-values.
 
@@ -19,53 +19,12 @@ define internal functions to compute the bias function and relative bias functio
 Finally, in the python version of the package, there is a param_check method which validates all the parameters, since
 they are roughly the same for each method.
 
-Reference:
-------------
-Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-Example:
-------------
-Load example dataset and fit a statsmodels OLSResults object ("fitted_model")
-
->>> from sensemakr import data
->>> darfur = data.load_darfur()
-
-Fit a statsmodels OLSResults object ("fitted_model")
-
->>> import statsmodels.formula.api as smf
->>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
->>> fitted_model = model.fit()
-
-Import this module
-
->>> from sensemakr import bias_functions
-
-Computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
-
->>> bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
-
-Computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
-
->>> bias_functions.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
-
-Computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
-
->>> bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
-
-Alternatively, pass in numerical values directly.
-
->>> bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
-
->>> bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
-
->>> bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
-
-Parameters:
+Parameters
 ------------
 For all methods, r2dz_x and r2yz_dx are required. For all methods other than bf, either model and treatment
 or estimate, se, and dof are also required, except adjused_se and bias which do not accept the estimate parameter.
 
-List of parameters:
+List of parameters
 ^^^^^^^^^^^^^^^^^^^^
 r2dz_x :
     a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
@@ -84,7 +43,7 @@ dof :
 reduce :
     whether to reduce (True, default) or increase (False) the estimate due to putative confounding
 
-Parameters only used in param_check:
+Parameters only used in param_check
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function_name :
     string with the name of the calling function, used to print the function name in error messages
@@ -92,6 +51,33 @@ estimate_is_param :
     flag for whether estimate should be a required parameter for the calling function
 reduce_is_param :
     flag for whether reduce is a parameter for the calling function
+
+Reference
+------------
+Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+Example
+------------
+>>> # Load example dataset and fit a statsmodels OLSResults object ("fitted_model")
+>>> from sensemakr import data
+>>> darfur = data.load_darfur()
+>>> # Fit a statsmodels OLSResults object ("fitted_model")
+>>> import statsmodels.formula.api as smf
+>>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+>>> fitted_model = model.fit()
+>>> # Import this module
+>>> from sensemakr import bias_functions
+>>> # Computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+>>> bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+>>> # Computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+>>> bias_functions.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+>>> # Computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
+>>> bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+>>> # Alternatively, pass in numerical values directly.
+>>> bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+>>> bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+>>> bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+
 """
 
 
