@@ -136,7 +136,7 @@ from . import ovb_bounds
 
 
 class Sensemakr:
-    """
+    r"""
     Sensitivity analysis to unobserved confounders.
 
     This function performs sensitivity analysis to omitted variables as discussed in Cinelli and Hazlett (2020).
@@ -186,16 +186,17 @@ class Sensemakr:
     >>> # Description of results
     >>> sensitivity.summary()
     >>> # Plot bias contour of point estimate
-    >>> plot(sensitivity,plot_type = "contour")
+    >>> from sensemakr import ovb_plots
+    >>> ovb_plots.plot(sensitivity,plot_type = "contour")
     >>> # Plot extreme scenario
-    >>> plot(sensitivity, plot_type = "extreme")
+    >>> ovb_plots.plot(sensitivity, plot_type = "extreme")
 
     """
 
     def __init__(self, model=None, treatment=None, estimate=None, se=None, dof=None, benchmark_covariates=None, kd=1,
                  ky=None, q=1, alpha=0.05, r2dz_x=None, r2yz_dx=None, r2dxj_x=None, r2yxj_dx=None,
                  bound_label="Manual Bound", reduce=True):
-        """
+        r"""
         The constructor for a Sensemakr object. Parameter descriptions are below. For usage and info, see the
         description of the class above.
 

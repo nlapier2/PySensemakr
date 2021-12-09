@@ -20,7 +20,7 @@ import pandas as pd
 
 
 def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=1, alpha=1.0):
-    """
+    r"""
     **Description:**
     This function computes the robustness value of a regression coefficient. The robustness value describes the
     minimum strength of association (parameterized in terms of partial R2) that omitted variables would need to have
@@ -58,8 +58,8 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model")
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+        + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> from sensemakr import sensitivity_stats
     >>> # Robustness value of directly harmed q =1 (reduce estimate to zero):
@@ -104,7 +104,7 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
 
 
 def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
-    """
+    r"""
     **Description:**
     This function computes the partial R2 for a linear regression model. The partial R2 describes how much of the
     residual variance of the outcome (after partialing out the other covariates) a covariate explains.
@@ -139,8 +139,8 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Load this module:
     >>> from sensemakr import sensitivity_stats
@@ -166,7 +166,7 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
 
 
 def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
-    """
+    r"""
     **Description:**
     This function computes the partial (Cohen's) f2 for a linear regression model. The partial (Cohen's) f2 is a
     common measure of effect size (a transformation of the partial R2) that can also be used directly
@@ -195,8 +195,8 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+                +herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Load this module:
     >>> from sensemakr import sensitivity_stats
@@ -226,7 +226,7 @@ def partial_f(model=None, covariates=None, t_statistic=None, dof=None):
 
 
 def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=None):
-    """
+    r"""
     **Description:**
     Partial R2 of groups of covariates in a linear regression model
 
@@ -251,8 +251,8 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> from sensemakr import sensitivity_stats
     >>> sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"])
@@ -276,7 +276,7 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
 
 
 def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=None, q=1, alpha=0.05, reduce=True):
-    """
+    r"""
     Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
     See those function descriptions above for more details.
 
@@ -304,14 +304,14 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
         * dof : an int with the degrees of freedom of the model
 
     **Examples:**
-    
+
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> from sensemakr import sensitivity_stats
     >>> # Sensitivity stats for directly harmed:

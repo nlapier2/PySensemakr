@@ -30,7 +30,7 @@ plot_env = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'sensitivity_of': None, 't
 
 
 def plot(sense_obj, plot_type):
-    """
+    r"""
     **Description:**
     This function provides the contour and extreme scenario sensitivity
     plots of the sensitivity analysis results obtained with the function Sensemakr. They are basically dispatchers
@@ -50,17 +50,18 @@ def plot(sense_obj, plot_type):
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar\
+                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
     >>> sensitivity = sensemakr.Sensemakr(
             fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot bias contour of point estimate
-    >>> plot(sensitivity,plot_type='contour')
+    >>> from sensemakr import ovb_plots
+    >>> ovb_plots.plot(sensitivity,plot_type='contour')
     >>> # Plot extreme scenario
-    >>> plot(sensitivity, plot_type = "extreme")
+    >>> ovb_plots.plot(sensitivity, plot_type = "extreme")
 
     """
     if plot_type == 'contour':
@@ -76,7 +77,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
                      reduce=True, estimate_threshold=0, t_threshold=2, lim=None, lim_y=None,
                      col_contour="black", col_thr_line="red", label_text=True, label_bump_x=None, label_bump_y=None,
                      xlab=None, ylab=None, asp=None, list_par=None, plot_margin_fraction=0.05, round_dig=3):
-    """
+    r"""
     **Description:**
     Contour plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
@@ -132,8 +133,8 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model")
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+                 +herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
@@ -265,7 +266,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
 def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, reduce=None,
                          treatment=None, bounds=None, r2dz_x=None, r2yz_dx=None, bound_value=None, bound_label=None,
                          sensitivity_of=None, label_text=True, label_bump_x=None, label_bump_y=None, round_dig=3):
-    """
+    r"""
     **Description:**
     Add bound label to the contour plot of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
@@ -299,8 +300,8 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
@@ -313,7 +314,7 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     >>> ovb_plots.add_bound_to_contour(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[2,3])
 
     """
-    if (model is None or benchmark_covariates is None) and bounds is None and (r2dz_x is None or r2yz_dx is None):
+    if ((model is None or benchmark_covariates is None) and bounds is None and (r2dz_x is None or r2yz_dx is None)):
         sys.exit('Error: add_bound_to_contour requires either a statsmodels OLSResults object and names of benchmark '
                  'covariates, or a Pandas DataFrame with bounding information, '
                  'or partial R^2 parameters r2dz_x and r2yz_dx.')
@@ -348,6 +349,9 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
             bound_value = bounds['adjusted_t'].copy()
         if bound_label is None:
             bound_label = bounds['bound_label'].copy()
+    if model is None:
+        if (bounds is not None) and (bound_label is None):
+            bound_label=list(bounds['bound_label'])
 
     if bounds is not None:
         r2dz_x = bounds['r2dz_x']
@@ -365,7 +369,7 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         if label_text:
             if(np.isscalar(bound_label)):
                 bound_label=[bound_label]
-            if bound_value is not None and bound_label is not None:
+            if (bound_value is not None) and (bound_label is not None):
                 bound_value[i] = round(bound_value[i], round_dig)
                 label = str(bound_label[i]) + '\n(' + str(bound_value[i]) + ')'
             else:
@@ -381,7 +385,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
                      benchmark_covariates=None, kd=1,ky=None, r2dz_x=None, r2yz_dx=[1, 0.75, 0.5],
                      reduce=True, threshold=0, lim=None, lim_y=None,
                      xlab=None, ylab=None, list_par=None):
-    """
+    r"""
     **Description:**
 
     Extreme scenario plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
@@ -432,8 +436,8 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~
-                directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
@@ -447,7 +451,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     >>> # Plot extreme value of the fitted model with manual benchmark
     >>> ovb_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
     >>> # Plot extreme value of the sensemakr object
-    >>> ovb_plots.ovb_plots.ovb_extreme_plot(sense_obj=sensitivity)
+    >>> ovb_plots.ovb_extreme_plot(sense_obj=sensitivity)
 
     """
 

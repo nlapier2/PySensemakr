@@ -46,10 +46,12 @@ Journal of the Royal Statistical Society, Series B (Statistical Methodology).
         fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 >>> # Description of results
 >>> sensitivity.summary()
+>>> # Import plot module
+>>> from sensemakr import ovb_plots
 >>> # Plot bias contour of point estimate
->>> plot(sensitivity,plot_type = "contour")
+>>> ovb_plots.plot(sensitivity,plot_type = "contour")
 >>> # Plot extreme scenario
->>> plot(sensitivity, plot_type = "extreme")
+>>> ovb_plots.plot(sensitivity, plot_type = "extreme")
 >>> #Pandas DataFrame with sensitivity statistics
 >>> sensitivity.sensitivity_stats
 >>> # Pandas DataFrame with bounds on the strength of confounders
@@ -78,9 +80,9 @@ Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 >>> # Adjusted t-value given hypothetical strength of confounder
 >>> bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.1, r2yz_dx = 0.1)
 >>> # Bias contour plot directly from model
->>> ovb_contour_plot(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+>>> ovb_plots.ovb_contour_plot(model=fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 >>> # Extreme scenario plot directly from model
->>> ovb_extreme_plot(model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3], lim = 0.05)
+>>> ovb_plots.ovb_extreme_plot(model=fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3], lim = 0.05)
 
 
 

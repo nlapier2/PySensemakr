@@ -1,4 +1,4 @@
-"""
+r"""
 Description
 ------------
 Compute bias-adjusted estimates, standard-errors, and t-values.
@@ -63,7 +63,8 @@ Example
 >>> darfur = data.load_darfur()
 >>> # Fit a statsmodels OLSResults object ("fitted_model")
 >>> import statsmodels.formula.api as smf
->>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+>>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
+            + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
 >>> fitted_model = model.fit()
 >>> # Import this module
 >>> from sensemakr import bias_functions
