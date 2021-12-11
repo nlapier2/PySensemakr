@@ -133,7 +133,7 @@ import numpy as np
 from . import sensitivity_stats
 from . import bias_functions
 from . import ovb_bounds
-
+from . import ovb_plots
 
 class Sensemakr:
     r"""
@@ -426,3 +426,49 @@ class Sensemakr:
                   " with association with the treatment and the outcome bounded by a multiple of the observed explanatory"
                   " power of the chosen benchmark covariate(s).\n")
             print(self.bounds)
+    def plot(self, plot_type,sensitivity_of='estimate'):
+        r"""
+        **Description:**
+        This function provides the contour and extreme scenario sensitivity
+        plots of the sensitivity analysis results obtained with the function Sensemakr. They are basically dispatchers
+        to the core plot functions ovb_contour_plot and ovb_extreme_plot.
+
+        This function takes as input a sensemakr object and one of the plot type "contour" or "extreme".
+
+        :param sense_obj: a sensemakr object
+        :param plot_type: either "extreme" or "contour"
+
+        :return: a plot for the corresponding plot type
+
+        **Examples:**
+
+        >>> # Load example dataset:
+        >>> from sensemakr import data
+        >>> darfur = data.load_darfur()
+        >>> # Fit a statsmodels OLSResults object ("fitted_model"):
+        >>> import statsmodels.formula.api as smf
+        >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar\
+                    + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+        >>> fitted_model = model.fit()
+        >>> # Runs sensemakr for sensitivity analysis
+        >>> from sensemakr import sensemakr
+        >>> sensitivity = sensemakr.Sensemakr(
+                fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+        >>> # Plot bias contour of point estimate
+        >>> from sensemakr import ovb_plots
+        >>> ovb_plots.plot(sensitivity,plot_type='contour')
+        >>> # Plot bias contour of t-values
+        >>> ovb_plots.plot(sensitivity,plot_type='contour',sensitivity_of='t-value')
+
+        >>> # Plot extreme scenario
+        >>> ovb_plots.plot(sensitivity, plot_type = "extreme")
+
+        """
+        if plot_type == 'contour':
+            ovb_plots.ovb_contour_plot(sense_obj=self,sensitivity_of=sensitivity_of)
+        elif (plot_type == 'extreme') and (sensitivity_of == 't-value'):
+            sys.exit('Error: extreme plot for t-value has not been implemented yet')
+        elif plot_type == 'extreme':
+            ovb_plots.ovb_extreme_plot(sense_obj=self)
+        else:
+            sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')

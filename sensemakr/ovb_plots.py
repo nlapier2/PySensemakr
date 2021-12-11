@@ -29,7 +29,7 @@ plot_env = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'sensitivity_of': None, 't
 # plot_env_ext = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'treatment': None}
 
 
-def plot(sense_obj, plot_type):
+def plot(sense_obj, plot_type,sensitivity_of='estimate'):
     r"""
     **Description:**
     This function provides the contour and extreme scenario sensitivity
@@ -60,12 +60,16 @@ def plot(sense_obj, plot_type):
     >>> # Plot bias contour of point estimate
     >>> from sensemakr import ovb_plots
     >>> ovb_plots.plot(sensitivity,plot_type='contour')
+    >>> # Plot bias contour of t-values
+    >>> ovb_plots.plot(sensitivity,plot_type='contour',sensitivity_of='t-value')
     >>> # Plot extreme scenario
     >>> ovb_plots.plot(sensitivity, plot_type = "extreme")
 
     """
     if plot_type == 'contour':
-        ovb_contour_plot(sense_obj=sense_obj)
+        ovb_contour_plot(sense_obj=sense_obj,sensitivity_of=sensitivity_of)
+    elif (plot_type == 'extreme') and (sensitivity_of == 't-value'):
+        sys.exit('Error: extreme plot for t-value has not been implemented yet')
     elif plot_type == 'extreme':
         ovb_extreme_plot(sense_obj=sense_obj)
     else:
@@ -470,7 +474,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
 
     r2d_values = np.arange(0, lim, 0.001)
 
-    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    fig, ax = plt.subplots(1, 1, figsize=(8, 4.8))
     for i in range(len(r2yz_dx)):
         y=bias_functions.adjusted_estimate(r2d_values, r2yz_dx[i],
                    estimate=estimate, se=se, dof=dof)
