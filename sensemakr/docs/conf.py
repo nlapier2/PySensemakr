@@ -33,8 +33,10 @@ sys.path.insert(0, os.path.abspath('../..'))
 # ones.
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.coverage',
+    'sphinx.ext.mathjax',
     'sphinx.ext.imgmath',
     'sphinx.ext.viewcode',
+    'nbsphinx',
     'sphinx.ext.githubpages']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -73,7 +75,7 @@ language = 'Python'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store','**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -98,7 +100,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = []
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -169,5 +171,12 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+def skip_functions(app,what,name,obj,skip,options):
+    exclusions=[]
+    exclusions.append(name.startswith('bias'))
+    exclude=name in exclusions
+    return True if exclude else None
 
 
+def setup(app):
+    app.connect('autodoc-skip-member',skip_functions)

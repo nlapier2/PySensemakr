@@ -10,6 +10,8 @@ Welcome to Pysensemakr's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   notebooks/quickstart
+   notebooks/the_risks_of_informal_benchmarking
    modules
 
 Indices and tables
