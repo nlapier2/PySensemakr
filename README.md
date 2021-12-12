@@ -15,22 +15,14 @@ pip install Pysensemakr
 pip3 install git+https://github.com/KennyZhang-17/PySensemakr
 ```
 
-<h1>Example Usage<span class="tocSkip"></span></h1>
-<div class="toc"><ul class="toc-item"></ul></div>
+## Example Usage
 
 
 ```python
 # Imports
-from sensemakr import sensitivity_stats
-from sensemakr import bias_functions
-from sensemakr import ovb_bounds
-from sensemakr import ovb_plots
-from sensemakr import sensemakr
 from sensemakr import data
-import statsmodels.api as sm
+from sensemakr import sensemakr
 import statsmodels.formula.api as smf
-import numpy as np
-import pandas as pd
 ```
 
 
@@ -40,6 +32,23 @@ darfur = data.load_darfur()
 darfur.head()
 ```
 
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -224,22 +233,22 @@ s.summary()
 
 ```python
 # Make a contour plot for the estimate
-ovb_plots.ovb_contour_plot(sense_obj=s, sensitivity_of='estimate')
+s.plot(plot_type='contour',sensitivity_of='estimate')
 ```
 
 
     
-![png](/images/output_8_0.png)
+![png](output_6_0.png)
     
 
 
 
 ```python
-ovb_plots.ovb_extreme_plot(sense_obj=s)
+s.plot(plot_type='extreme',sensitivity_of='estimate')
 ```
 
 
     
-![png](/images/output_9_0.png)
+![png](output_7_0.png)
     
 

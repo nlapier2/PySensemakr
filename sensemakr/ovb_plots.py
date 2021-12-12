@@ -27,7 +27,8 @@ import pandas as pd
 
 plot_env = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'sensitivity_of': None, 'treatment': None}
 # plot_env_ext = {'lim': 0.4, 'lim_y': 0.4, 'reduce': None, 'treatment': None}
-
+plt.rcParams['figure.dpi'] = 96
+plt.rcParams['savefig.dpi'] = 300
 
 def plot(sense_obj, plot_type,sensitivity_of='estimate'):
     r"""
