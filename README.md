@@ -33,22 +33,6 @@ darfur.head()
 ```
 
 
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -238,7 +222,7 @@ s.plot(plot_type='contour',sensitivity_of='estimate')
 
 
     
-![png](output_6_0.png)
+![png](/images/output_6_0.png)
     
 
 
@@ -249,6 +233,6 @@ s.plot(plot_type='extreme',sensitivity_of='estimate')
 
 
     
-![png](output_7_0.png)
+![png](/images/output_7_0.png)
     
 
