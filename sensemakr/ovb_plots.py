@@ -180,6 +180,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     grid_values_x = np.arange(0, lim, lim / 400)
     grid_values_y = np.arange(0, lim_y, lim_y / 400)
     bound_value = None
+
     if sensitivity_of == 'estimate':
         # call adjusted_estimate using grid values as r2dz_x and r2yz_dx as well as passed-in estimate, se, and dof
         z_axis = [[bias_functions.adjusted_estimate(grid_values_x[j], grid_values_y[i],
@@ -200,7 +201,6 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
         if r2dz_x is not None:
             bound_value = bias_functions.adjusted_t(r2dz_x, r2yz_dx, estimate=estimate, se=se, dof=dof,
                                                     reduce=reduce, h0=estimate_threshold)
-
     # TODO: see which of these params we want to include in function args list
     fig, ax = plt.subplots(1, 1, figsize=(6, 6))
     # draw all contours
@@ -266,7 +266,6 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
               y0,
               y1 + y_plot_margin))
     plt.tight_layout()
-
 
 def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, reduce=None,
                          treatment=None, bounds=None, r2dz_x=None, r2yz_dx=None, bound_value=None, bound_label=None,

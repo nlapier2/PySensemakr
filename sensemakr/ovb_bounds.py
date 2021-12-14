@@ -170,14 +170,14 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
     >>> from sensemakr import sensitivity_stats
     >>> from sensemakr import bias_functions
     >>> from sensemakr import ovb_bounds
-    >>> from sensemakr import ovp_plots
+    >>> from sensemakr import ovb_plots
     >>> # Use the t statistic of female in the outcome regression to compute the partial R2 of female with the outcome.
     >>> r2yxj_dx = sensitivity_stats.partial_r2(t_statistic = -9.789, dof = 783)
     >>> # Use the t-value of female in the *treatment* regression to compute the partial R2 of female with the treatment.
     >>> r2dxj_x = sensitivity_stats.partial_r2(t_statistic = -2.680, dof = 783)
     >>> # Compute manually bounds on the strength of confounders 1, 2, or 3 times as strong as female.
     >>> bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,\
-                    kd = [1, 2, 3], ky = [1, 3, 3])
+                    kd = [1, 2, 3], ky = [1, 2, 3])
     >>> # Compute manually adjusted estimates.
     >>> bound_values = bias_functions.adjusted_estimate(estimate = 0.0973, se = 0.0232,\
                         dof = 783, r2dz_x = bounds['r2dz_x'], r2yz_dx = bounds['r2yz_dx'])
