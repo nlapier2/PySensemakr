@@ -5,7 +5,7 @@
 [![Codecov](https://img.shields.io/codecov/c/gh/KennyZhang-17/PySensemakr)](https://app.codecov.io/gh/KennyZhang-17/PySensemakr)
 
 
-`sensemakr` for Python implements a suite of sensitivity analysis tools that
+`sensemakr` for Python (PySensemakr) implements a suite of sensitivity analysis tools that
 extends the traditional omitted variable bias framework and makes it
 easier to understand the impact of omitted variables in regression
 models, as discussed in [Cinelli, C. and Hazlett, C. (2020) “Making
