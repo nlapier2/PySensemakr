@@ -3,13 +3,39 @@
 ![PyPI](https://img.shields.io/pypi/v/Pysensemakr)
 [![CI](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml/badge.svg)](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml)
 [![Codecov](https://img.shields.io/codecov/c/gh/KennyZhang-17/PySensemakr)](https://app.codecov.io/gh/KennyZhang-17/PySensemakr)
+
+
+`sensemakr` for Python implements a suite of sensitivity analysis tools that
+extends the traditional omitted variable bias framework and makes it
+easier to understand the impact of omitted variables in regression
+models, as discussed in [Cinelli, C. and Hazlett, C. (2020) “Making
+Sense of Sensitivity: Extending Omitted Variable Bias.” Journal of the
+Royal Statistical Society, Series B (Statistical
+Methodology).](https://doi.org/10.1111/rssb.12348)
+
+## Related Packages
+-   The R version of the package can be downloaded here: <https://github.com/carloscinelli/sensemakr/>.
+    
+-   The Stata version of the package can be downloaded here: <https://github.com/resonance1/sensemakr-stata>.
+
+-   The Shiny App is available at: <https://carloscinelli.shinyapps.io/robustness_value/>.
+    
+## Details
+
+For theoretical details, [please see the JRSS-B
+paper](https://www.researchgate.net/publication/322509816_Making_Sense_of_Sensitivity_Extending_Omitted_Variable_Bias).
+
+For practical details of the package, see the the [package documentation](https://pysensemakr.readthedocs.io/en/latest/).
+
 ## Installation
+
+To install the version in PyPI, run:
 
 ```
 pip install Pysensemakr
 ```
 
-## Development Version
+To install the development version, run:
 
 ```
 pip3 install git+https://github.com/KennyZhang-17/PySensemakr
