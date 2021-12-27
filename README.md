@@ -29,6 +29,8 @@ For practical details of the package, see the the [package documentation](https:
 
 ## Installation
 
+Make sure you have Python 3.8, or higher, installed.
+
 To install the version in PyPI, run:
 
 ```
