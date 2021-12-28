@@ -11,12 +11,12 @@ with open("requirements.txt", "r") as fh:
     requirements = [line.strip() for line in fh]
 
 setuptools.setup(
-    name="Pysensemakr",
+    name="PySensemakr",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     author="Nathan LaPierre",
     author_email="nathanl2012@gmail.com",
-    description="Pysensemakr: Python implementation of the original R sensemakr package",
+    description="PySensemakr: sensemakr for Python",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/nlapier2/PySensemakr",
