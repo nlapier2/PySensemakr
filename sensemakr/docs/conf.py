@@ -53,8 +53,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Pysensemakr'
-copyright = u'2021, Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli'
-author = u'Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli'
+copyright = u'2021, Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
+author = u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
