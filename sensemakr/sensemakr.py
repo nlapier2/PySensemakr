@@ -459,7 +459,6 @@ class Sensemakr:
         >>> ovb_plots.plot(sensitivity,plot_type='contour')
         >>> # Plot bias contour of t-values
         >>> ovb_plots.plot(sensitivity,plot_type='contour',sensitivity_of='t-value')
-
         >>> # Plot extreme scenario
         >>> ovb_plots.plot(sensitivity, plot_type = "extreme")
 

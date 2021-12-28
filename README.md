@@ -1,36 +1,56 @@
-# PySensemakr
+# PySensemakr - sensemakr for Python
 
 ![PyPI](https://img.shields.io/pypi/v/Pysensemakr)
 [![CI](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml/badge.svg)](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml)
 [![Codecov](https://img.shields.io/codecov/c/gh/KennyZhang-17/PySensemakr)](https://app.codecov.io/gh/KennyZhang-17/PySensemakr)
+
+
+`sensemakr` for Python (PySensemakr) implements a suite of sensitivity analysis tools that
+extends the traditional omitted variable bias framework and makes it
+easier to understand the impact of omitted variables in regression
+models, as discussed in [Cinelli, C. and Hazlett, C. (2020) “Making
+Sense of Sensitivity: Extending Omitted Variable Bias.” Journal of the
+Royal Statistical Society, Series B (Statistical
+Methodology).](https://doi.org/10.1111/rssb.12348)
+
+## Related Packages
+-   The R version of the package can be downloaded here: <https://github.com/carloscinelli/sensemakr/>.
+    
+-   The Stata version of the package can be downloaded here: <https://github.com/resonance1/sensemakr-stata>.
+
+-   The Shiny App is available at: <https://carloscinelli.shinyapps.io/robustness_value/>.
+    
+## Details
+
+For theoretical details, [please see the JRSS-B
+paper](https://www.researchgate.net/publication/322509816_Making_Sense_of_Sensitivity_Extending_Omitted_Variable_Bias).
+
+For practical details of the package, see the the [package documentation](https://pysensemakr.readthedocs.io/en/latest/).
+
 ## Installation
+
+Make sure you have Python 3.8, or higher, installed.
+
+To install the version in PyPI, run:
 
 ```
 pip install Pysensemakr
 ```
 
-## Development Version
+To install the development version, run:
 
 ```
 pip3 install git+https://github.com/KennyZhang-17/PySensemakr
 ```
 
-<h1>Example Usage<span class="tocSkip"></span></h1>
-<div class="toc"><ul class="toc-item"></ul></div>
+## Example Usage
 
 
 ```python
 # Imports
-from sensemakr import sensitivity_stats
-from sensemakr import bias_functions
-from sensemakr import ovb_bounds
-from sensemakr import ovb_plots
-from sensemakr import sensemakr
 from sensemakr import data
-import statsmodels.api as sm
+from sensemakr import sensemakr
 import statsmodels.formula.api as smf
-import numpy as np
-import pandas as pd
 ```
 
 
@@ -39,6 +59,7 @@ import pandas as pd
 darfur = data.load_darfur()
 darfur.head()
 ```
+
 
 <table border="1" class="dataframe">
   <thead>
@@ -224,22 +245,22 @@ s.summary()
 
 ```python
 # Make a contour plot for the estimate
-ovb_plots.ovb_contour_plot(sense_obj=s, sensitivity_of='estimate')
+s.plot(plot_type='contour',sensitivity_of='estimate')
 ```
 
 
     
-![png](/images/output_8_0.png)
+![png](/images/output_6_0.png)
     
 
 
 
 ```python
-ovb_plots.ovb_extreme_plot(sense_obj=s)
+s.plot(plot_type='extreme',sensitivity_of='estimate')
 ```
 
 
     
-![png](/images/output_9_0.png)
+![png](/images/output_7_0.png)
     
 

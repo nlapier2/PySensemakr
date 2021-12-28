@@ -1,79 +1,183 @@
+
 <!DOCTYPE html>
-<html class="writer-html4" lang="Python" >
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sensemakr.ovb_bounds &mdash; Pysensemakr  documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-      <script>
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'',
-              LANGUAGE:'Python',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+
+<html lang="Python">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sensemakr.ovb_bounds &#8212; Pysensemakr  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="Python">
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Pysensemakr
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">sensemakr</a></li>
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../../index.html">
+<p class="title">Pysensemakr</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../notebooks/quickstart.html">
+  Quickstart Example of Pysensemakr Package
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../notebooks/the_risks_of_informal_benchmarking.html">
+  The risks of informal benchmarking
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules.html">
+  sensemakr
+ </a>
+</li>
+
+    
 </ul>
-
-        </div>
       </div>
-    </nav>
+      
+    </div>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Pysensemakr</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>sensemakr.ovb_bounds</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
-  </ul>
-  <hr/>
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <h1>Source code for sensemakr.ovb_bounds</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Computes bounds on the strength of unobserved confounders using observed covariates</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Description:</span>
+<span class="sd">------------</span>
+<span class="sd">Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).</span>
+<span class="sd">The main generic function is ovb_bounds, which can compute both the bounds on the strength of confounding</span>
+<span class="sd">as well as the adjusted estimates, standard errors, t-values and confidence intervals.</span>
+
+<span class="sd">Other functions that compute only the bounds on the strength of confounding are also provided. These functions</span>
+<span class="sd">may be useful when computing benchmarks for using only summary statistics from papers you see in print.</span>
+
+<span class="sd">Currently it implements only the bounds based on partial R2. Other bounds will be implemented soon.</span>
+
+<span class="sd">Reference:</span>
+<span class="sd">------------</span>
+<span class="sd">Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot; Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">Example:</span>
+<span class="sd">------------</span>
+<span class="sd">Load example dataset</span>
+
+<span class="sd">&gt;&gt;&gt; from sensemakr import data</span>
+<span class="sd">&gt;&gt;&gt; darfur = data.load_darfur()</span>
+
+<span class="sd">Fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+
+<span class="sd">&gt;&gt;&gt; import statsmodels.formula.api as smf</span>
+<span class="sd">&gt;&gt;&gt; model = smf.ols(formula=&#39;peacefactor ~ directlyharmed + age + farmer_dar + herder_dar \</span>
+<span class="sd">            +pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">&gt;&gt;&gt; fitted_model = model.fit()</span>
+
+<span class="sd">Bounds on the strength of confounders 1, 2, or 3 times as strong as female</span>
+<span class="sd">and 1, 2, or 3 times as strong as pastvoted</span>
+
+<span class="sd">&gt;&gt;&gt; from sensemakr import ovb_bounds</span>
+<span class="sd">&gt;&gt;&gt; ovb_bounds.ovb_bounds(model = fitted_model, treatment = &quot;directlyharmed&quot;,\</span>
+<span class="sd">           benchmark_covariates = [&quot;female&quot;, &quot;pastvoted&quot;], kd = [1, 2, 3])</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Computes bounds on the strength of unobserved confounders using observed covariates</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">bias_functions</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">sensitivity_stats</span>
@@ -82,10 +186,12 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
 
-
 <div class="viewcode-block" id="ovb_bounds"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.ovb_bounds.ovb_bounds">[docs]</a><span class="k">def</span> <span class="nf">ovb_bounds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">treatment</span><span class="p">,</span> <span class="n">benchmark_covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kd</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ky</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;partial r2&#39;</span><span class="p">,</span> <span class="n">adjusted_estimates</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    **Description:**</span>
+
 <span class="sd">    Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).</span>
 <span class="sd">    The main generic function is ovb_bounds, which can compute both the bounds on the strength of confounding</span>
 <span class="sd">    as well as the adjusted estimates, standard errors, t-values and confidence intervals.</span>
@@ -95,28 +201,8 @@
 
 <span class="sd">    Currently it implements only the bounds based on partial R2. Other bounds will be implemented soon.</span>
 
-<span class="sd">    Reference:</span>
-<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
-<span class="sd">        Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+<span class="sd">    :Required parameters: model and treatment</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">    # load example dataset and fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
-<span class="sd">    import pandas as pd</span>
-<span class="sd">    darfur = pd.read_csv(&#39;data/darfur.csv&#39;)</span>
-
-<span class="sd">    # fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
-<span class="sd">    import statsmodels.formula.api as smf</span>
-<span class="sd">    model = smf.ols(formula=&#39;peacefactor ~ \</span>
-<span class="sd">        directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
-<span class="sd">    fitted_model = model.fit()</span>
-
-<span class="sd">    # bounds on the strength of confounders 1, 2, or 3 times as strong as female</span>
-<span class="sd">    # and 1,2, or 3 times as strong as pastvoted</span>
-<span class="sd">    from sensemakr import ovb_bounds</span>
-<span class="sd">    ovb_bounds.ovb_bounds(model = fitted_model, treatment = &quot;directlyharmed&quot;,</span>
-<span class="sd">               benchmark_covariates = [&quot;female&quot;, &quot;pastvoted&quot;], kd = [1, 2, 3])</span>
-
-<span class="sd">    Required parameters: model and treatment</span>
 <span class="sd">    :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided</span>
 <span class="sd">    :param treatment: a string with the name of the &quot;treatment&quot; variable, e.g. the independent variable of interest</span>
 <span class="sd">    :param benchmark_covariates: a string or list of strings with names of the variables to use for benchmark bounding</span>
@@ -130,17 +216,39 @@
 <span class="sd">    :param bound: type of bound to perform; as of now, only partial R^2 bounding is allowed</span>
 <span class="sd">    :param adjusted_estimates: whether to compute bias-adjusted estimates, standard errors, and t-statistics</span>
 <span class="sd">    :return: A Pandas DataFrame containing the following variables:</span>
-<span class="sd">      * treatment: the name of the provided treatment variable</span>
-<span class="sd">      * bound_label: a string created by label_maker to serve as a label for the bound for printing &amp; plotting purposes</span>
-<span class="sd">      * r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
-<span class="sd">            with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out, as implied by z being kd-times</span>
-<span class="sd">            as strong as the benchmark_covariates</span>
-<span class="sd">      * r2yz_dx: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
-<span class="sd">            with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and the treatment variable &quot;d&quot; partialed out,</span>
-<span class="sd">            as implied by z being ky-times as strong as the benchmark_covariates</span>
-<span class="sd">      * adjusted_estimate: the bias-adjusted estimate adjusted for a confounder with the given r2dz_x and r2yz_dx above</span>
-<span class="sd">      * adjusted_se: the bias-adjusted standard error adjusted for a confounder with the given r2dz_x and r2yz_dx above</span>
-<span class="sd">      * adjusted_t: the bias-adjusted t-statistic adjusted for a confounder with the given r2dz_x and r2yz_dx above</span>
+
+<span class="sd">      * treatment : the name of the provided treatment variable</span>
+<span class="sd">      * bound_label : a string created by label_maker to serve as a label for the bound for printing &amp; plotting purposes</span>
+<span class="sd">      * r2dz_x : a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
+<span class="sd">        with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out, as implied by z being kd-times</span>
+<span class="sd">        as strong as the benchmark_covariates</span>
+<span class="sd">      * r2yz_dx : a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
+<span class="sd">        with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and the treatment variable &quot;d&quot; partialed out,</span>
+<span class="sd">        as implied by z being ky-times as strong as the benchmark_covariates</span>
+<span class="sd">      * adjusted_estimate : the bias-adjusted estimate adjusted for a confounder with the given r2dz_x and r2yz_dx above</span>
+<span class="sd">      * adjusted_se : the bias-adjusted standard error adjusted for a confounder with the given r2dz_x and r2yz_dx above</span>
+<span class="sd">      * adjusted_t : the bias-adjusted t-statistic adjusted for a confounder with the given r2dz_x and r2yz_dx above</span>
+
+<span class="sd">    **Reference:**</span>
+
+<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot; Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">    **Example:**</span>
+
+<span class="sd">    &gt;&gt;&gt; # Load example dataset</span>
+<span class="sd">    &gt;&gt;&gt; from sensemakr import data</span>
+<span class="sd">    &gt;&gt;&gt; darfur = data.load_darfur()</span>
+<span class="sd">    &gt;&gt;&gt; # Fit a statsmodels OLSResults object (&quot;fitted_model&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; import statsmodels.formula.api as smf</span>
+<span class="sd">    &gt;&gt;&gt; model = smf.ols(formula=&#39;peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + &#39;\</span>
+<span class="sd">                    &#39;pastvoted + hhsize_darfur + female + village&#39;, data=darfur)</span>
+<span class="sd">    &gt;&gt;&gt; fitted_model = model.fit()</span>
+<span class="sd">    &gt;&gt;&gt; # Bounds on the strength of confounders 1, 2, or 3 times as strong as female</span>
+<span class="sd">    &gt;&gt;&gt; # and 1, 2, or 3 times as strong as pastvoted</span>
+<span class="sd">    &gt;&gt;&gt; from sensemakr import ovb_bounds</span>
+<span class="sd">    &gt;&gt;&gt; ovb_bounds.ovb_bounds(model = fitted_model, treatment = &quot;directlyharmed&quot;,\</span>
+<span class="sd">               benchmark_covariates = [&quot;female&quot;, &quot;pastvoted&quot;], kd = [1, 2, 3])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ky</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ky</span> <span class="o">=</span> <span class="n">kd</span>
@@ -166,68 +274,59 @@
 
 <div class="viewcode-block" id="ovb_partial_r2_bound"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.ovb_bounds.ovb_partial_r2_bound">[docs]</a><span class="k">def</span> <span class="nf">ovb_partial_r2_bound</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">treatment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r2dxj_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r2yxj_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">benchmark_covariates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kd</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ky</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    **Description:**</span>
 <span class="sd">    The function `ovb_partial_r2_bound()` returns only a Pandas DataFrame with the bounds on the strength of the</span>
 <span class="sd">    unobserved confounder. Adjusted estimates, standard errors and t-values (among other quantities) need to be computed</span>
 <span class="sd">    manually by the user using those bounds with the functions adjusted_estimate, adjusted_se and adjusted_t.</span>
 
-<span class="sd">    Reference:</span>
-<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot;</span>
-<span class="sd">        Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+<span class="sd">    :Required parameters: (model and treatment) or (r2dxj_x and r2yxj_dx)</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">    #########################################################</span>
-<span class="sd">    ## Let&#39;s construct bounds from summary statistics only ##</span>
-<span class="sd">    #########################################################</span>
-<span class="sd">    # Suppose you didn&#39;t have access to the data, but only to</span>
-<span class="sd">    # the treatment and outcome regression tables.</span>
-<span class="sd">    # You can still compute the bounds.</span>
-
-<span class="sd">    # first import the necessary libraries</span>
-<span class="sd">    from sensemakr import sensitivity_stats</span>
-<span class="sd">    from sensemakr import bias_functions</span>
-<span class="sd">    from sensemakr import ovb_bounds</span>
-
-<span class="sd">    # Use the t statistic of female in the outcome regression</span>
-<span class="sd">    # to compute the partial R2 of female with the outcome.</span>
-<span class="sd">    r2yxj_dx = sensitivity_stats.partial_r2(t_statistic = -9.789, dof = 783)</span>
-
-<span class="sd">    # Use the t-value of female in the *treatment* regression</span>
-<span class="sd">    # to compute the partial R2 of female with the treatment</span>
-<span class="sd">    r2dxj_x = sensitivity_stats.partial_r2(t_statistic = -2.680, dof = 783)</span>
-
-<span class="sd">    #### Compute manually bounds on the strength of confounders 1, 2, or 3</span>
-<span class="sd">    #### times as strong as female</span>
-<span class="sd">    ###bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,</span>
-<span class="sd">    ###                              kd = [1, 2, 3], ky = [1, 3, 3], bound_label = &quot;[1, 2, 3]x female&quot;)</span>
-<span class="sd">    #### Compute manually adjusted estimates</span>
-<span class="sd">    ###bound_values = bias_functions.adjusted_estimate(estimate = 0.0973, se = 0.0232, dof = 783,</span>
-<span class="sd">    ###                                 r2dz_x = bounds[&#39;r2dz_x&#39;], r2yz_dx = bounds[&#39;r2yz_dx&#39;])</span>
-
-<span class="sd">    #### Plot contours and bounds</span>
-<span class="sd">    ###ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)</span>
-<span class="sd">    ###add_bound_to_contour(bounds, bound_value = bound_values)</span>
-
-
-<span class="sd">    Required parameters: model and treatment or r2dxj_x and r2yxj_dx</span>
 <span class="sd">    :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided</span>
 <span class="sd">    :param treatment: a string with the name of the &quot;treatment&quot; variable, e.g. the independent variable of interest</span>
-<span class="sd">    :param r2dxj_x: float with the partial R2 of covariate Xj with the treatment D</span>
-<span class="sd">        (after partialling out the effect of the remaining covariates X, excluding Xj).</span>
-<span class="sd">    :param r2yxj_dx: float with the partial R2 of covariate Xj with the outcome Y</span>
-<span class="sd">        (after partialling out the effect of the remaining covariates X, excluding Xj).</span>
+<span class="sd">    :param r2dxj_x: float with the partial R2 of covariate Xj with the treatment D (after partialling out the effect of the remaining covariates X, excluding Xj).</span>
+<span class="sd">    :param r2yxj_dx: float with the partial R2 of covariate Xj with the outcome Y (after partialling out the effect of the remaining covariates X, excluding Xj).</span>
 <span class="sd">    :param benchmark_covariates: a string or list of strings with names of the variables to use for benchmark bounding</span>
 <span class="sd">    :param kd: a float or list of floats with each being a multiple of the strength of association between a</span>
 <span class="sd">            benchmark variable and the treatment variable to test with benchmark bounding</span>
 <span class="sd">    :param ky: same as kd except measured in terms of strength of association with the outcome variable</span>
+
 <span class="sd">    :return: A Pandas DataFrame containing the following variables:</span>
-<span class="sd">      * bound_label: a string created by label_maker to serve as a label for the bound for printing &amp; plotting purposes</span>
-<span class="sd">      * r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
-<span class="sd">            with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out, as implied by z being kd-times</span>
-<span class="sd">            as strong as the benchmark_covariates</span>
-<span class="sd">      * r2yz_dx: a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
-<span class="sd">            with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and the treatment variable &quot;d&quot; partialed out,</span>
-<span class="sd">            as implied by z being ky-times as strong as the benchmark_covariates</span>
+
+<span class="sd">      * bound_label : a string created by label_maker to serve as a label for the bound for printing &amp; plotting purposes</span>
+<span class="sd">      * r2dz_x : a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
+<span class="sd">        with the treatment variable &quot;d&quot;, with observed covariates &quot;x&quot; partialed out, as implied by z being kd-times</span>
+<span class="sd">        as strong as the benchmark_covariates</span>
+<span class="sd">      * r2yz_dx : a float or list of floats with the partial R^2 of a putative unobserved confounder &quot;z&quot;</span>
+<span class="sd">        with the outcome variable &quot;y&quot;, with observed covariates &quot;x&quot; and the treatment variable &quot;d&quot; partialed out,</span>
+<span class="sd">        as implied by z being ky-times as strong as the benchmark_covariates</span>
+
+<span class="sd">    **Reference:**</span>
+<span class="sd">    Cinelli, C. and Hazlett, C. (2020), &quot;Making Sense of Sensitivity: Extending Omitted Variable Bias.&quot; Journal of the Royal Statistical Society, Series B (Statistical Methodology).</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">    Let&#39;s construct bounds from summary statistics only. Suppose you didn&#39;t have access to the data, but only to the treatment and outcome regression tables.</span>
+<span class="sd">    You can still compute the bounds.</span>
+
+<span class="sd">    &gt;&gt;&gt; # First import the necessary libraries.</span>
+<span class="sd">    &gt;&gt;&gt; from sensemakr import sensitivity_stats</span>
+<span class="sd">    &gt;&gt;&gt; from sensemakr import bias_functions</span>
+<span class="sd">    &gt;&gt;&gt; from sensemakr import ovb_bounds</span>
+<span class="sd">    &gt;&gt;&gt; from sensemakr import ovb_plots</span>
+<span class="sd">    &gt;&gt;&gt; # Use the t statistic of female in the outcome regression to compute the partial R2 of female with the outcome.</span>
+<span class="sd">    &gt;&gt;&gt; r2yxj_dx = sensitivity_stats.partial_r2(t_statistic = -9.789, dof = 783)</span>
+<span class="sd">    &gt;&gt;&gt; # Use the t-value of female in the *treatment* regression to compute the partial R2 of female with the treatment.</span>
+<span class="sd">    &gt;&gt;&gt; r2dxj_x = sensitivity_stats.partial_r2(t_statistic = -2.680, dof = 783)</span>
+<span class="sd">    &gt;&gt;&gt; # Compute manually bounds on the strength of confounders 1, 2, or 3 times as strong as female.</span>
+<span class="sd">    &gt;&gt;&gt; bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,\</span>
+<span class="sd">                    kd = [1, 2, 3], ky = [1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; # Compute manually adjusted estimates.</span>
+<span class="sd">    &gt;&gt;&gt; bound_values = bias_functions.adjusted_estimate(estimate = 0.0973, se = 0.0232,\</span>
+<span class="sd">                        dof = 783, r2dz_x = bounds[&#39;r2dz_x&#39;], r2yz_dx = bounds[&#39;r2yz_dx&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; # Plot contours and bounds.</span>
+<span class="sd">    &gt;&gt;&gt; ovb_plots.ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)</span>
+<span class="sd">    &gt;&gt;&gt; ovb_plots.add_bound_to_contour(bounds=bounds, bound_value = bound_values)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">treatment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">r2dxj_x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">r2yxj_dx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: ovb_partial_r2_bound requires either a statsmodels OLSResults object and a treatment name&#39;</span>
@@ -323,7 +422,7 @@
     <span class="k">return</span> <span class="n">bounds</span></div>
 
 
-<div class="viewcode-block" id="label_maker"><a class="viewcode-back" href="../../sensemakr.html#sensemakr.ovb_bounds.label_maker">[docs]</a><span class="k">def</span> <span class="nf">label_maker</span><span class="p">(</span><span class="n">benchmark_covariate</span><span class="p">,</span> <span class="n">kd</span><span class="p">,</span> <span class="n">ky</span><span class="p">,</span> <span class="n">digits</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">label_maker</span><span class="p">(</span><span class="n">benchmark_covariate</span><span class="p">,</span> <span class="n">kd</span><span class="p">,</span> <span class="n">ky</span><span class="p">,</span> <span class="n">digits</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Returns a string created by appending the covariate name to the multiplier(s) ky and (if applicable) kd. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">benchmark_covariate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;manual&#39;</span>
@@ -334,34 +433,39 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">multiplier_text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">kd</span><span class="p">,</span> <span class="n">digits</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">ky</span><span class="p">,</span> <span class="n">digits</span><span class="p">))</span>
     <span class="n">bound_label</span> <span class="o">=</span> <span class="n">multiplier_text</span> <span class="o">+</span> <span class="s1">&#39;x&#39;</span> <span class="o">+</span> <span class="n">variable_text</span>
-    <span class="k">return</span> <span class="n">bound_label</span></div>
+    <span class="k">return</span> <span class="n">bound_label</span>
 </pre></div>
 
-           </div>
-          </div>
-          <footer>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              
+          </main>
+          
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2021, Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
       </div>
-    </section>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+</p>
+    </div>
+    
   </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+</footer>
+  </body>
 </html>

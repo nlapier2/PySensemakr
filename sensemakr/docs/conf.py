@@ -53,8 +53,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Pysensemakr'
-copyright = u'2021, Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli'
-author = u'Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli'
+copyright = u'2021, Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
+author = u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -89,8 +89,8 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.ctive 7 months ago
 #
-html_theme = 'sphinx_rtd_theme'
-
+# html_theme = 'sphinx_rtd_theme'
+html_theme = "pydata_sphinx_theme"
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
