@@ -31,17 +31,13 @@ For practical details of the package, see the the [package documentation](https:
 
 Make sure you have Python 3.8, or higher, installed.
 
-To install the version in PyPI, run:
-
-```
-pip install Pysensemakr
-```
-
-To install the development version, run:
+To install the latest development version on GitHub, run:
 
 ```
 pip3 install git+https://github.com/KennyZhang-17/PySensemakr
 ```
+
+A release version on PyPI will be available soon.
 
 ## Example Usage
 
