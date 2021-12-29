@@ -15,7 +15,7 @@
 # You may also use the other sensitivity functions of the package directly, such as: (i) functions for sensitivity plots
 # (`ovb_contour_plot`, `ovb_extreme_plot`); (ii) functions for computing bias-adjusted estimates and t-values
 # (`adjusted_estimate`, `adjusted_t`); (iii) functions for computing the robustness value and partial R2 directly (`robustness_value`,
-# `partial_r2`); and, (iv) functions for bounding the strength of unobserved confounders (`ovb_bounds`), among others. These functions are 
+# `partial_r2`); and, (iv) functions for bounding the strength of unobserved confounders (`ovb_bounds`), among others. These functions are
 # in the modules `ovb_plots`, `bias_functions`, `sensitivity_stats`, and `ovb_bounds`. `PySensemakr` also comes with example data sets, found
 # in the module `data`.
 #
@@ -500,7 +500,7 @@ class Sensemakr:
         print("  Robustness Value, q =", self.q, ":", round(self.sensitivity_stats['rv_q'], digits))
         print("  Robustness Value, q =", self.q, "alpha =", self.alpha, ":",
               round(self.sensitivity_stats['rv_qa'], digits), "\n")
-    def ovb_minimal_reporting(self,digits=3,format='latex',verbose=True):
+    def ovb_minimal_reporting(self,digits=3,format='latex'):
         """
         **Descriptions:**
 
