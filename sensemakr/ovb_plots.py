@@ -1,18 +1,12 @@
 """
 Description
 ------------
-Sensitivity analysis plots for sensemakr. This module provides the contour and extreme scenario sensitivity
-plots of the sensitivity analysis results obtained with the function Sensemakr or model or maunually input statistics.
+This module provides sensitivity contour plots and extreme scenario sensitivity plots.
+They can be used on an object of class `Sensemakr`, directly in an OLS `statsmodel,` 
+or by providing the required statistics manually.
 
-Reference
-----------
-
-Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-Example
+Functions
 ------------
-See specific functions below.
 """
 # Code for producing sensitivity contour plots and other plots
 import matplotlib.pyplot as plt
@@ -91,38 +85,32 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     The vertical axis shows hypothetical values of the partial R2 of the unobserved confounder(s) with the outcome.
     The contour levels represent the adjusted estimates (or t-values) of the treatment effect.
 
-    The reference points are the bounds on the partial R2 of the unobserved confounder if it were k times ''as strong'' as the observed covariate used for benchmarking (see arguments kd and ky).
+    The reference points are the bounds on the partial R2 of the unobserved confounder if it were k times "as strong" as the observed covariates used for benchmarking (see arguments kd and ky).
     The dotted red line show the chosen critical threshold (for instance, zero): confounders with such strength (or stronger) are sufficient to invalidate the research conclusions.
     All results are exact for single confounders and conservative for multiple/nonlinear confounders.
 
     See Cinelli and Hazlett (2020) for details.
 
-    :param sense_obj: a sensemakr object
-    :param sensitivity_of: either "estimate" or "t-value"
-    :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
-    :param treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest
-    :param estimate: a float with the estimate of the coefficient for the independent variable of interest
-    :param se: a float with the standard error of the regression
-    :param dof: an int with the degrees of freedom of the regression
-    :param benchmark_covariates: a string or list of strings with
-     the names of the variables to use for benchmark bounding
-    :param kd: a float or list of floats with each being a multiple of the strength of association between a
-     benchmark variable and the treatment variable to test with benchmark bounding
-    :param ky: same as kd except measured in terms of strength of association with the outcome variable
-    :param r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
-     with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
-     as strong as the benchmark_covariates
-    :param r2yz_dx: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
-     with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
-     as implied by z being ky-times as strong as the benchmark_covariates
-    :param reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default=True
-    :param estimate_threshold: threshold line to emphasize when drawing estimate, default=0
-    :param t_threshold: threshold line to emphasize when drawing t-value, default=2
-    :param xlab: x-axis label text
-    :param ylab: y-axis label text
-    :param round_dig: rounding digit of the display numbers, default=3
-    :param col_contour: color of the contour line, default="black"
-    :param col_thr_line: color of the threshold line, default="red"
+    :param sense_obj: a Sensemakr object.
+    :param sensitivity_of: either "estimate" or "t-value".
+    :param model: a fitted statsmodels OLSResults object. 
+    :param treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    :param estimate: a float with the estimate of the coefficient for the independent variable of interest.
+    :param se: a float with the standard error of the regression.
+    :param dof: an int with the degrees of freedom of the regression.
+    :param benchmark_covariates: a string or list of strings with the names of the variables to use for benchmarking.
+    :param kd: a float or list of floats. Parameterizes how many times stronger the confounder is related to the treatment in comparison to the observed benchmark covariate. Default value is 1 (confounder is as strong as benchmark covariate).
+    :param ky: a float or list of floats. Parameterizes how many times stronger the confounder is related to the outcome in comparison to the observed benchmark covariate. Default value is the same as kd.
+    :param r2dz_x: a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with treatment D, given covariates X.
+    :param r2yz_dx: a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with outcome Y, given covariates X and treatment D.
+    :param reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default is True.
+    :param estimate_threshold: threshold line to emphasize when contours correspond to estimate, default is 0.
+    :param t_threshold: threshold line to emphasize when contours correspond to t-value, default is 2.
+    :param xlab: x-axis label text.
+    :param ylab: y-axis label text.
+    :param round_dig: rounding digit of the display numbers, default is 3.
+    :param col_contour: color of the contour line, default is "black".
+    :param col_thr_line: color of the threshold line, default is "red".
 
     :return: a contour plot of omitted variable bias for the corresponding model/sense_obj.
 
@@ -141,18 +129,18 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
                  +herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
-    >>> # Runs sensemakr for sensitivity analysis
-    >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(
-            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-    >>> # Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
+    >>> # Contours directly from OLS object
+    >>> ## Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
     >>> from sensemakr import ovb_plots
     >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
-    >>> # Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates kd=[1,2,3]
+    >>> ## Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates kd=[1,2,3]
     >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
-    >>> # Plot contour of the fitted model with manual benchmark
+    >>> ## Plot contour of the fitted model with manual benchmark
     >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
-    >>> # Plot contour of the sensemakr object
+    >>> # Contours from Sensemakr object
+    >>> from sensemakr import sensemakr
+    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", 
+                                          benchmark_covariates = "female", kd = [1, 2, 3])
     >>> ovb_plots.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
 
     """

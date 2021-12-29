@@ -8,7 +8,6 @@
 # DataFrame/Series objects, thus PySensemakr makes heavy use of those packages.
 # In this documention, several examples are included to demonstrate how to use these objects to run this package successfully.
 #
-#
 # The main function of the package is sensemakr.Sensemakr, which computes the most common sensitivity analysis results.
 # After creating an object of the Sensemakr class, you may directly use the plot, summary, and print methods of the object.
 #
