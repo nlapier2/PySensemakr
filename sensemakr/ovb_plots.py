@@ -495,10 +495,10 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
             ax.plot(r2d_values,y,label='%s%%' % int(round(r2yz_dx[i]*100)),linewidth=np.abs(2.1-0.5*i), linestyle="--",color='black')
 
     # Set font size
-    params = {'axes.labelsize': 14,
-          'axes.titlesize': 14,
-          'legend.title_fontsize':14,
-          'legend.fontsize':14,
+    params = {'axes.labelsize': 12,
+          'axes.titlesize': 12,
+          'legend.title_fontsize':12,
+          'legend.fontsize':12,
           'xtick.labelsize':12,
           'ytick.labelsize':12}
     plt.rcParams.update(params)
