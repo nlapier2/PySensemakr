@@ -14,7 +14,7 @@
 # You may also use the other sensitivity functions of the package directly, such as: (i) functions for sensitivity plots
 # (`ovb_contour_plot`, `ovb_extreme_plot`); (ii) functions for computing bias-adjusted estimates and t-values
 # (`adjusted_estimate`, `adjusted_t`); (iii) functions for computing the robustness value and partial R2 directly (`robustness_value`,
-# `partial_r2`); and, (iv) functions for bounding the strength of unobserved confounders (`ovb_bounds`), among others. These functions are 
+# `partial_r2`); and, (iv) functions for bounding the strength of unobserved confounders (`ovb_bounds`), among others. These functions are
 # in the modules `ovb_plots`, `bias_functions`, `sensitivity_stats`, and `ovb_bounds`. `PySensemakr` also comes with example data sets, found
 # in the module `data`.
 #
@@ -465,3 +465,170 @@ class Sensemakr:
             ovb_plots.ovb_extreme_plot(sense_obj=self)
         else:
             sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')
+
+    def print(self, digits=3):
+        """
+        Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
+        digits is the number of digits to round numbers to; default is 3.
+        Following the example above, if you have a Sensemakr object called sensitivity, call this method using
+        sensitivity.print(). To round to 5 digits instead of 3, call sensitivity.print(digits=5).
+        """
+        if self.reduce:
+            h0 = round(self.estimate * (1 - self.q), digits)
+            direction = "reduce"
+        else:
+            h0 = round(self.estimate * (1 + self.q), digits)
+            direction = "increase"
+
+        print("Sensitivity Analysis to Unobserved Confounding\n")
+        if self.model is not None:
+            #model_formula = self.model.model.endog_names + ' ~ ' + ' + '.join(self.model.model.exog_names)
+            #print("Model Formula: " + model_formula + "\n")
+            print("Model Formula: "+self.model.model.formula+"\n")
+        print("Null hypothesis: q =", self.q, "and reduce =", self.reduce, "\n")
+        print("-- This means we are considering biases that", direction, "the absolute value of the current estimate.")
+        print("-- The null hypothesis deemed problematic is H0:tau =", h0, "\n")
+
+        print("Unadjusted Estimates of '", self.treatment, "':")
+        print("  Coef. estimate:", round(self.estimate, digits))
+        print("  Standard Error:", round(self.sensitivity_stats['se'], digits))
+        print("  t-value:", round(self.sensitivity_stats['t_statistic'], digits), "\n")
+
+        print("Sensitivity Statistics:")
+        print("  Partial R2 of treatment with outcome:", round(self.sensitivity_stats['r2yd_x'], digits))
+        print("  Robustness Value, q =", self.q, ":", round(self.sensitivity_stats['rv_q'], digits))
+        print("  Robustness Value, q =", self.q, "alpha =", self.alpha, ":",
+              round(self.sensitivity_stats['rv_qa'], digits), "\n")
+    def ovb_minimal_reporting(self,digits=3,format='latex'):
+        """
+        **Descriptions:**
+
+        ovb_minimal_reporting prints the LaTeX/HTML code for a table summarizing the sensemakr object.
+
+        This function takes as input a sensemakr object and one of the plot type "contour" or "extreme".
+
+        :param sense_obj: a sensemakr object
+        :param digit: rounding digit for the table (minimal 3 to support percentages)
+        :param Format: either "latex" or "html"
+
+        :return: LaTex/HTML code for creating the table summarizing the sensemakr object
+
+        **Examples:**
+
+        >>> # Load example dataset:
+        >>> from sensemakr import data
+        >>> darfur = data.load_darfur()
+        >>> # Fit a statsmodels OLSResults object ("fitted_model"):
+        >>> import statsmodels.formula.api as smf
+        >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar\
+                    + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+        >>> fitted_model = model.fit()
+        >>> # Runs sensemakr for sensitivity analysis
+        >>> from sensemakr import sensemakr
+        >>> sensitivity = sensemakr.Sensemakr(model=fitted_model, treatment = "directlyharmed", q=1.0, alpha=0.05, reduce=True)
+        >>> # Gets LaTeX and HTML code
+        >>> sensitivity.ovb_minimal_reporting()
+        >>> sensitivity.ovb_minimal_reporting(format='html')
+        """
+
+        if(format=='latex'):
+            # Static Header
+            print('\\begin{table}[!h] \n\\centering \n\\begin{tabular}{lrrrrrr} \n'+\
+            # Outcome variable header
+            "\\multicolumn{7}{c}{Outcome: \\textit{",self.model.model.endog_names,"}} \\\\\n"
+            # Coeff header row
+            "\\hline \\hline \nTreatment: & Est. & S.E. & t-value & $R^2_{Y \\sim D |{\\bf X}}$"+\
+            " & $RV_{q =",self.q,"}$"+ "& $RV_{q = ", self.q, ", \\alpha = ", self.alpha, "}$ " + " \\\\ \n"+ "\\hline \n"+\
+            # Treatment result
+            "\\textit{", self.treatment, "} &",round(self.sensitivity_stats['estimate'], digits), " & ",\
+              round(self.sensitivity_stats['se'], digits), " & ",\
+              round(self.sensitivity_stats['t_statistic'], digits)," & ",\
+              round(self.sensitivity_stats['r2yd_x']*100, digits-2), "\\% & ",\
+              round(self.sensitivity_stats['rv_q']*100, digits-2), "\\% & ",\
+              round(self.sensitivity_stats['rv_qa']*100, digits-2), "\\% \\\\ \n"+\
+            # Foonote row: Display benchmarks
+            "\\hline \n" + "df = ", self.sensitivity_stats['dof'], " & & ","\\multicolumn{5}{r}{ ", "}\n"+\
+            "\\end{tabular}\n"+\
+            "\\end{table}" if (self.bounds is None) else "\\small"+\
+            "\\textit{Bound ("+str(self.bounds['bound_label'][0])+ ")}: "+\
+            "$R^2_{Y\\sim Z| {\\bf X}, D}$ = "+\
+            str(round(self.bounds['r2yz_dx'][0]*100, digits-2))+\
+            "\\%, $R^2_{D\\sim Z| {\\bf X} }$ = "+\
+            str(round(self.bounds['r2dz_x'][0]*100, digits-2))+\
+            "\\%""}\\\\\n"+\
+            "\\end{tabular}\n"+\
+            "\\end{table}"
+            )
+        if(format=='html'):
+            print("<table style='align:center'>\n","<thead>\n",
+            "<tr>\n",
+            '\t<th style="text-align:left;border-bottom: 1px solid transparent;border-top: 1px solid black"> </th>\n',
+            '\t<th colspan = 6 style="text-align:center;border-bottom: 1px solid black;border-top: 1px solid black"> Outcome: ',
+            self.model.model.endog_names,'</th>\n',
+            "</tr>\n",
+            "<tr>\n",
+            '\t<th style="text-align:left;border-top: 1px solid black"> Treatment </th>\n',
+            '\t<th style="text-align:right;border-top: 1px solid black"> Est. </th>\n',
+            '\t<th style="text-align:right;border-top: 1px solid black"> S.E. </th>\n',
+            '\t<th style="text-align:right;border-top: 1px solid black"> t-value </th>\n',
+            '\t<th style="text-align:right;border-top: 1px solid black"> R<sup>2</sup><sub>Y~D|X</sub> </th>\n',
+            '\t<th style="text-align:right;border-top: 1px solid black">  RV<sub>q = ',
+            self.q, '</sub> </th>\n',
+            '\t<th style="text-align:right;border-top: 1px solid black"> RV<sub>q = ',
+            self.q, ", &alpha; = ",
+            self.alpha, "</sub> </th>\n",
+            "</tr>\n",
+            "</thead>\n",
+            # Treatment result
+            "<tbody>\n <tr>\n",
+            '\t<td style="text-align:left; border-bottom: 1px solid black"><i>',
+            self.treatment, "</i></td>\n",
+            '\t<td style="text-align:right;border-bottom: 1px solid black">',
+            round(self.sensitivity_stats['estimate'], digits), " </td>\n",
+            '\t<td style="text-align:right;border-bottom: 1px solid black">',
+            round(self.sensitivity_stats['se'], digits), " </td>\n",
+            '\t<td style="text-align:right;border-bottom: 1px solid black">',
+            round(self.sensitivity_stats['t_statistic'], digits-2)," </td>\n",
+            '\t<td style="text-align:right;border-bottom: 1px solid black">',
+            round(self.sensitivity_stats['r2yd_x']*100, digits-2), "% </td>\n",
+            '\t<td style="text-align:right;border-bottom: 1px solid black">',
+            round(self.sensitivity_stats['rv_q']*100, digits-2), "% </td>\n",
+            '\t<td style="text-align:right;border-bottom: 1px solid black">',
+            round(self.sensitivity_stats['rv_qa']*100, digits-2), "% </td>\n",
+            "</tr>\n</tbody>\n",
+            # '<tr>\n'+\
+            # "<td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'>"+\
+            # "Note: df = "+str(self.sensitivity_stats['dof'])+ "; "+\
+            # "</td>\n"+\
+            # "</tr>\n"+\
+            # "</table>" if (self.bounds is None) else "<tr>\n"+\
+            # "<td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'>"+\
+            # "Note: df = "+ str(self.sensitivity_stats['dof'])+ "; "+\
+            # "Bound ( "+str(self.bounds['bound_label'][0])+ " ):  "+\
+            # "$R^2_{Y\\sim Z| {\\bf X}, D}$ = "+\
+            # str(round(self.bounds['r2yz_dx'][0]*100, digits-2))+\
+            # "\\%, $R^2_{D\\sim Z| {\\bf X} }$ = "+\
+            # str(round(self.bounds['r2dz_x'][0]*100, digits-2))+\
+            # "\\%"+\
+            # "</td>\n"+\
+            # "</tr>\n"+\
+            # "</table>"
+            '<tr>\n'+\
+            "<td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'>"+\
+            "Note: df = "+str(self.sensitivity_stats['dof'])+ "; "+\
+            "</td>\n"+\
+            "</tr>\n"+\
+            "</table>" if (self.bounds is None) else "<tr>\n"+\
+            "<td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'>"+\
+            "Note: df = "+ str(self.sensitivity_stats['dof'])+ "; "+\
+            "Bound ( "+str(self.bounds['bound_label'][0])+ " ):  "+\
+            "R<sup>2</sup><sub>Y~Z|X,D</sub> =  "+\
+            str(round(self.bounds['r2yz_dx'][0]*100, digits-2))+\
+            "%, R<sup>2</sup><sub>D~Z|X</sub> ="+\
+            str(round(self.bounds['r2dz_x'][0]*100, digits-2))+\
+            "%"+\
+            "</td>\n"+\
+            "</tr>\n"+\
+            "</table>"
+
+           )
