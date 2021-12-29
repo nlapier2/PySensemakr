@@ -41,6 +41,9 @@ def test_columns():
 def test_darfur_Sensemakr():
 	darfur_out=sensemakr.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
 	darfur_out.summary()
+	darfur_out.print()
+	darfur_out.ovb_minimal_reporting(format='html')
+	darfur_out.ovb_minimal_reporting()
 	ovb_contour_plot(sense_obj=darfur_out)
 	ovb_extreme_plot(sense_obj=darfur_out)
 	# info
@@ -68,6 +71,9 @@ def test_darfur_Sensemakr():
 	assert(darfur_out.bounds.round(6).equals(df.round(6)))
 
 	darfur_out2=sensemakr.Sensemakr(model=model,treatment='directlyharmed')
+	darfur_out3=sensemakr.Sensemakr(model=model, treatment='directlyharmed', q=1.0, alpha=0.05, reduce=True)
+	darfur_out3.ovb_minimal_reporting(format='html')
+	darfur_out3.ovb_minimal_reporting()
 	ovb_contour_plot(sense_obj=darfur_out2)
 	ovb_extreme_plot(sense_obj=darfur_out2)
 
@@ -202,7 +208,7 @@ def test_darfur_plots():
 
 	# test extreme scenario plot
 	extreme_out =ovb_extreme_plot(model=model, treatment = "directlyharmed", kd = [1,2,3])
-	
+
 	assert(True)
 
 def test_darfur_different_q():

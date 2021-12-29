@@ -95,12 +95,25 @@ html_theme = "pydata_sphinx_theme"
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+"icon_links":[
+        {
+            "name": "GitHub",
+            "url": "https://github.com/nlapier2/PySensemakr",
+            "icon": "fab fa-github-square",
+        }
+        ]
+#        ,
+# "external_links": [
+#       {"name": "Version", "url": "https://img.shields.io/pypi/v/Pysensemakr"},
+#   ]
+        }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ['_static']
+html_css_files = ["custom.css"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
