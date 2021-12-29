@@ -1,30 +1,25 @@
 # """
 # Description:
 # ------------
-# This is a Python version of the original R sensemakr package, which can be found here:
-# https://github.com/carloscinelli/sensemakr
-#
-# R's linear model ("lm") and data.frame objects most naturally translate into statsmodels OLS/OLSResults and pandas
-# DataFrame/Series objects, so we have used those in the python version. These packages are not universally familiar
-# to python users, but they were the most straightforward and faithful way to translate the R package into Python.
-# Examples are included below to demonstrate how to use these objects to run this package successfully.
-#
-# There are some features of the original package that have not yet been implemented. For instance, R's notion of
-# "formulas" for linear models are less used by and less familiar to python programmers, and thus have not yet been
-# included in the Python version. This could change if there is sufficient demand.
-#
-# The sensemakr package implements a suite of sensitivity analysis tools that makes it easier to
+# PySensemakr is the Python version of the R package sensemakr.  The sensemakr package implements a suite of sensitivity analysis tools that makes it easier to
 # understand the impact of omitted variables in linear regression models, as discussed in Cinelli and Hazlett (2020).
 #
-# This package defines a class called Sensemakr, which computes the most common sensitivity analysis results.
-# After creating an object of the Sensemakr class, you may directly use the plot and print methods of the object.
+# R's linear model ("lm") and data.frame objects most naturally translate to statsmodels OLS/OLSResults and pandas
+# DataFrame/Series objects, thus PySensemakr makes heavy use of those packages.
+# In this documention, several examples are included to demonstrate how to use these objects to run this package successfully.
 #
-# You may also use the other sensitivity functions of the package directly, such as the functions for sensitivity plots
-# (ovb_contour_plot, ovb_extreme_plot) the functions for computing bias-adjusted estimates and t-values
-# (adjusted_estimate, adjusted_t), the functions for computing the robustness value and partial R2 (robustness_value,
-# partial_r2),  or the functions for bounding the strength of unobserved confounders (ovb_bounds), among others.
 #
-# More information can be found on the help documentation and related papers.
+# The main function of the package is sensemakr.Sensemakr, which computes the most common sensitivity analysis results.
+# After creating an object of the Sensemakr class, you may directly use the plot, summary, and print methods of the object.
+#
+# You may also use the other sensitivity functions of the package directly, such as: (i) functions for sensitivity plots
+# (`ovb_contour_plot`, `ovb_extreme_plot`); (ii) functions for computing bias-adjusted estimates and t-values
+# (`adjusted_estimate`, `adjusted_t`); (iii) functions for computing the robustness value and partial R2 directly (`robustness_value`,
+# `partial_r2`); and, (iv) functions for bounding the strength of unobserved confounders (`ovb_bounds`), among others. These functions are 
+# in the modules `ovb_plots`, `bias_functions`, `sensitivity_stats`, and `ovb_bounds`. `PySensemakr` also comes with example data sets, found
+# in the module `data`.
+#
+# More information can be found on this documentation and related papers.
 #
 # Reference:
 # ----------
@@ -32,7 +27,7 @@
 # Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
 # Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 #
-# Example:
+# Examples:
 # ---------
 #
 # Load example dataset:
