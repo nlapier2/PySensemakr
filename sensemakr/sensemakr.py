@@ -499,17 +499,19 @@ class Sensemakr:
         print("  Robustness Value, q =", self.q, ":", round(self.sensitivity_stats['rv_q'], digits))
         print("  Robustness Value, q =", self.q, "alpha =", self.alpha, ":",
               round(self.sensitivity_stats['rv_qa'], digits), "\n")
-    def ovb_minimal_reporting(self,digits=3,format='latex'):
+    def ovb_minimal_reporting(self,digits=3,format='html',display=True):
         """
         **Descriptions:**
 
-        ovb_minimal_reporting prints the LaTeX/HTML code for a table summarizing the sensemakr object.
+        ovb_minimal_reporting returns the LaTeX/HTML code for a table summarizing the sensemakr object.
 
-        This function takes as input a sensemakr object and one of the plot type "contour" or "extreme".
+        This function takes as input a sensemakr object, the digit to round number, one of the format type "latex" or "html",
+        and a boolean whether to display the output or not. The default is round 3 digits, 'html' format and display the table.
 
         :param sense_obj: a sensemakr object
         :param digit: rounding digit for the table (minimal 3 to support percentages)
-        :param Format: either "latex" or "html"
+        :param format: either "latex" or "html"
+        :param display: default is True, to display the table
 
         :return: LaTex/HTML code for creating the table summarizing the sensemakr object
 
@@ -526,28 +528,24 @@ class Sensemakr:
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import sensemakr
         >>> sensitivity = sensemakr.Sensemakr(model=fitted_model, treatment = "directlyharmed", q=1.0, alpha=0.05, reduce=True)
-        >>> # Gets LaTeX and HTML code
-        >>> sensitivity.ovb_minimal_reporting()
-        >>> sensitivity.ovb_minimal_reporting(format='html')
+        >>> # Gets HTML code and table
+        >>> result=sensitivity.ovb_minimal_reporting()
+        >>> # Prints raw html code
+        >>> print(result)
         """
 
         if(format=='latex'):
-            # Static Header
-            print('\\begin{table}[!h] \n\\centering \n\\begin{tabular}{lrrrrrr} \n'+\
-            # Outcome variable header
-            "\\multicolumn{7}{c}{Outcome: \\textit{",self.model.model.endog_names,"}} \\\\\n"
-            # Coeff header row
+            result='\\begin{table}[!h] \n\\centering \n\\begin{tabular}{lrrrrrr} \n'+\
+            "\\multicolumn{7}{c}{Outcome: \\textit{"+str(self.model.model.endog_names)+"}} \\\\\n"+\
             "\\hline \\hline \nTreatment: & Est. & S.E. & t-value & $R^2_{Y \\sim D |{\\bf X}}$"+\
-            " & $RV_{q =",self.q,"}$"+ "& $RV_{q = ", self.q, ", \\alpha = ", self.alpha, "}$ " + " \\\\ \n"+ "\\hline \n"+\
-            # Treatment result
-            "\\textit{", self.treatment, "} &",round(self.sensitivity_stats['estimate'], digits), " & ",\
-              round(self.sensitivity_stats['se'], digits), " & ",\
-              round(self.sensitivity_stats['t_statistic'], digits)," & ",\
-              round(self.sensitivity_stats['r2yd_x']*100, digits-2), "\\% & ",\
-              round(self.sensitivity_stats['rv_q']*100, digits-2), "\\% & ",\
-              round(self.sensitivity_stats['rv_qa']*100, digits-2), "\\% \\\\ \n"+\
-            # Foonote row: Display benchmarks
-            "\\hline \n" + "df = ", self.sensitivity_stats['dof'], " & & ","\\multicolumn{5}{r}{ ", "}\n"+\
+            " & $RV_{q ="+str(self.q)+"}$"+ "& $RV_{q = "+str(self.q)+ ", \\alpha = "+str(self.alpha)+ "}$ " + " \\\\ \n"+ "\\hline \n"+\
+            "\\textit{"+str(self.treatment)+ "} &"+str(round(self.sensitivity_stats['estimate'], digits))+ " & "+\
+              str(round(self.sensitivity_stats['se'], digits))+ " & "+\
+              str(round(self.sensitivity_stats['t_statistic'], digits))+" & "+\
+              str(round(self.sensitivity_stats['r2yd_x']*100, digits-2))+ "\\% & "+\
+              str(round(self.sensitivity_stats['rv_q']*100, digits-2))+ "\\% & "+\
+              str(round(self.sensitivity_stats['rv_qa']*100, digits-2))+ "\\% \\\\ \n"+\
+            "\\hline \n" + "df = "+str(self.sensitivity_stats['dof'])+ " & & "+"\\multicolumn{5}{r}{ "+( "}\n"+\
             "\\end{tabular}\n"+\
             "\\end{table}" if (self.bounds is None) else "\\small"+\
             "\\textit{Bound ("+str(self.bounds['bound_label'][0])+ ")}: "+\
@@ -557,65 +555,51 @@ class Sensemakr:
             str(round(self.bounds['r2dz_x'][0]*100, digits-2))+\
             "\\%""}\\\\\n"+\
             "\\end{tabular}\n"+\
-            "\\end{table}"
-            )
+            "\\end{table}")
+            if(display==True):
+                from IPython.display import display_latex
+                display_latex(result, raw=True)
+            return result
+
         if(format=='html'):
-            print("<table style='align:center'>\n","<thead>\n",
-            "<tr>\n",
-            '\t<th style="text-align:left;border-bottom: 1px solid transparent;border-top: 1px solid black"> </th>\n',
-            '\t<th colspan = 6 style="text-align:center;border-bottom: 1px solid black;border-top: 1px solid black"> Outcome: ',
-            self.model.model.endog_names,'</th>\n',
-            "</tr>\n",
-            "<tr>\n",
-            '\t<th style="text-align:left;border-top: 1px solid black"> Treatment </th>\n',
-            '\t<th style="text-align:right;border-top: 1px solid black"> Est. </th>\n',
-            '\t<th style="text-align:right;border-top: 1px solid black"> S.E. </th>\n',
-            '\t<th style="text-align:right;border-top: 1px solid black"> t-value </th>\n',
-            '\t<th style="text-align:right;border-top: 1px solid black"> R<sup>2</sup><sub>Y~D|X</sub> </th>\n',
-            '\t<th style="text-align:right;border-top: 1px solid black">  RV<sub>q = ',
-            self.q, '</sub> </th>\n',
-            '\t<th style="text-align:right;border-top: 1px solid black"> RV<sub>q = ',
-            self.q, ", &alpha; = ",
-            self.alpha, "</sub> </th>\n",
-            "</tr>\n",
-            "</thead>\n",
-            # Treatment result
-            "<tbody>\n <tr>\n",
-            '\t<td style="text-align:left; border-bottom: 1px solid black"><i>',
-            self.treatment, "</i></td>\n",
-            '\t<td style="text-align:right;border-bottom: 1px solid black">',
-            round(self.sensitivity_stats['estimate'], digits), " </td>\n",
-            '\t<td style="text-align:right;border-bottom: 1px solid black">',
-            round(self.sensitivity_stats['se'], digits), " </td>\n",
-            '\t<td style="text-align:right;border-bottom: 1px solid black">',
-            round(self.sensitivity_stats['t_statistic'], digits-2)," </td>\n",
-            '\t<td style="text-align:right;border-bottom: 1px solid black">',
-            round(self.sensitivity_stats['r2yd_x']*100, digits-2), "% </td>\n",
-            '\t<td style="text-align:right;border-bottom: 1px solid black">',
-            round(self.sensitivity_stats['rv_q']*100, digits-2), "% </td>\n",
-            '\t<td style="text-align:right;border-bottom: 1px solid black">',
-            round(self.sensitivity_stats['rv_qa']*100, digits-2), "% </td>\n",
-            "</tr>\n</tbody>\n",
-            # '<tr>\n'+\
-            # "<td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'>"+\
-            # "Note: df = "+str(self.sensitivity_stats['dof'])+ "; "+\
-            # "</td>\n"+\
-            # "</tr>\n"+\
-            # "</table>" if (self.bounds is None) else "<tr>\n"+\
-            # "<td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'>"+\
-            # "Note: df = "+ str(self.sensitivity_stats['dof'])+ "; "+\
-            # "Bound ( "+str(self.bounds['bound_label'][0])+ " ):  "+\
-            # "$R^2_{Y\\sim Z| {\\bf X}, D}$ = "+\
-            # str(round(self.bounds['r2yz_dx'][0]*100, digits-2))+\
-            # "\\%, $R^2_{D\\sim Z| {\\bf X} }$ = "+\
-            # str(round(self.bounds['r2dz_x'][0]*100, digits-2))+\
-            # "\\%"+\
-            # "</td>\n"+\
-            # "</tr>\n"+\
-            # "</table>"
-            '<tr>\n'+\
+            result="<table style='align:center'>\n"+"<thead>\n"+\
+            "<tr>\n"+\
+            '\t<th style="text-align:left;border-bottom: 1px solid transparent;border-top: 1px solid black"> </th>\n'+\
+            '\t<th colspan = 6 style="text-align:center;border-bottom: 1px solid black;border-top: 1px solid black"> Outcome: '+\
+            str(self.model.model.endog_names)+'</th>\n'+\
+            "</tr>\n"+\
+            "<tr>\n"+\
+            '\t<th style="text-align:left;border-top: 1px solid black"> Treatment </th>\n'+\
+            '\t<th style="text-align:right;border-top: 1px solid black"> Est. </th>\n'+\
+            '\t<th style="text-align:right;border-top: 1px solid black"> S.E. </th>\n'+\
+            '\t<th style="text-align:right;border-top: 1px solid black"> t-value </th>\n'+\
+            '\t<th style="text-align:right;border-top: 1px solid black"> R<sup>2</sup><sub>Y~D|X</sub> </th>\n'+\
+            '\t<th style="text-align:right;border-top: 1px solid black">  RV<sub>q = '+\
+            str(self.q)+ '</sub> </th>\n'+\
+            '\t<th style="text-align:right;border-top: 1px solid black"> RV<sub>q = '+\
+            str(self.q)+ ", &alpha; = "+\
+            str(self.alpha)+ "</sub> </th>\n"+\
+            "</tr>\n"+\
+            "</thead>\n"+\
+            "<tbody>\n <tr>\n"+\
+            '\t<td style="text-align:left; border-bottom: 1px solid black"><i>'+\
+            str(self.treatment)+ "</i></td>\n"+\
+            '\t<td style="text-align:right;border-bottom: 1px solid black">'+\
+            str(round(self.sensitivity_stats['estimate'], digits))+ " </td>\n"+\
+            '\t<td style="text-align:right;border-bottom: 1px solid black">'+\
+            str(round(self.sensitivity_stats['se'], digits))+ " </td>\n"+\
+            '\t<td style="text-align:right;border-bottom: 1px solid black">'+\
+            str(round(self.sensitivity_stats['t_statistic'], digits-2))+" </td>\n"+\
+            '\t<td style="text-align:right;border-bottom: 1px solid black">'+\
+            str(round(self.sensitivity_stats['r2yd_x']*100, digits-2))+ "% </td>\n"+\
+            '\t<td style="text-align:right;border-bottom: 1px solid black">'+\
+            str(round(self.sensitivity_stats['rv_q']*100, digits-2))+ "% </td>\n"+\
+            '\t<td style="text-align:right;border-bottom: 1px solid black">'+\
+            str(round(self.sensitivity_stats['rv_qa']*100, digits-2))+"% </td>\n"+\
+            "</tr>\n</tbody>\n"+\
+            ('<tr>\n'+\
             "<td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'>"+\
-            "Note: df = "+str(self.sensitivity_stats['dof'])+ "; "+\
+            "Note: df = "+str(self.sensitivity_stats['dof'])+\
             "</td>\n"+\
             "</tr>\n"+\
             "</table>" if (self.bounds is None) else "<tr>\n"+\
@@ -629,6 +613,8 @@ class Sensemakr:
             "%"+\
             "</td>\n"+\
             "</tr>\n"+\
-            "</table>"
-
-           )
+            "</table>")
+            if(display==True):
+                from IPython.display import display_html
+                display_html(result, raw=True)
+            return result

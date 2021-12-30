@@ -1,4 +1,4 @@
-sensemakr
+Modules
 =========
 
 .. toctree::
