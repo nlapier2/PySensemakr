@@ -38,12 +38,13 @@ While regression is widely used in Python, to the best of the author’s knowled
 
 # Methods
 
+We illustrate how to use the package using a simple example:
+
 ```python
 # Imports
 from sensemakr import data
 from sensemakr import sensemakr
 import statsmodels.formula.api as smf
-from statsmodels.iolib.summary2 import summary_col
 ```
 
 
@@ -100,7 +101,7 @@ darfur_sense.plot(plot_type='contour',sensitivity_of='t-value')
 
 
 
-![png](output_4_0.png){width=55% } ![png](output_5_0.png){width=55% }
+![png](output_4_0.png){width=50% } ![png](output_5_0.png){width=50% }
 
 
 
@@ -114,7 +115,7 @@ darfur_sense.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
 
 
 
-![png](output_6_0.png) {width=40% }
+![png](output_6_0.png){width=70% }
 
 
 
