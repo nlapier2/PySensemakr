@@ -102,6 +102,7 @@ html_theme_options = {
             "url": "https://github.com/nlapier2/PySensemakr",
             "icon": "fab fa-github-square",
         }
+ "navbar_end": ["search-field.html", "navbar-icon-links.html"],
         ]
 #        ,
 # "external_links": [
@@ -121,10 +122,7 @@ html_css_files = ["custom.css"]
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
-    '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
-    ]
+        "**": [],
 }
 
 
