@@ -1,5 +1,5 @@
 ---
-title: 'Pysensemakr: A Python Package to Apply Sensitivity Analysis for Regression Models'
+title: '``PySensemakr``: A Python Package to Apply Sensitivity Analysis for Regression Models'
 tags:
   - Python
   - causal inference
@@ -25,7 +25,7 @@ bibliography: paper.bib
 
 # Summary
 
-Regression has been widely applied in statistical modeling in social science, biology etc. While regression can often help making predictions or forecasting, it is also widely used to determine causal relationships between different variables, especially in treatment-control settings. @cinelli2020making proposes a suite of sensitivity analysis tools that extends the traditional omitted variable bias framework and makes it easier to understand the causal impact of omitted variables in regression models. We want to answer questions like how strong unobserved confounders need to be to overturn our research hypothesis and how robust are the results to all unobserved confounders acting together, possibly non-linearly. "Pysensemakr" is a Python package to address these questions based on regression output without further model assumptions. "Pysensemakr" is build upon the python package "statsmodels", which performs regression analysis. "Pysensemakr" reports some key causal quantities based on the routine regression output and provides visualization and causal interpretation of these quantities. We suggest using "Pysensemakr" for routine reporting sensitivity analysis on regression methods to assist research on causal relationships.
+Regression has been widely applied in statistical modeling in social science, biology etc. While regression can often help making predictions or forecasting, it is also widely used to determine causal relationships between different variables, especially in treatment-control settings. @cinelli2020making proposes a suite of sensitivity analysis tools that extends the traditional omitted variable bias framework and makes it easier to understand the causal impact of omitted variables in regression models. We want to answer questions like how strong unobserved confounders need to be to overturn our research hypothesis and how robust are the results to all unobserved confounders acting together, possibly non-linearly. ``PySensemakr`` is a Python package to address these questions based on regression output without further model assumptions. "Pysensemakr" is build upon the python package "statsmodels", which performs regression analysis. "Pysensemakr" reports some key causal quantities based on the routine regression output and provides visualization and causal interpretation of these quantities. We suggest using "Pysensemakr" for routine reporting sensitivity analysis on regression methods to assist research on causal relationships.
 
 This package includes unit and integration tests made using the pytest framework. The repo containing the latest project code is integrated with continuous integration using Github Actions. Code coverage is monitored via codecov and is presently above 90%. The package website contains detailed description of methods in this package as well as a quick start guide and examples for users.
 
