@@ -252,6 +252,18 @@ s.plot(plot_type = 'contour',sensitivity_of = 'estimate')
 
 
 ```python
+# Make a contour plot for the t-value
+s.plot(plot_type='contour',sensitivity_of='t-value')
+```
+
+
+    
+![png](output_22_0.png)
+
+
+
+
+```python
 s.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
 ```
 
