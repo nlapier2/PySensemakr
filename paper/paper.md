@@ -60,30 +60,7 @@ reg_model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + '
             'village', data=darfur)
 darfur_model = reg_model.fit()
 
-# regression results for directlyharmed
-summary_col(darfur_model, regressor_order=["directlyharmed"], drop_omitted=True)
 ```
-
-
-
-
-<table class="simpletable">
-<tr>
-         <td></td>        <th>peacefactor</th>
-</tr>
-<tr>
-  <th>directlyharmed</th>   <td>0.0973</td>   
-</tr>
-<tr>
-  <th></th>                <td>(0.0233)</td>  
-</tr>
-<tr>
-  <th>R-squared</th>        <td>0.5115</td>   
-</tr>
-<tr>
-  <th>R-squared Adj.</th>   <td>0.2046</td>   
-</tr>
-</table>
 
 
 
@@ -100,56 +77,31 @@ html_code = darfur_sense.ovb_minimal_reporting(format = "html")
 ```
 
 
-<table style='align:center'>
-<thead>
-<tr>
-	<th style="text-align:left;border-bottom: 1px solid transparent;border-top: 1px solid black"> </th>
-	<th colspan = 6 style="text-align:center;border-bottom: 1px solid black;border-top: 1px solid black"> Outcome: peacefactor</th>
-</tr>
-<tr>
-	<th style="text-align:left;border-top: 1px solid black"> Treatment </th>
-	<th style="text-align:right;border-top: 1px solid black"> Est. </th>
-	<th style="text-align:right;border-top: 1px solid black"> S.E. </th>
-	<th style="text-align:right;border-top: 1px solid black"> t-value </th>
-	<th style="text-align:right;border-top: 1px solid black"> R<sup>2</sup><sub>Y~D|X</sub> </th>
-	<th style="text-align:right;border-top: 1px solid black">  RV<sub>q = 1</sub> </th>
-	<th style="text-align:right;border-top: 1px solid black"> RV<sub>q = 1, &alpha; = 0.05</sub> </th>
-</tr>
-</thead>
-<tbody>
- <tr>
-	<td style="text-align:left; border-bottom: 1px solid black"><i>directlyharmed</i></td>
-	<td style="text-align:right;border-bottom: 1px solid black">0.097 </td>
-	<td style="text-align:right;border-bottom: 1px solid black">0.023 </td>
-	<td style="text-align:right;border-bottom: 1px solid black">4.2 </td>
-	<td style="text-align:right;border-bottom: 1px solid black">2.2% </td>
-	<td style="text-align:right;border-bottom: 1px solid black">13.9% </td>
-	<td style="text-align:right;border-bottom: 1px solid black">7.6% </td>
-</tr>
-</tbody>
-<tr>
-<td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'>Note: df = 783; Bound ( 1x female ):  R<sup>2</sup><sub>Y~Z|X,D</sub> =  12.5%, R<sup>2</sup><sub>D~Z|X</sub> =0.9%</td>
-</tr>
-</table>
-
+\begin{table}[!h]
+\centering
+\begin{tabular}{lrrrrrr}
+\multicolumn{7}{c}{Outcome: \textit{peacefactor}} \\
+\hline \hline
+Treatment: & Est. & S.E. & t-value & $R^2_{Y \sim D |{\bf X}}$ & $RV_{q =1}$& $RV_{q = 1, \alpha = 0.05}$  \\
+\hline
+\textit{directlyharmed} &0.097 & 0.023 & 4.184 & 2.2\% & 13.9\% & 7.6\% \\
+\hline
+df = 783 & & \multicolumn{5}{r}{ \small\textit{Bound (1x female)}: $R^2_{Y\sim Z| {\bf X}, D}$ = 12.5\%, $R^2_{D\sim Z| {\bf X} }$ = 0.9\%}\\
+\end{tabular}
+\end{table}
 
 
 ```python
 # contour plot for the estimate
 darfur_sense.plot(plot_type = 'contour',sensitivity_of = 'estimate')
-```
-
-
-
-![png](output_4_0.png)
-
-
-
-
-```python
 # contour plot for the t-value
 darfur_sense.plot(plot_type='contour',sensitivity_of='t-value')
 ```
+
+
+
+![png](output_4_0.png){width=40% } ![png](output_5_0.png){width=40% }
+
 
 
 
@@ -165,7 +117,7 @@ darfur_sense.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
 
 
 
-![png](output_6_0.png)
+![png](output_6_0.png) {width=60% }
 
 
 
