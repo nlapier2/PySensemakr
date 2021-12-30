@@ -43,6 +43,7 @@ While regression is widely used in Python, to the best of the author’s knowled
 from sensemakr import data
 from sensemakr import sensemakr
 import statsmodels.formula.api as smf
+from statsmodels.iolib.summary2 import summary_col
 ```
 
 ```python
@@ -56,6 +57,9 @@ darfur = data.load_darfur()
 reg_model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + '\
                     'pastvoted + hhsize_darfur + female + village', data=darfur)
 darfur_model = reg_model.fit()
+
+# regression results for directlyharmed
+summary_col(darfur_model, regressor_order=["directlyharmed"], drop_omitted=True)
 ```
 
 
