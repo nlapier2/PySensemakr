@@ -3,7 +3,7 @@
 ![PyPI](https://img.shields.io/pypi/v/Pysensemakr)
 [![CI](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml/badge.svg)](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml)
 [![Codecov](https://img.shields.io/codecov/c/gh/KennyZhang-17/PySensemakr)](https://app.codecov.io/gh/KennyZhang-17/PySensemakr)
-
+[![Documentation Status](https://readthedocs.org/projects/pysensemakr/badge/?version=latest)](https://pysensemakr.readthedocs.io/en/latest/?badge=latest)
 
 `sensemakr` for Python (PySensemakr) implements a suite of sensitivity analysis tools that
 extends the traditional omitted variable bias framework and makes it
@@ -192,8 +192,8 @@ ky = kd
 
 ```python
 # Create a sensemakr object and print summary of results
-s = sensemakr.Sensemakr(model, treatment, q=q, 
-                        alpha=alpha, reduce=reduce, benchmark_covariates=benchmark_covariates, kd=kd)
+s = sensemakr.Sensemakr(model, treatment, q = q, 
+                        alpha = alpha, reduce = reduce, benchmark_covariates = benchmark_covariates, kd = kd)
 s.summary()
 ```
 
@@ -241,7 +241,7 @@ s.summary()
 
 ```python
 # Make a contour plot for the estimate
-s.plot(plot_type='contour',sensitivity_of='estimate')
+s.plot(plot_type = 'contour',sensitivity_of = 'estimate')
 ```
 
 
@@ -252,7 +252,7 @@ s.plot(plot_type='contour',sensitivity_of='estimate')
 
 
 ```python
-s.plot(plot_type='extreme',sensitivity_of='estimate')
+s.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
 ```
 
 
