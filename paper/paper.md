@@ -101,7 +101,7 @@ darfur_sense.plot(plot_type='contour',sensitivity_of='t-value')
 
 
 
-![png](output_4_0.png){width=50% } ![png](output_5_0.png){width=50% }
+![](output_4_0.png){width=50% } ![](output_5_0.png){width=50% }
 
 
 
@@ -115,7 +115,7 @@ darfur_sense.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
 
 
 
-![png](output_6_0.png){width=70% }
+![](output_6_0.png){width=70% }
 
 
 
