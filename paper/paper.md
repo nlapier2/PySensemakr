@@ -5,7 +5,6 @@ tags:
   - causal inference
   - regression
   - sensitivity analysis
-
 authors:
   - name: Zhehao Zhang
     affiliation: 2
@@ -22,7 +21,6 @@ affiliations:
    index: 2
 date: 29 Dec 2021
 bibliography: paper.bib
-
 ---
 
 # Summary
