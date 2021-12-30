@@ -3,10 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-``PySensemakr``: sensemakr for Python
+PySensemakr: Sensitivity Analysis Tools for Regression Models in Python
 =======================================
 
-``sensemakr`` for Python (``PySensemakr``) implements a suite of sensitivity analysis tools that makes it easier to understand the impact of omitted variables in linear regression models, as discussed in Cinelli, C. and Hazlett, C. (2020) “Making Sense of Sensitivity: Extending Omitted Variable Bias.” Journal of the Royal Statistical Society, Series B (Statistical Methodology). The Python version of the package closely mirrors the R version, which can be found `here<http://carloscinelli.com/sensemakr/>`.
+``sensemakr`` for Python (``PySensemakr``) implements a suite of sensitivity analysis tools that makes it easier to understand the impact of omitted variables in linear regression models, as discussed in `Cinelli, C. and Hazlett, C. (2020) <https://rss.onlinelibrary.wiley.com/doi/10.1111/rssb.12348>`_ “Making Sense of Sensitivity: Extending Omitted Variable Bias.” Journal of the Royal Statistical Society, Series B (Statistical Methodology). 
+
+The Python version of the package closely mirrors the R version, which can be found `here <http://carloscinelli.com/sensemakr/>`_.
 
 
 .. toctree::
@@ -16,3 +18,7 @@
    notebooks/quickstart
    notebooks/the_risks_of_informal_benchmarking
    modules
+
+References
+=======================================
+Cinelli, C. Hazlett, C. (2020) “Making Sense of Sensitivity: Extending Omitted Variable Bias”. Journal of the Royal Statistical Society, Series B (Statistical Methodology). 
