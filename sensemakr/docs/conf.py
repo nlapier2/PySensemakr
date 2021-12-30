@@ -148,7 +148,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'PySensemakr.tex', u'PySensemakr Documentation',
-     u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli', 'manual'),
+     u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli', 'article'),
 ]
 
 
