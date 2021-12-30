@@ -128,11 +128,11 @@ htmlhelp_basename = 'PySensemakrdoc'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
-    # 'papersize': 'letterpaper',
+    'papersize': 'letterpaper',
 
     # The font size ('10pt', '11pt' or '12pt').
     #
-    # 'pointsize': '10pt',
+    'pointsize': '10pt',
 
     # Additional stuff for the LaTeX preamble.
     #
@@ -148,7 +148,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'PySensemakr.tex', u'PySensemakr Documentation',
-     u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli', 'article'),
+     u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli', 'book'),
 ]
 
 
