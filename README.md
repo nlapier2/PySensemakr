@@ -258,7 +258,7 @@ s.plot(plot_type='contour',sensitivity_of='t-value')
 
 
     
-![png](output_22_0.png)
+![png](/images/output_22_0.png)
 
 
 
