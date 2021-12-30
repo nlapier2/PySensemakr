@@ -174,27 +174,16 @@ darfur.head()
 # runs regression model
 reg_model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + '\
                     'pastvoted + hhsize_darfur + female + village', data=darfur)
-model = reg_model.fit()
+darfur_model = reg_model.fit()
 ```
-
-
-```python
-# Define parameters for sensemakr
-treatment = "directlyharmed"
-q = 1.0
-alpha = 0.05
-reduce = True
-benchmark_covariates=["female"]
-kd = [1, 2, 3]
-ky = kd
-```
-
 
 ```python
 # Create a sensemakr object and print summary of results
-s = sensemakr.Sensemakr(model, treatment, q = q, 
-                        alpha = alpha, reduce = reduce, benchmark_covariates = benchmark_covariates, kd = kd)
-s.summary()
+darfur_sense = sensemakr.Sensemakr(model = darfur_model, 
+                                   treatment = "directlyharmed", 
+                                   benchmark_covariates = ["female"], 
+                                   kd = [1,2,3])
+darfur_sense.summary()
 ```
 
     Sensitivity Analysis to Unobserved Confounding
@@ -241,7 +230,7 @@ s.summary()
 
 ```python
 # Make a contour plot for the estimate
-s.plot(plot_type = 'contour',sensitivity_of = 'estimate')
+darfur_sense.plot(plot_type = 'contour',sensitivity_of = 'estimate')
 ```
 
 
@@ -253,7 +242,7 @@ s.plot(plot_type = 'contour',sensitivity_of = 'estimate')
 
 ```python
 # Make a contour plot for the t-value
-s.plot(plot_type='contour',sensitivity_of='t-value')
+darfur_sense.plot(plot_type='contour',sensitivity_of='t-value')
 ```
 
 
@@ -264,7 +253,7 @@ s.plot(plot_type='contour',sensitivity_of='t-value')
 
 
 ```python
-s.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
+darfur_sense.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
 ```
 
 
