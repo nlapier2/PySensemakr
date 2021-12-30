@@ -1,5 +1,5 @@
 ---
-title: '``PySensemakr``: A Python Package to Apply Sensitivity Analysis for Regression Models'
+title: '``PySensemakr``: Sensitivity Analysis Tools for Regression Models in Python'
 tags:
   - Python
   - causal inference
