@@ -1,10 +1,13 @@
-.. Pysensemakr documentation master file, created by
+.. PySensemakr documentation master file, created by
    sphinx-quickstart on Tue Nov 23 14:27:31 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-PySensemakr: sensemakr for Python
+``PySensemakr``: sensemakr for Python
 =======================================
+
+``sensemakr`` for Python (``PySensemakr``) implements a suite of sensitivity analysis tools that makes it easier to understand the impact of omitted variables in linear regression models, as discussed in Cinelli, C. and Hazlett, C. (2020) “Making Sense of Sensitivity: Extending Omitted Variable Bias.” Journal of the Royal Statistical Society, Series B (Statistical Methodology). The Python version of the package closely mirrors the R version, which can be found `here<http://carloscinelli.com/sensemakr/>`.
+
 
 .. toctree::
    :maxdepth: 2
@@ -13,9 +16,3 @@ PySensemakr: sensemakr for Python
    notebooks/quickstart
    notebooks/the_risks_of_informal_benchmarking
    modules
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`

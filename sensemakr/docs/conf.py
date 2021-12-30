@@ -96,18 +96,13 @@ html_theme = "pydata_sphinx_theme"
 # documentation.
 #
 html_theme_options = {
-"icon_links":[
-        {
-            "name": "GitHub",
-            "url": "https://github.com/nlapier2/PySensemakr",
-            "icon": "fab fa-github-square",
-        }
-        ]
-#        ,
-# "external_links": [
-#       {"name": "Version", "url": "https://img.shields.io/pypi/v/PySensemakr"},
-#   ]
-        }
+    "github_url": "https://github.com/nlapier2/PySensemakr",
+    "show_prev_next": False,
+    "navbar_end": ["search-field.html", "navbar-icon-links.html"],
+}
+html_sidebars = {
+    "**": [],
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -120,12 +115,6 @@ html_css_files = ["custom.css"]
 #
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-html_sidebars = {
-    '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
-    ]
-}
 
 
 # -- Options for HTMLHelp output ------------------------------------------
