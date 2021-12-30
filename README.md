@@ -192,8 +192,8 @@ ky = kd
 
 ```python
 # Create a sensemakr object and print summary of results
-s = sensemakr.Sensemakr(model, treatment, q=q, 
-                        alpha=alpha, reduce=reduce, benchmark_covariates=benchmark_covariates, kd=kd)
+s = sensemakr.Sensemakr(model, treatment, q = q, 
+                        alpha = alpha, reduce = reduce, benchmark_covariates = benchmark_covariates, kd = kd)
 s.summary()
 ```
 
@@ -241,7 +241,7 @@ s.summary()
 
 ```python
 # Make a contour plot for the estimate
-s.plot(plot_type='contour',sensitivity_of='estimate')
+s.plot(plot_type = 'contour',sensitivity_of = 'estimate')
 ```
 
 
@@ -252,7 +252,7 @@ s.plot(plot_type='contour',sensitivity_of='estimate')
 
 
 ```python
-s.plot(plot_type='extreme',sensitivity_of='estimate')
+s.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
 ```
 
 
