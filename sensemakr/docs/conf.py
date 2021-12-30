@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Pysensemakr documentation build configuration file, created by
+# PySensemakr documentation build configuration file, created by
 # sphinx-quickstart on Tue Nov 23 14:27:31 2021.
 #
 # This file is execfile()d with the current directory set to its
@@ -52,7 +52,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Pysensemakr'
+project = u'PySensemakr'
 copyright = u'2021, Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
 author = u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
 
@@ -105,7 +105,7 @@ html_theme_options = {
         ]
 #        ,
 # "external_links": [
-#       {"name": "Version", "url": "https://img.shields.io/pypi/v/Pysensemakr"},
+#       {"name": "Version", "url": "https://img.shields.io/pypi/v/PySensemakr"},
 #   ]
         }
 
@@ -131,7 +131,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Pysensemakrdoc'
+htmlhelp_basename = 'PySensemakrdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -158,8 +158,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Pysensemakr.tex', u'Pysensemakr Documentation',
-     u'Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli', 'manual'),
+    (master_doc, 'PySensemakr.tex', u'PySensemakr Documentation',
+     u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli', 'manual'),
 ]
 
 
@@ -168,7 +168,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pysensemakr', u'Pysensemakr Documentation',
+    (master_doc, 'PySensemakr', u'PySensemakr Documentation',
      [author], 1)
 ]
 
@@ -179,8 +179,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Pysensemakr', u'Pysensemakr Documentation',
-     author, 'Pysensemakr', 'One line description of project.',
+    (master_doc, 'PySensemakr', u'PySensemakr Documentation',
+     author, 'PySensemakr', 'sensemakr for Python',
      'Miscellaneous'),
 ]
 
