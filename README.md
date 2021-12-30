@@ -229,7 +229,7 @@ darfur_sense.summary()
 
 
 ```python
-# Make a contour plot for the estimate
+# contour plot for the estimate
 darfur_sense.plot(plot_type = 'contour',sensitivity_of = 'estimate')
 ```
 
@@ -241,7 +241,7 @@ darfur_sense.plot(plot_type = 'contour',sensitivity_of = 'estimate')
 
 
 ```python
-# Make a contour plot for the t-value
+# contour plot for the t-value
 darfur_sense.plot(plot_type='contour',sensitivity_of='t-value')
 ```
 
@@ -253,6 +253,7 @@ darfur_sense.plot(plot_type='contour',sensitivity_of='t-value')
 
 
 ```python
+# extreme scenarios plot
 darfur_sense.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
 ```
 
