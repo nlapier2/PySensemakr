@@ -108,7 +108,7 @@ html_theme_options = {
 }
 
 html_sidebars = {
-    '**': ['localtoc.html'],
+    '**': ['sidebar-nav-bs.html'],
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
