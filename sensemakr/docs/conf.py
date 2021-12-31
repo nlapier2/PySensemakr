@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Pysensemakr documentation build configuration file, created by
+# PySensemakr documentation build configuration file, created by
 # sphinx-quickstart on Tue Nov 23 14:27:31 2021.
 #
 # This file is execfile()d with the current directory set to its
@@ -28,6 +28,10 @@ sys.path.insert(0, os.path.abspath('../..'))
 #
 # needs_sphinx = '1.0'
 
+# order by source
+autodoc_member_order = 'bysource'
+
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
@@ -52,7 +56,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Pysensemakr'
+project = u'PySensemakr'
 copyright = u'2021, Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
 author = u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
 
@@ -86,6 +90,10 @@ todo_include_todos = False
 
 # -- Options for HTML output ----------------------------------------------
 
+# for sourcelink on sidebar
+# html_show_sourcelink = True
+# html_copy_source = True
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.ctive 7 months ago
 #
@@ -96,18 +104,16 @@ html_theme = "pydata_sphinx_theme"
 # documentation.
 #
 html_theme_options = {
-"icon_links":[
-        {
-            "name": "GitHub",
-            "url": "https://github.com/nlapier2/PySensemakr",
-            "icon": "fab fa-github-square",
-        }
-        ]
-#        ,
-# "external_links": [
-#       {"name": "Version", "url": "https://img.shields.io/pypi/v/Pysensemakr"},
-#   ]
-        }
+    "github_url": "https://github.com/nlapier2/PySensemakr",
+    "show_prev_next": False,
+    "navbar_end": ["search-field.html", "navbar-icon-links.html"],
+    "show_nav_level": 2,
+
+}
+
+html_sidebars = {
+    '**': ['sidebar-nav-bs.html'],
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -120,18 +126,12 @@ html_css_files = ["custom.css"]
 #
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-html_sidebars = {
-    '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
-    ]
-}
 
 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Pysensemakrdoc'
+htmlhelp_basename = 'PySensemakrdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -139,11 +139,11 @@ htmlhelp_basename = 'Pysensemakrdoc'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
-    # 'papersize': 'letterpaper',
+    'papersize': 'letterpaper',
 
     # The font size ('10pt', '11pt' or '12pt').
     #
-    # 'pointsize': '10pt',
+    'pointsize': '10pt',
 
     # Additional stuff for the LaTeX preamble.
     #
@@ -158,8 +158,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Pysensemakr.tex', u'Pysensemakr Documentation',
-     u'Nathan LaPierre, Kenny Zhang, Brain Hill, Carlos Cinelli', 'manual'),
+    (master_doc, 'PySensemakr.tex', u'PySensemakr Documentation',
+     u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli', 'book'),
 ]
 
 
@@ -168,7 +168,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pysensemakr', u'Pysensemakr Documentation',
+    (master_doc, 'PySensemakr', u'PySensemakr Documentation',
      [author], 1)
 ]
 
@@ -179,8 +179,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Pysensemakr', u'Pysensemakr Documentation',
-     author, 'Pysensemakr', 'One line description of project.',
+    (master_doc, 'PySensemakr', u'PySensemakr Documentation',
+     author, 'PySensemakr', 'sensemakr for Python',
      'Miscellaneous'),
 ]
 
