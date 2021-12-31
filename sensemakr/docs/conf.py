@@ -103,6 +103,8 @@ html_theme_options = {
     "github_url": "https://github.com/nlapier2/PySensemakr",
     "show_prev_next": False,
     "navbar_end": ["search-field.html", "navbar-icon-links.html"],
+    "show_nav_level": 2,
+
 }
 html_sidebars = {
     "**": [],
