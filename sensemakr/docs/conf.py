@@ -87,8 +87,8 @@ todo_include_todos = False
 # -- Options for HTML output ----------------------------------------------
 
 # for sourcelink on sidebar
-html_show_sourcelink = True
-html_copy_source = True
+# html_show_sourcelink = True
+# html_copy_source = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.ctive 7 months ago
@@ -105,7 +105,7 @@ html_theme_options = {
     "navbar_end": ["search-field.html", "navbar-icon-links.html"],
 }
 html_sidebars = {
-    "**": ['sourcelink.html'],
+    "**": [],
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
