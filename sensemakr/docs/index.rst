@@ -18,4 +18,4 @@ The Python version of the package closely mirrors the R version, which can be fo
 
    notebooks/quickstart
    notebooks/the_risks_of_informal_benchmarking
-   modules
+   modules/index
