@@ -418,14 +418,15 @@ class Sensemakr:
                   " with association with the treatment and the outcome bounded by a multiple of the observed explanatory"
                   " power of the chosen benchmark covariate(s).\n")
             print(self.bounds)
-    def plot(self, plot_type,sensitivity_of='estimate'):
+    def plot(self, plot_type,sensitivity_of='estimate',**kwargs):
         r"""
         **Description:**
         This function provides the contour and extreme scenario sensitivity
         plots of the sensitivity analysis results obtained with the function Sensemakr. They are basically dispatchers
         to the core plot functions ovb_contour_plot and ovb_extreme_plot.
 
-        This function takes as input a sensemakr object and one of the plot type "contour" or "extreme".
+        This function takes as input a sensemakr object and one of the plot type "contour" or "extreme". Optional arguments
+        can be found in ovb_plots documentation including col_contour, col_thr_line etc.
 
         :param sense_obj: a sensemakr object
         :param plot_type: either "extreme" or "contour"
@@ -454,11 +455,11 @@ class Sensemakr:
 
         """
         if plot_type == 'contour':
-            ovb_plots.ovb_contour_plot(sense_obj=self,sensitivity_of=sensitivity_of)
+            ovb_plots.ovb_contour_plot(sense_obj=self,sensitivity_of=sensitivity_of,**kwargs)
         elif (plot_type == 'extreme') and (sensitivity_of == 't-value'):
             sys.exit('Error: extreme plot for t-value has not been implemented yet')
         elif plot_type == 'extreme':
-            ovb_plots.ovb_extreme_plot(sense_obj=self)
+            ovb_plots.ovb_extreme_plot(sense_obj=self,**kwargs)
         else:
             sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')
 
