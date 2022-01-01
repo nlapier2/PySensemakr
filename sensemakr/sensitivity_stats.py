@@ -143,13 +143,13 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> # Load this module:
     >>> from sensemakr import sensitivity_stats
     >>> # Partial R2 of directly harmed with peacefactor:
-    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")
+    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")  # doctest: +NUMBER
     0.021873093341111503
     >>> # Partial R2 of female with peacefactor:
-    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")
+    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")  # doctest: +NUMBER
     0.1090339154278388
     >>> # You can also provide the statistics directly:
-    >>> sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)
+    >>> sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)  # doctest: +NUMBER
     0.021873093496457607
 
     """
@@ -205,7 +205,7 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> # Partial f2 of female with peacefactor:
     >>> sensitivity_stats.partial_f2(model = fitted_model, covariates = "female") # doctest: +SKIP
     >>> # You can also provide the statistics directly:
-    >>> sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783)
+    >>> sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783) # doctest: +NUMBER
     0.022362224524265645
 
     """
@@ -255,7 +255,7 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> from sensemakr import sensitivity_stats
-    >>> sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"])
+    >>> sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"]) # doctest: +NUMBER
     0.11681276064557282
     """
     if (model is None or covariates is None) and (f_statistic is None or p is None or dof is None):
