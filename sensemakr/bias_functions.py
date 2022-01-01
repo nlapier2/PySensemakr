@@ -1,4 +1,4 @@
-r"""
+"""
 Description
 ------------
 Compute bias-adjusted estimates, standard-errors, and t-values.
@@ -63,22 +63,26 @@ Example
 >>> darfur = data.load_darfur()
 >>> # Fit a statsmodels OLSResults object ("fitted_model")
 >>> import statsmodels.formula.api as smf
->>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
-            + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+>>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
 >>> fitted_model = model.fit()
 >>> # Import this module
 >>> from sensemakr import bias_functions
 >>> # Computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 >>> bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+0.06393214421078594
 >>> # Computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 >>> bias_functions.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+0.023271402968126444
 >>> # Computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 >>> bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)
+2.7472406497515545
 >>> # Alternatively, pass in numerical values directly.
 >>> bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+0.0639321417819119
 >>> bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
+0.023271405159715323
 >>> bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
-
+2.7472402866580476
 """
 
 
