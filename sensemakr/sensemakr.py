@@ -170,15 +170,13 @@ class Sensemakr:
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model")
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~ \
-            directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(
-            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Description of results
-    >>> sensitivity.summary()
+    >>> sensitivity.summary() # doctest: +SKIP
     >>> # Plot bias contour of point estimate
     >>> from sensemakr import ovb_plots
     >>> ovb_plots.plot(sensitivity,plot_type = "contour")
@@ -441,13 +439,11 @@ class Sensemakr:
         >>> darfur = data.load_darfur()
         >>> # Fit a statsmodels OLSResults object ("fitted_model"):
         >>> import statsmodels.formula.api as smf
-        >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar\
-                    + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+        >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
         >>> fitted_model = model.fit()
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import sensemakr
-        >>> sensitivity = sensemakr.Sensemakr(
-                fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+        >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
         >>> # Plot bias contour of point estimate
         >>> from sensemakr import ovb_plots
         >>> ovb_plots.plot(sensitivity,plot_type='contour')
@@ -522,16 +518,15 @@ class Sensemakr:
         >>> darfur = data.load_darfur()
         >>> # Fit a statsmodels OLSResults object ("fitted_model"):
         >>> import statsmodels.formula.api as smf
-        >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar\
-                    + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+        >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
         >>> fitted_model = model.fit()
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import sensemakr
         >>> sensitivity = sensemakr.Sensemakr(model=fitted_model, treatment = "directlyharmed", q=1.0, alpha=0.05, reduce=True)
         >>> # Gets HTML code and table
-        >>> result=sensitivity.ovb_minimal_reporting()
+        >>> result=sensitivity.ovb_minimal_reporting() # doctest: +SKIP
         >>> # Prints raw html code
-        >>> print(result)
+        >>> print(result) # doctest: +SKIP
         """
 
         if(format=='latex'):

@@ -2,7 +2,7 @@
 Description
 ------------
 This module provides sensitivity contour plots and extreme scenario sensitivity plots.
-They can be used on an object of class `Sensemakr`, directly in an OLS `statsmodel,` 
+They can be used on an object of class `Sensemakr`, directly in an OLS `statsmodel,`
 or by providing the required statistics manually.
 
 Functions
@@ -45,13 +45,11 @@ def plot(sense_obj, plot_type,sensitivity_of='estimate'):
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar\
-                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(
-            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot bias contour of point estimate
     >>> from sensemakr import ovb_plots
     >>> ovb_plots.plot(sensitivity,plot_type='contour')
@@ -93,7 +91,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
 
     :param sense_obj: a Sensemakr object.
     :param sensitivity_of: either "estimate" or "t-value".
-    :param model: a fitted statsmodels OLSResults object. 
+    :param model: a fitted statsmodels OLSResults object.
     :param treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     :param estimate: a float with the estimate of the coefficient for the independent variable of interest.
     :param se: a float with the standard error of the regression.
@@ -126,8 +124,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model")
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
-                 +herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Contours directly from OLS object
     >>> ## Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
@@ -139,8 +136,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
     >>> # Contours from Sensemakr object
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", 
-                                          benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> ovb_plots.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
 
     """
@@ -292,13 +288,11 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
-                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(
-            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
     >>> from sensemakr import ovb_plots
     >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
@@ -428,13 +422,11 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar \
-                + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(
-            fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot extreme value of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
     >>> from sensemakr import ovb_plots
     >>> ovb_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
