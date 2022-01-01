@@ -69,20 +69,20 @@ Example
 >>> from sensemakr import bias_functions
 >>> # Computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 >>> bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
-0.06393214421078594
+0.06393
 >>> # Computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 >>> bias_functions.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
-0.023271402968126444
+0.02327
 >>> # Computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
 >>> bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
-2.7472406497515545
+2.74724
 >>> # Alternatively, pass in numerical values directly.
 >>> bias_functions.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
-0.0639321417819119
+0.06393
 >>> bias_functions.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)
-0.023271405159715323
+0.02327
 >>> bias_functions.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
-2.7472402866580476
+2.74724
 """
 
 
