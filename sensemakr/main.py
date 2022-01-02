@@ -43,7 +43,7 @@
 #
 # Runs sensemakr for sensitivity analysis
 #
-# >>> from sensemakr import sensemakr
+# >>> from sensemakr import main
 # >>> sensitivity = main.Sensemakr(
 #         fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 #
@@ -165,7 +165,7 @@ class Sensemakr:
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
-    >>> from sensemakr import sensemakr
+    >>> from sensemakr import main
     >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Description of results
     >>> sensitivity.summary() # doctest: +SKIP
@@ -430,7 +430,7 @@ class Sensemakr:
         >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
         >>> fitted_model = model.fit()
         >>> # Runs sensemakr for sensitivity analysis
-        >>> from sensemakr import sensemakr
+        >>> from sensemakr import main
         >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 
         """
@@ -503,7 +503,7 @@ class Sensemakr:
         >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
         >>> fitted_model = model.fit()
         >>> # Runs sensemakr for sensitivity analysis
-        >>> from sensemakr import sensemakr
+        >>> from sensemakr import main
         >>> sensitivity = main.Sensemakr(model=fitted_model, treatment = "directlyharmed", q=1.0, alpha=0.05, reduce=True)
         >>> # Gets HTML code and table
         >>> result=sensitivity.ovb_minimal_reporting() # doctest: +SKIP
