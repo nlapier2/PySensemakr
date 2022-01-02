@@ -599,8 +599,6 @@ class Sensemakr:
 
             return result
     
-    def __repr__(self):
-        self.print()
     
     def __str__(self):
         self.print()
