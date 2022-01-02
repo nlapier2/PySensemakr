@@ -11,7 +11,7 @@ Functions
 # Code for producing sensitivity contour plots and other plots
 import matplotlib.pyplot as plt
 from . import sensitivity_stats
-from . import ovb_bounds
+from . import sensitivity_bounds
 from . import bias_functions
 import sys
 import numpy as np
@@ -83,16 +83,16 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     >>> fitted_model = model.fit()
     >>> # Contours directly from OLS object
     >>> ## Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
-    >>> from sensemakr import ovb_plots
-    >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+    >>> from sensemakr import sensitivity_plots
+    >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
     >>> ## Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates kd=[1,2,3]
-    >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
+    >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
     >>> ## Plot contour of the fitted model with manual benchmark
-    >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
+    >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
     >>> # Contours from Sensemakr object
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-    >>> ovb_plots.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
+    >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity_plots.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
 
     """
 
@@ -185,12 +185,12 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
         if bound_label is None:
             bound_label=[]
             for i in range(len(kd)):
-                bound_label.append( ovb_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
+                bound_label.append( sensitivity_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
         if(np.isscalar(r2dz_x)):
-            bound_label.append( ovb_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
+            bound_label.append( sensitivity_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
         elif(len(r2dz_x)>len(kd)):
             for i in range(len(r2dz_x)-len(kd)):
-                bound_label.append( ovb_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
+                bound_label.append( sensitivity_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
         add_bound_to_contour(r2dz_x=r2dz_x, r2yz_dx=r2yz_dx, bound_value=bound_value, bound_label=bound_label,
                              sensitivity_of=sensitivity_of, label_text=label_text, label_bump_x=label_bump_x,
                              label_bump_y=label_bump_y, round_dig=round_dig)
@@ -247,12 +247,12 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
-    >>> from sensemakr import ovb_plots
-    >>> ovb_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+    >>> from sensemakr import sensitivity_plots
+    >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
     >>> # Add bound to contour.
-    >>> ovb_plots.add_bound_to_contour(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[2,3])
+    >>> sensitivity_plots.add_bound_to_contour(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[2,3])
 
     """
     if ((model is None or benchmark_covariates is None) and bounds is None and (r2dz_x is None or r2yz_dx is None)):
@@ -282,7 +282,7 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         if treatment != plot_env['treatment']:
             print('Warning: treatment variable provided does not equal treatment of previous contour plot.')
 
-        bounds = ovb_bounds.ovb_bounds(model=model, treatment=treatment, benchmark_covariates=benchmark_covariates,
+        bounds = sensitivity_bounds.ovb_bounds(model=model, treatment=treatment, benchmark_covariates=benchmark_covariates,
                                        kd=kd, ky=ky, adjusted_estimates=True, reduce=reduce)
         if sensitivity_of == 'estimate':
             bound_value = bounds['adjusted_estimate'].copy()
@@ -381,16 +381,16 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot extreme value of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
-    >>> from sensemakr import ovb_plots
-    >>> ovb_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+    >>> from sensemakr import sensitivity_plots
+    >>> sensitivity_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
     >>> # Plot extreme value of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates kd=[1,2].
-    >>> ovb_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2])
+    >>> sensitivity_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2])
     >>> # Plot extreme value of the fitted model with manual benchmark
-    >>> ovb_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
+    >>> sensitivity_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
     >>> # Plot extreme value of the sensemakr object
-    >>> ovb_plots.ovb_extreme_plot(sense_obj=sensitivity)
+    >>> sensitivity_plots.ovb_extreme_plot(sense_obj=sensitivity)
 
     """
 
@@ -510,7 +510,7 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
     if benchmark_covariates is None:  # no benchmark bounding to do
         return estimate, se, dof, r2dz_x, r2yz_dx
     else:
-        bench_bounds = ovb_bounds.ovb_bounds(
+        bench_bounds = sensitivity_bounds.ovb_bounds(
             model, treatment, benchmark_covariates=benchmark_covariates, kd=kd, ky=ky, adjusted_estimates=False)
         if r2dz_x is None:
             bounds = bench_bounds

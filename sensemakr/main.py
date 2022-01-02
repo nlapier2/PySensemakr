@@ -8,7 +8,7 @@
 # DataFrame/Series objects, thus PySensemakr makes heavy use of those packages.
 # In this documention, several examples are included to demonstrate how to use these objects to run this package successfully.
 #
-# The main function of the package is sensemakr.Sensemakr, which computes the most common sensitivity analysis results.
+# The main function of the package is main.Sensemakr, which computes the most common sensitivity analysis results.
 # After creating an object of the Sensemakr class, you may directly use the plot, summary, and print methods of the object.
 #
 # You may also use the other sensitivity functions of the package directly, such as: (i) functions for sensitivity plots
@@ -44,7 +44,7 @@
 # Runs sensemakr for sensitivity analysis
 #
 # >>> from sensemakr import sensemakr
-# >>> sensitivity = sensemakr.Sensemakr(
+# >>> sensitivity = main.Sensemakr(
 #         fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 #
 # Description of results
@@ -62,7 +62,7 @@
 # Using sensitivity functions directly
 #
 # >>> from sensemakr import sensitivity_stats
-# >>> from sensemakr import ovb_bounds
+# >>> from sensemakr import sensitivity_bounds
 # >>> from sensemakr import bias_functions
 #
 # Robustness value of directly harmed q = 1 (reduce estimate to zero)
@@ -91,7 +91,7 @@
 #
 # Bounds on the strength of confounders using female and age
 #
-# >>> ovb_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed",
+# >>> sensitivity_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed",
 #     benchmark_covariates = ["female", "age"], kd = [1, 2, 3])
 #
 # Adjusted estimate given hypothetical strength of confounder
@@ -118,8 +118,8 @@ from scipy.stats import t
 import numpy as np
 from . import sensitivity_stats
 from . import bias_functions
-from . import ovb_bounds
-from . import ovb_plots
+from . import sensitivity_bounds
+from . import sensitivity_plots
 
 class Sensemakr:
     r"""
@@ -166,7 +166,7 @@ class Sensemakr:
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
     >>> from sensemakr import sensemakr
-    >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Description of results
     >>> sensitivity.summary() # doctest: +SKIP
 
@@ -316,14 +316,14 @@ class Sensemakr:
 	                                             'adjusted_upper_CI': self.adjusted_upper_CI},index=[0])
 
         if self.benchmark_covariates is not None and self.model is not None:
-            self.bench_bounds = ovb_bounds.ovb_bounds(self.model, self.treatment,
+            self.bench_bounds = sensitivity_bounds.ovb_bounds(self.model, self.treatment,
                                                       benchmark_covariates=self.benchmark_covariates, kd=self.kd,
                                                       ky=self.ky, alpha=self.alpha, h0=self.h0, reduce=self.reduce)
         elif self.r2dxj_x is not None and self.estimate is not None:
             if self.benchmark_covariates is None:
                 self.benchmark_covariates = 'manual_benchmark'
             # bound_label = ovb_bounds.label_maker(benchmark_covariate=self.benchmark_covariates, kd=kd, ky=ky)
-            self.bench_bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x=self.r2dxj_x, r2yxj_dx=self.r2yxj_dx, kd=kd, ky=ky,benchmark_covariates=self.benchmark_covariates)
+            self.bench_bounds = sensitivity_bounds.ovb_partial_r2_bound(r2dxj_x=self.r2dxj_x, r2yxj_dx=self.r2yxj_dx, kd=kd, ky=ky,benchmark_covariates=self.benchmark_covariates)
             if (self.bench_bounds is not None):
                 self.r2dz_x=self.bench_bounds['r2dz_x'].values
                 self.r2yz_dx=self.bench_bounds['r2yz_dx'].values
@@ -413,7 +413,7 @@ class Sensemakr:
         to the core plot functions ovb_contour_plot and ovb_extreme_plot.
 
         This function takes as input a sensemakr object and one of the plot type "contour" or "extreme". Optional arguments
-        can be found in ovb_plots documentation including col_contour, col_thr_line etc.
+        can be found in sensitivity_plots documentation including col_contour, col_thr_line etc.
 
         :param sense_obj: a sensemakr object
         :param plot_type: either "extreme" or "contour"
@@ -431,15 +431,15 @@ class Sensemakr:
         >>> fitted_model = model.fit()
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import sensemakr
-        >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+        >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 
         """
         if plot_type == 'contour':
-            ovb_plots.ovb_contour_plot(sense_obj=self,sensitivity_of=sensitivity_of,**kwargs)
+            sensitivity_plots.ovb_contour_plot(sense_obj=self,sensitivity_of=sensitivity_of,**kwargs)
         elif (plot_type == 'extreme') and (sensitivity_of == 't-value'):
             sys.exit('Error: extreme plot for t-value has not been implemented yet')
         elif plot_type == 'extreme':
-            ovb_plots.ovb_extreme_plot(sense_obj=self,**kwargs)
+            sensitivity_plots.ovb_extreme_plot(sense_obj=self,**kwargs)
         else:
             sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')
 
@@ -504,7 +504,7 @@ class Sensemakr:
         >>> fitted_model = model.fit()
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import sensemakr
-        >>> sensitivity = sensemakr.Sensemakr(model=fitted_model, treatment = "directlyharmed", q=1.0, alpha=0.05, reduce=True)
+        >>> sensitivity = main.Sensemakr(model=fitted_model, treatment = "directlyharmed", q=1.0, alpha=0.05, reduce=True)
         >>> # Gets HTML code and table
         >>> result=sensitivity.ovb_minimal_reporting() # doctest: +SKIP
         >>> # Prints raw html code
