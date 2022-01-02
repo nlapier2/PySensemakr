@@ -598,3 +598,9 @@ class Sensemakr:
                 display_html(result, raw=True)
 
             return result
+    
+    def __repr__(self):
+        print(self)
+    
+    def __str__(self):
+        print(self)
