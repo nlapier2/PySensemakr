@@ -44,15 +44,14 @@ A release version on PyPI will be available soon.
 
 ```python
 # Imports
-from sensemakr import data
-from sensemakr import sensemakr
+import sensemakr as smkr
 import statsmodels.formula.api as smf
 ```
 
 
 ```python
 # loads data
-darfur = data.load_darfur()
+darfur = smkr.load_darfur()
 darfur.head()
 ```
 
@@ -179,10 +178,10 @@ darfur_model = reg_model.fit()
 
 ```python
 # Create a sensemakr object and print summary of results
-darfur_sense = sensemakr.Sensemakr(model = darfur_model, 
-                                   treatment = "directlyharmed", 
-                                   benchmark_covariates = ["female"], 
-                                   kd = [1,2,3])
+darfur_sense = smkr.Sensemakr(model = darfur_model, 
+                              treatment = "directlyharmed", 
+                              benchmark_covariates = ["female"], 
+                              kd = [1,2,3])
 darfur_sense.summary()
 ```
 
@@ -230,7 +229,7 @@ darfur_sense.summary()
 
 ```python
 # contour plot for the estimate
-darfur_sense.plot(plot_type = 'contour',sensitivity_of = 'estimate')
+darfur_sense.plot()
 ```
 
 
@@ -242,7 +241,7 @@ darfur_sense.plot(plot_type = 'contour',sensitivity_of = 'estimate')
 
 ```python
 # contour plot for the t-value
-darfur_sense.plot(plot_type='contour',sensitivity_of='t-value')
+darfur_sense.plot(sensitivity_of = 't-value')
 ```
 
 
@@ -254,7 +253,7 @@ darfur_sense.plot(plot_type='contour',sensitivity_of='t-value')
 
 ```python
 # extreme scenarios plot
-darfur_sense.plot(plot_type = 'extreme',sensitivity_of = 'estimate')
+darfur_sense.plot(plot_type = 'extreme')
 ```
 
 
