@@ -463,8 +463,6 @@ class Sensemakr:
             #print("Model Formula: " + model_formula + "\n")
             print("Model Formula: "+self.model.model.formula+"\n")
         print("Null hypothesis: q =", self.q, "and reduce =", self.reduce, "\n")
-        print("-- This means we are considering biases that", direction, "the absolute value of the current estimate.")
-        print("-- The null hypothesis deemed problematic is H0:tau =", h0, "\n")
 
         print("Unadjusted Estimates of '", self.treatment, "':")
         print("  Coef. estimate:", round(self.estimate, digits))
@@ -598,7 +596,3 @@ class Sensemakr:
                 display_html(result, raw=True)
 
             return result
-    
-    
-    def __str__(self):
-        self.print()
