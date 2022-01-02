@@ -418,7 +418,7 @@ class Sensemakr:
                   " with association with the treatment and the outcome bounded by a multiple of the observed explanatory"
                   " power of the chosen benchmark covariate(s).\n")
             print(self.bounds)
-    def plot(self, plot_type,sensitivity_of='estimate',**kwargs):
+    def plot(self, plot_type = "contour", sensitivity_of = 'estimate', **kwargs):
         r"""
         **Description:**
         This function provides the contour and extreme scenario sensitivity
@@ -496,7 +496,8 @@ class Sensemakr:
         print("  Robustness Value, q =", self.q, ":", round(self.sensitivity_stats['rv_q'], digits))
         print("  Robustness Value, q =", self.q, "alpha =", self.alpha, ":",
               round(self.sensitivity_stats['rv_qa'], digits), "\n")
-    def ovb_minimal_reporting(self,digits=3,format='html',display=True):
+
+    def ovb_minimal_reporting(self, format = 'html', digits = 3, display = True):
         """
         **Descriptions:**
 
@@ -552,6 +553,7 @@ class Sensemakr:
             "\\%""}\\\\\n"+\
             "\\end{tabular}\n"+\
             "\\end{table}")
+            
             if(display==True):
                 from IPython.display import display_latex
                 display_latex(result, raw=True)
@@ -610,7 +612,9 @@ class Sensemakr:
             "</td>\n"+\
             "</tr>\n"+\
             "</table>")
+
             if(display==True):
                 from IPython.display import display_html
                 display_html(result, raw=True)
+
             return result
