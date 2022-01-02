@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 from sensemakr.sensitivity_stats import *
 from sensemakr.bias_functions import *
-from sensemakr.ovb_plots import *
-from sensemakr.ovb_bounds import *
+from sensemakr.sensitivity_plots import *
+from sensemakr.sensitivity_bounds import *
 import statsmodels.formula.api as smf
-from sensemakr import sensemakr
+from sensemakr import main
 import pytest
 import os
 
@@ -83,9 +83,9 @@ def test_group_bench():
 	r2dz=group_partial_r2(model=model_dz,covariates=['z1','z2'])
 	kd=r2dz/r2dx
 	np.testing.assert_allclose(kd,1,atol=1e-7)
-	out    = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = [['x1','x2']], kd =kd, ky= ky)
-	out2   = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =kd, ky= ky)
-	out3   = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =[1,2,3])
+	out    = main.Sensemakr(model = model, treatment = "d", benchmark_covariates = [['x1','x2']], kd =kd, ky= ky)
+	out2   = main.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =kd, ky= ky)
+	out3   = main.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =[1,2,3])
 	bound  = ovb_partial_r2_bound(model=model,treatment="d")
 	bound2 = ovb_partial_r2_bound(model=model,treatment="d",benchmark_covariates='x1')
 	assert(out.bounds.equals(out2.bounds))

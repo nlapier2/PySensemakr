@@ -5,10 +5,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sensemakr.sensitivity_stats import *
 from sensemakr.bias_functions import *
-from sensemakr.ovb_plots import *
-from sensemakr.ovb_bounds import *
+from sensemakr.sensitivity_plots import *
+from sensemakr.sensitivity_bounds import *
 import statsmodels.formula.api as smf
-from sensemakr import sensemakr
+from sensemakr import main
 import pytest
 import os
 
@@ -24,9 +24,9 @@ reduce = True
 benchmark_covariates=["female"]
 kd = [1, 2, 3]
 ky = kd
-s = sensemakr.Sensemakr(model, treatment, q=q, 
+s = main.Sensemakr(model, treatment, q=q, 
                         alpha=alpha, reduce=reduce, benchmark_covariates=benchmark_covariates, kd=kd)
-s2 = sensemakr.Sensemakr(model, treatment, q=q, 
+s2 = main.Sensemakr(model, treatment, q=q, 
                         alpha=alpha, reduce=False, benchmark_covariates=benchmark_covariates, kd=kd)
 def test_plots():
 	ovb_contour_plot(model=model,treatment='directlyharmed',r2dz_x=0.1)

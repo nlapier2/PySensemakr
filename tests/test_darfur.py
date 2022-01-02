@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 from sensemakr.sensitivity_stats import *
 from sensemakr.bias_functions import *
-from sensemakr.ovb_plots import *
-from sensemakr.ovb_bounds import *
+from sensemakr.sensitivity_plots import *
+from sensemakr.sensitivity_bounds import *
 import statsmodels.formula.api as smf
-from sensemakr import sensemakr
+from sensemakr import main
 import pytest
 import os
 
@@ -39,7 +39,7 @@ def test_columns():
                  "female"])
     assert(np.sum(col_vec)==14)
 def test_darfur_Sensemakr():
-	darfur_out=sensemakr.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
+	darfur_out=main.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
 	darfur_out.summary()
 	darfur_out.print()
 	darfur_out.ovb_minimal_reporting(format='html')
@@ -70,15 +70,15 @@ def test_darfur_Sensemakr():
 	df[['r2dz_x','r2yz_dx','adjusted_estimate','adjusted_se','adjusted_t','adjusted_lower_CI','adjusted_upper_CI']].astype(float)
 	assert(darfur_out.bounds.round(6).equals(df.round(6)))
 
-	darfur_out2=sensemakr.Sensemakr(model=model,treatment='directlyharmed')
-	darfur_out3=sensemakr.Sensemakr(model=model, treatment='directlyharmed', q=1.0, alpha=0.05, reduce=True)
+	darfur_out2=main.Sensemakr(model=model,treatment='directlyharmed')
+	darfur_out3=main.Sensemakr(model=model, treatment='directlyharmed', q=1.0, alpha=0.05, reduce=True)
 	darfur_out3.ovb_minimal_reporting(format='html')
 	darfur_out3.ovb_minimal_reporting()
 	ovb_contour_plot(sense_obj=darfur_out2)
 	ovb_extreme_plot(sense_obj=darfur_out2)
 
 def test_darfur_Sensemakr_negative():
-	darfur_out=sensemakr.Sensemakr(model=model2,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
+	darfur_out=main.Sensemakr(model=model2,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
 	darfur_out.summary()
 	ovb_contour_plot(sense_obj=darfur_out)
 	ovb_extreme_plot(sense_obj=darfur_out)
@@ -106,12 +106,12 @@ def test_darfur_Sensemakr_negative():
 	df[['r2dz_x','r2yz_dx','adjusted_estimate','adjusted_se','adjusted_t','adjusted_lower_CI','adjusted_upper_CI']].astype(float)
 	assert(darfur_out.bounds.round(6).equals(df.round(6)))
 
-	darfur_out2=sensemakr.Sensemakr(model=model2,treatment='directlyharmed')
+	darfur_out2=main.Sensemakr(model=model2,treatment='directlyharmed')
 	ovb_contour_plot(sense_obj=darfur_out2)
 	ovb_extreme_plot(sense_obj=darfur_out2)
 
 def test_darfur_manual_bounds():
-	sense_out=sensemakr.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',r2dz_x=0.1)
+	sense_out=main.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',r2dz_x=0.1)
 	sense_out.summary()
 	bounds_check=sense_out.bounds
 	to_check=bounds_check.adjusted_se
@@ -121,7 +121,7 @@ def test_darfur_manual_bounds():
 def test_darfur_sensemakr_manually():
 	model_treat=smf.ols(formula='directlyharmed ~  age + farmer_dar + herder_dar +\
                 pastvoted + hhsize_darfur + female + village', data=darfur).fit()
-	darfur_out=sensemakr.Sensemakr(estimate = 0.09731582,
+	darfur_out=main.Sensemakr(estimate = 0.09731582,
                                     se = 0.02325654,
                                     dof = 783,
                                     treatment = "directlyharmed",
@@ -212,7 +212,7 @@ def test_darfur_plots():
 	assert(True)
 
 def test_darfur_different_q():
-	darfur_out=sensemakr.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',q=2,kd=[1,2,3])
+	darfur_out=main.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',q=2,kd=[1,2,3])
 	rvq=darfur_out.sensitivity_stats['rv_q']
 	rvqa=darfur_out.sensitivity_stats['rv_qa']
 	assert(rvq==robustness_value(model=model,covariates='directlyharmed',q=2).values)
@@ -220,7 +220,7 @@ def test_darfur_different_q():
 
 def test_darfur_group_benchmarks():
 	village=[k for k in model.params.index.values if 'village' in k]
-	sensitivity=sensemakr.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates=[village],kd=0.3)
+	sensitivity=main.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates=[village],kd=0.3)
 	r2y=group_partial_r2(model,covariates=village)
 	treat_model=smf.ols(formula='directlyharmed ~  age + farmer_dar + herder_dar +\
                 pastvoted + hhsize_darfur + female + village', data=darfur).fit()
