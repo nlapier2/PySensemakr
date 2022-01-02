@@ -83,12 +83,11 @@ def test_group_bench():
 	r2dz=group_partial_r2(model=model_dz,covariates=['z1','z2'])
 	kd=r2dz/r2dx
 	np.testing.assert_allclose(kd,1,atol=1e-7)
-	out = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = [['x1','x2']], kd =kd, ky= ky)
-	out2 = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =kd, ky= ky)
-	out3 = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =[1,2,3])
-	bound=ovb_partial_r2_bound(model=model,treatment="d")
-	bound2=ovb_partial_r2_bound(model=model,treatment="d",benchmark_covariates='x1')
-	plot(out,'contour')
+	out    = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = [['x1','x2']], kd =kd, ky= ky)
+	out2   = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =kd, ky= ky)
+	out3   = sensemakr.Sensemakr(model = model, treatment = "d", benchmark_covariates = {'['+"'x1', 'x2'"+']':['x1','x2']}, kd =[1,2,3])
+	bound  = ovb_partial_r2_bound(model=model,treatment="d")
+	bound2 = ovb_partial_r2_bound(model=model,treatment="d",benchmark_covariates='x1')
 	assert(out.bounds.equals(out2.bounds))
 	
 

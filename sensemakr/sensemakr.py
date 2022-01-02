@@ -51,14 +51,6 @@
 #
 # >>> sensitivity.summary()
 #
-# Plot bias contour of point estimate
-#
-# >>> plot(sensitivity,plot_type = "contour")
-#
-# Plot extreme scenario
-#
-# >>> plot(sensitivity, plot_type = "extreme")
-#
 # Pandas DataFrame with sensitivity statistics
 #
 # >>> sensitivity.sensitivity_stats
@@ -177,11 +169,6 @@ class Sensemakr:
     >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Description of results
     >>> sensitivity.summary() # doctest: +SKIP
-    >>> # Plot bias contour of point estimate
-    >>> from sensemakr import ovb_plots
-    >>> ovb_plots.plot(sensitivity,plot_type = "contour")
-    >>> # Plot extreme scenario
-    >>> ovb_plots.plot(sensitivity, plot_type = "extreme")
 
     """
 
@@ -445,13 +432,6 @@ class Sensemakr:
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import sensemakr
         >>> sensitivity = sensemakr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-        >>> # Plot bias contour of point estimate
-        >>> from sensemakr import ovb_plots
-        >>> ovb_plots.plot(sensitivity,plot_type='contour')
-        >>> # Plot bias contour of t-values
-        >>> ovb_plots.plot(sensitivity,plot_type='contour',sensitivity_of='t-value')
-        >>> # Plot extreme scenario
-        >>> ovb_plots.plot(sensitivity, plot_type = "extreme")
 
         """
         if plot_type == 'contour':
