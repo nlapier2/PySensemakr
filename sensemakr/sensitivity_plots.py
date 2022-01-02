@@ -90,7 +90,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     >>> ## Plot contour of the fitted model with manual benchmark
     >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
     >>> # Contours from Sensemakr object
-    >>> from sensemakr import sensemakr
+    >>> from sensemakr import main
     >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> sensitivity_plots.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
 
@@ -246,7 +246,7 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
-    >>> from sensemakr import sensemakr
+    >>> from sensemakr import main
     >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
     >>> from sensemakr import sensitivity_plots
@@ -380,7 +380,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
-    >>> from sensemakr import sensemakr
+    >>> from sensemakr import main
     >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot extreme value of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
     >>> from sensemakr import sensitivity_plots
