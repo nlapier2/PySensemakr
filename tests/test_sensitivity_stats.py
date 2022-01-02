@@ -5,7 +5,7 @@ import pandas as pd
 from sensemakr.sensitivity_stats import *
 from sensemakr.bias_functions import *
 import statsmodels.formula.api as smf
-from sensemakr import sensemakr
+from sensemakr import main
 import pytest
 # Numerical Tests
 def test_partial_r2():

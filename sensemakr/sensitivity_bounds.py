@@ -1,4 +1,4 @@
-r"""
+"""
 Description:
 ------------
 Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
@@ -24,16 +24,14 @@ Load example dataset
 Fit a statsmodels OLSResults object ("fitted_model")
 
 >>> import statsmodels.formula.api as smf
->>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar \
-            +pastvoted + hhsize_darfur + female + village', data=darfur)
+>>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar +pastvoted + hhsize_darfur + female + village', data=darfur)
 >>> fitted_model = model.fit()
 
 Bounds on the strength of confounders 1, 2, or 3 times as strong as female
 and 1, 2, or 3 times as strong as pastvoted
 
->>> from sensemakr import ovb_bounds
->>> ovb_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed",\
-           benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3])
+>>> from sensemakr import sensitivity_bounds
+>>> sensitivity_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
 """
 # Computes bounds on the strength of unobserved confounders using observed covariates
 import sys
@@ -47,7 +45,7 @@ import statsmodels.api as sm
 def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha=0.05, h0=0, reduce=True,
                bound='partial r2', adjusted_estimates=True):
 
-    r"""
+    """
     **Description:**
 
     Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
@@ -98,14 +96,12 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
     >>> darfur = data.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model")
     >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + '\
-                    'pastvoted + hhsize_darfur + female + village', data=darfur)
+    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Bounds on the strength of confounders 1, 2, or 3 times as strong as female
     >>> # and 1, 2, or 3 times as strong as pastvoted
-    >>> from sensemakr import ovb_bounds
-    >>> ovb_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed",\
-               benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3])
+    >>> from sensemakr import sensitivity_bounds
+    >>> sensitivity_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
 
     """
     if ky is None:
@@ -132,7 +128,7 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
 
 def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None,
                          benchmark_covariates=None, kd=1, ky=None):
-    r"""
+    """
     **Description:**
     The function `ovb_partial_r2_bound()` returns only a Pandas DataFrame with the bounds on the strength of the
     unobserved confounder. Adjusted estimates, standard errors and t-values (among other quantities) need to be computed
@@ -167,23 +163,18 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
     You can still compute the bounds.
 
     >>> # First import the necessary libraries.
-    >>> from sensemakr import sensitivity_stats
-    >>> from sensemakr import bias_functions
-    >>> from sensemakr import ovb_bounds
-    >>> from sensemakr import ovb_plots
+    >>> from sensemakr import *
     >>> # Use the t statistic of female in the outcome regression to compute the partial R2 of female with the outcome.
-    >>> r2yxj_dx = sensitivity_stats.partial_r2(t_statistic = -9.789, dof = 783)
+    >>> r2yxj_dx = partial_r2(t_statistic = -9.789, dof = 783)
     >>> # Use the t-value of female in the *treatment* regression to compute the partial R2 of female with the treatment.
-    >>> r2dxj_x = sensitivity_stats.partial_r2(t_statistic = -2.680, dof = 783)
+    >>> r2dxj_x = partial_r2(t_statistic = -2.680, dof = 783)
     >>> # Compute manually bounds on the strength of confounders 1, 2, or 3 times as strong as female.
-    >>> bounds = ovb_bounds.ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,\
-                    kd = [1, 2, 3], ky = [1, 2, 3])
+    >>> bounds = ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,kd = [1, 2, 3], ky = [1, 2, 3])
     >>> # Compute manually adjusted estimates.
-    >>> bound_values = bias_functions.adjusted_estimate(estimate = 0.0973, se = 0.0232,\
-                        dof = 783, r2dz_x = bounds['r2dz_x'], r2yz_dx = bounds['r2yz_dx'])
+    >>> bound_values = adjusted_estimate(estimate = 0.0973, se = 0.0232, dof = 783, r2dz_x = bounds['r2dz_x'], r2yz_dx = bounds['r2yz_dx'])
     >>> # Plot contours and bounds.
-    >>> ovb_plots.ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)
-    >>> ovb_plots.add_bound_to_contour(bounds=bounds, bound_value = bound_values)
+    >>> ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)
+    >>> add_bound_to_contour(bounds=bounds, bound_value = bound_values)
 
     """
     if (model is None or treatment is None) and (r2dxj_x is None or r2yxj_dx is None):
