@@ -600,7 +600,7 @@ class Sensemakr:
             return result
     
     def __repr__(self):
-        print(self)
+        self.print()
     
     def __str__(self):
-        print(self)
+        self.print()
