@@ -29,19 +29,19 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
                      reduce=True, estimate_threshold=0, t_threshold=2, lim=None, lim_y=None,
                      col_contour="black", col_thr_line="red", label_text=True, label_bump_x=None, label_bump_y=None,
                      xlab=None, ylab=None, asp=None, list_par=None, plot_margin_fraction=0.05, round_dig=3):
-    """r"""
+    r"""
     **Description:**
     Contour plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
-    
+
     The horizontal axis of the plot shows hypothetical values of the partial R2 of the unobserved confounder(s) with the treatment.
     The vertical axis shows hypothetical values of the partial R2 of the unobserved confounder(s) with the outcome.
     The contour levels represent the adjusted estimates (or t-values) of the treatment effect.
-    
+
     The reference points are the bounds on the partial R2 of the unobserved confounder if it were k times "as strong" as the observed covariates used for benchmarking (see arguments kd and ky).
     The dotted red line show the chosen critical threshold (for instance, zero): confounders with such strength (or stronger) are sufficient to invalidate the research conclusions.
     All results are exact for single confounders and conservative for multiple/nonlinear confounders.
-    
+
     See Cinelli and Hazlett (2020) for details.
 
     Parameters
@@ -107,14 +107,13 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
 
     Returns
     -------
-    type
         a contour plot of omitted variable bias for the corresponding model/sense_obj.
-        
+
         **Reference:**
-        
+
         Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
         Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-        
+
         **Examples:**
 
     >>> # Load example dataset:
@@ -136,7 +135,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     >>> from sensemakr import main
     >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> sensitivity_plots.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
-
+    """
     if sensitivity_of not in ["estimate", "t-value"]:
         sys.exit('Error: "sensitivity_of" argument is required and must be "estimate" or "t-value".')
     if sense_obj is not None:
@@ -250,11 +249,11 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
 def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, reduce=None,
                          treatment=None, bounds=None, r2dz_x=None, r2yz_dx=None, bound_value=None, bound_label=None,
                          sensitivity_of=None, label_text=True, label_bump_x=None, label_bump_y=None, round_dig=3):
-    """r"""
+    r"""
     **Description:**
     Add bound label to the contour plot of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
-    
+
     The reference points are the bounds on the partial R2 of the unobserved confounder if it were k times ''as strong'' as the observed covariate used for benchmarking (see arguments kd and ky).
 
     Parameters
@@ -300,9 +299,8 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
 
     Returns
     -------
-    type
         add a bound label to the existing contour plot.
-        
+
         **Examples:**
 
     >>> # Load example dataset:
@@ -320,6 +318,7 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
     >>> # Add bound to contour.
     >>> sensitivity_plots.add_bound_to_contour(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[2,3])
+    """
     if ((model is None or benchmark_covariates is None) and bounds is None and (r2dz_x is None or r2yz_dx is None)):
         sys.exit('Error: add_bound_to_contour requires either a statsmodels OLSResults object and names of benchmark '
                  'covariates, or a Pandas DataFrame with bounding information, '
@@ -391,17 +390,17 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
                      benchmark_covariates=None, kd=1,ky=None, r2dz_x=None, r2yz_dx=[1, 0.75, 0.5],
                      reduce=True, threshold=0, lim=None, lim_y=None,
                      xlab=None, ylab=None, list_par=None):
-    """r"""
+    r"""
     **Description:**
-    
+
     Extreme scenario plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
-    
+
     The horizontal axis shows the partial R2 of the unobserved confounder(s) with the treatment. The vertical axis shows the adjusted treatment effect estimate.
     The partial R2 of the confounder with the outcome is represented by different curves for each scenario, as given by the parameter r2yz_dx.
     The red marks on horizontal axis are bounds on the partial R2 of the unobserved confounder kd times as strong as the covariates used for benchmarking.
     The dotted red line represent the threshold for the effect estimate deemed to be problematic (for instance, zero).
-    
+
     See Cinelli and Hazlett (2020) for details.
 
     Parameters
@@ -447,22 +446,21 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     lim_y :
         range of y-axis (Default value = None)
     0.75 :
-        
+
     0.5] :
-        
+
     list_par :
          (Default value = None)
 
     Returns
     -------
-    type
         an extreme value plot of omitted variable bias for the corresponding model/sense_obj.
-        
+
         **Reference:**
-        
+
         Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
         Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-        
+
         **Examples:**
 
     >>> # Load example dataset:
@@ -484,7 +482,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     >>> sensitivity_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
     >>> # Plot extreme value of the sensemakr object
     >>> sensitivity_plots.ovb_extreme_plot(sense_obj=sensitivity)
-
+    """
     if sense_obj is not None:
         # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
         treatment, estimate, se, dof, r2dz_x, dum, bound_label, reduce, estimate_threshold, t_threshold,benchmark_covariates,kd,ky = \
@@ -557,7 +555,7 @@ def extract_from_sense_obj(sense_obj):
     Parameters
     ----------
     sense_obj :
-        
+
 
     Returns
     -------
@@ -597,19 +595,19 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
     Parameters
     ----------
     model :
-        
+
     treatment :
-        
+
     benchmark_covariates :
-        
+
     kd :
-        
+
     ky :
-        
+
     r2dz_x :
-        
+
     r2yz_dx :
-        
+
 
     Returns
     -------
@@ -656,23 +654,23 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
     Parameters
     ----------
     estimate :
-        
+
     r2dz_x :
-        
+
     r2yz_dx :
-        
+
     lim :
-        
+
     lim_y :
-        
+
     label_bump_x :
-        
+
     label_bump_y :
-        
+
     asp :
-        
+
     list_par :
-        
+
 
     Returns
     -------
@@ -724,15 +722,15 @@ def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim, list_par):
     Parameters
     ----------
     estimate :
-        
+
     r2dz_x :
-        
+
     r2yz_dx :
-        
+
     lim :
-        
+
     list_par :
-        
+
 
     Returns
     -------
@@ -769,7 +767,7 @@ def check_estimate(estimate):
     Parameters
     ----------
     estimate :
-        
+
 
     Returns
     -------
@@ -788,9 +786,9 @@ def check_multipliers(ky, kd):
     Parameters
     ----------
     ky :
-        
+
     kd :
-        
+
 
     Returns
     -------
