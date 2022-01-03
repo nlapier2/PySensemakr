@@ -46,16 +46,16 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
                bound='partial r2', adjusted_estimates=True):
 
     """**Description:**
-    
+
     Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
     The main generic function is ovb_bounds, which can compute both the bounds on the strength of confounding
     as well as the adjusted estimates, standard errors, t-values and confidence intervals.
-    
+
     Other functions that compute only the bounds on the strength of confounding are also provided. These functions
     may be useful when computing benchmarks for using only summary statistics from papers you see in print.
-    
+
     Currently it implements only the bounds based on partial R2. Other bounds will be implemented soon.
-    
+
     :Required parameters: model and treatment
 
     Parameters
@@ -85,9 +85,8 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
 
     Returns
     -------
-    type
         A Pandas DataFrame containing the following variables:
-        
+
         * treatment : the name of the provided treatment variable
         * bound_label : a string created by label_maker to serve as a label for the bound for printing & plotting purposes
         * r2dz_x : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
@@ -99,11 +98,11 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
         * adjusted_estimate : the bias-adjusted estimate adjusted for a confounder with the given r2dz_x and r2yz_dx above
         * adjusted_se : the bias-adjusted standard error adjusted for a confounder with the given r2dz_x and r2yz_dx above
         * adjusted_t : the bias-adjusted t-statistic adjusted for a confounder with the given r2dz_x and r2yz_dx above
-        
+
         **Reference:**
-        
+
         Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-        
+
         **Example:**
 
     >>> # Load example dataset
@@ -146,7 +145,7 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
     The function `ovb_partial_r2_bound()` returns only a Pandas DataFrame with the bounds on the strength of the
     unobserved confounder. Adjusted estimates, standard errors and t-values (among other quantities) need to be computed
     manually by the user using those bounds with the functions adjusted_estimate, adjusted_se and adjusted_t.
-    
+
     :Required parameters: (model and treatment) or (r2dxj_x and r2yxj_dx)
 
     Parameters
@@ -169,9 +168,9 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 
     Returns
     -------
-    type
+
         A Pandas DataFrame containing the following variables:
-        
+
         * bound_label : a string created by label_maker to serve as a label for the bound for printing & plotting purposes
         * r2dz_x : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
@@ -179,10 +178,10 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
         * r2yz_dx : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
         as implied by z being ky-times as strong as the benchmark_covariates
-        
+
         **Reference:**
         Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-        
+
         **Examples:**
         Let's construct bounds from summary statistics only. Suppose you didn't have access to the data, but only to the treatment and outcome regression tables.
         You can still compute the bounds.
@@ -305,7 +304,7 @@ def label_maker(benchmark_covariate, kd, ky, digits=2):
     ky :
         param digits:  (Default value = 2)
     kd :
-        
+
     digits :
          (Default value = 2)
 

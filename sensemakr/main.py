@@ -122,40 +122,52 @@ from . import sensitivity_bounds
 from . import sensitivity_plots
 
 class Sensemakr:
-    r"""
+    """r"""
     Sensitivity analysis to unobserved confounders.
-
+    
     This function performs sensitivity analysis to omitted variables as discussed in Cinelli and Hazlett (2020).
     It returns an object of class Sensemakr with several pre-computed sensitivity statistics for reporting.
     After creating the object, you may directly use the plot and summary methods of the returned object.
-
+    
     Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly,
     such as the functions for sensitivity plots (ovb_contour_plot, ovb_extreme_plot), the functions for
     computing bias-adjusted estimates and t-values (adjusted_estimate, adjusted_t), the functions for computing the
     robustness value and partial R2 (robustness_value, partial_r2),  or the functions for bounding the strength
     of unobserved confounders (ovb_bounds), among others.
-
+    
     **Parameters**
-    arguments passed to other methods. First argument should either be
 
-    * a statsmodels OLSResults object ("fitted_model"); or
-    * the numerical estimated value of the coefficient, along with the numeric values of standard errors and
-      degrees of freedom (arguments estimate, se and df).
+    Parameters
+    ----------
+    a :
+        statsmodels OLSResults object
+    the :
+        numerical estimated value of the coefficient
+    degrees :
+        of freedom
+    Return :
+        
+    An :
+        object of class Sensemakr
+    sensitivity_stats :
+        A Pandas DataFrame with the sensitivity statistics for the treatment variable
+    as :
+        computed by the function sensitivity_stats
+    bounds :
+        A pandas DataFrame with bounds on the strength of confounding according to some benchmark covariates
+    as :
+        computed by the function ovb_bounds
+    Reference :
+        
+    Cinelli :
+        
+    Journal :
+        of the Royal Statistical Society
+    Examples :
+        
 
-    **Return:**
-    An object of class Sensemakr, containing:
-
-    * sensitivity_stats : A Pandas DataFrame with the sensitivity statistics for the treatment variable,
-      as computed by the function sensitivity_stats.
-
-    * bounds : A pandas DataFrame with bounds on the strength of confounding according to some benchmark covariates,
-      as computed by the function ovb_bounds.
-
-    **Reference:**
-    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-    **Examples:**
+    Returns
+    -------
 
     >>> # Load example dataset:
     >>> from sensemakr import data
@@ -169,8 +181,6 @@ class Sensemakr:
     >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Description of results
     >>> sensitivity.summary() # doctest: +SKIP
-
-    """
 
     def __init__(self, model=None, treatment=None, estimate=None, se=None, dof=None, benchmark_covariates=None, kd=1,
                  ky=None, q=1, alpha=0.05, r2dz_x=None, r2yz_dx=None, r2dxj_x=None, r2yxj_dx=None,
@@ -344,11 +354,19 @@ class Sensemakr:
             self.bounds = self.bounds.append(self.bench_bounds).reset_index()
 
     def summary(self, digits=3):
-        """
-        Print a summary of the sensitivity results for a Sensemakr object, including robustness value, extreme
+        """Print a summary of the sensitivity results for a Sensemakr object, including robustness value, extreme
         confounding scenario, and benchmark bounding. digits is the number of digits to round numbers to; default is 3.
         Following the example above, if you have a Sensemakr object called sensitivity, call this method using
         sensitivity.summary(). To round to 5 digits instead of 3, call sensitivity.summary(digits=5).
+
+        Parameters
+        ----------
+        digits :
+             (Default value = 3)
+
+        Returns
+        -------
+
         """
         if self.reduce:
             h0 = round(self.estimate * (1 - self.q), digits)
@@ -406,21 +424,32 @@ class Sensemakr:
                   " power of the chosen benchmark covariate(s).\n")
             print(self.bounds)
     def plot(self, plot_type = "contour", sensitivity_of = 'estimate', **kwargs):
-        r"""
+        """r"""
         **Description:**
         This function provides the contour and extreme scenario sensitivity
         plots of the sensitivity analysis results obtained with the function Sensemakr. They are basically dispatchers
         to the core plot functions ovb_contour_plot and ovb_extreme_plot.
-
+        
         This function takes as input a sensemakr object and one of the plot type "contour" or "extreme". Optional arguments
         can be found in sensitivity_plots documentation including col_contour, col_thr_line etc.
 
-        :param sense_obj: a sensemakr object
-        :param plot_type: either "extreme" or "contour"
+        Parameters
+        ----------
+        sense_obj :
+            a sensemakr object
+        plot_type :
+            either "extreme" or "contour" (Default value = "contour")
+        sensitivity_of :
+             (Default value = 'estimate')
+        **kwargs :
+            
 
-        :return: a plot for the corresponding plot type
-
-        **Examples:**
+        Returns
+        -------
+        type
+            a plot for the corresponding plot type
+            
+            **Examples:**
 
         >>> # Load example dataset:
         >>> from sensemakr import data
@@ -432,8 +461,6 @@ class Sensemakr:
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import main
         >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-
-        """
         if plot_type == 'contour':
             sensitivity_plots.ovb_contour_plot(sense_obj=self,sensitivity_of=sensitivity_of,**kwargs)
         elif (plot_type == 'extreme') and (sensitivity_of == 't-value'):
@@ -444,11 +471,19 @@ class Sensemakr:
             sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')
 
     def print(self, digits=3):
-        """
-        Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
+        """Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
         digits is the number of digits to round numbers to; default is 3.
         Following the example above, if you have a Sensemakr object called sensitivity, call this method using
         sensitivity.print(). To round to 5 digits instead of 3, call sensitivity.print(digits=5).
+
+        Parameters
+        ----------
+        digits :
+             (Default value = 3)
+
+        Returns
+        -------
+
         """
         if self.reduce:
             h0 = round(self.estimate * (1 - self.q), digits)
@@ -476,22 +511,32 @@ class Sensemakr:
               round(self.sensitivity_stats['rv_qa'], digits), "\n")
 
     def ovb_minimal_reporting(self, format = 'html', digits = 3, display = True):
-        """
-        **Descriptions:**
-
+        """**Descriptions:**
+        
         ovb_minimal_reporting returns the LaTeX/HTML code for a table summarizing the sensemakr object.
-
+        
         This function takes as input a sensemakr object, the digit to round number, one of the format type "latex" or "html",
         and a boolean whether to display the output or not. The default is round 3 digits, 'html' format and display the table.
 
-        :param sense_obj: a sensemakr object
-        :param digit: rounding digit for the table (minimal 3 to support percentages)
-        :param format: either "latex" or "html"
-        :param display: default is True, to display the table
+        Parameters
+        ----------
+        sense_obj :
+            a sensemakr object
+        digit :
+            rounding digit for the table (minimal 3 to support percentages)
+        format :
+            either "latex" or "html" (Default value = 'html')
+        display :
+            default is True, to display the table
+        digits :
+             (Default value = 3)
 
-        :return: LaTex/HTML code for creating the table summarizing the sensemakr object
-
-        **Examples:**
+        Returns
+        -------
+        type
+            LaTex/HTML code for creating the table summarizing the sensemakr object
+            
+            **Examples:**
 
         >>> # Load example dataset:
         >>> from sensemakr import data

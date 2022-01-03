@@ -92,7 +92,31 @@ import numpy as np
 
 
 def adjusted_estimate(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True):
-    """ Compute the bias-adjusted coefficient estimate. See description at top for details. """
+    """Compute the bias-adjusted coefficient estimate. See description at top for details.
+
+    Parameters
+    ----------
+    r2dz_x :
+        
+    r2yz_dx :
+        
+    model :
+         (Default value = None)
+    treatment :
+         (Default value = None)
+    estimate :
+         (Default value = None)
+    se :
+         (Default value = None)
+    dof :
+         (Default value = None)
+    reduce :
+         (Default value = True)
+
+    Returns
+    -------
+
+    """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_estimate', r2dz_x, r2yz_dx, model=model,
                                                      treatment=treatment, estimate=estimate,
                                                      se=se, dof=dof, reduce=reduce)
@@ -103,7 +127,27 @@ def adjusted_estimate(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None
 
 
 def adjusted_se(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
-    """ Compute the bias-adjusted regression standard error. See description at top for details. """
+    """Compute the bias-adjusted regression standard error. See description at top for details.
+
+    Parameters
+    ----------
+    r2dz_x :
+        
+    r2yz_dx :
+        
+    model :
+         (Default value = None)
+    treatment :
+         (Default value = None)
+    se :
+         (Default value = None)
+    dof :
+         (Default value = None)
+
+    Returns
+    -------
+
+    """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_se', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      se=se, dof=dof, estimate_is_param=False, reduce_is_param=False)
     new_se = np.sqrt((1 - r2yz_dx) / (1 - r2dz_x)) * se * np.sqrt(dof / (dof - 1))
@@ -111,7 +155,33 @@ def adjusted_se(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
 
 
 def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True, h0=0):
-    """ Compute bias-adjusted t-statistic, (adjusted_estimate - h0) / adjusted_se. See description at top for details. """
+    """Compute bias-adjusted t-statistic, (adjusted_estimate - h0) / adjusted_se. See description at top for details.
+
+    Parameters
+    ----------
+    r2dz_x :
+        
+    r2yz_dx :
+        
+    model :
+         (Default value = None)
+    treatment :
+         (Default value = None)
+    estimate :
+         (Default value = None)
+    se :
+         (Default value = None)
+    dof :
+         (Default value = None)
+    reduce :
+         (Default value = True)
+    h0 :
+         (Default value = 0)
+
+    Returns
+    -------
+
+    """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_t', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      estimate=estimate, se=se, dof=dof, reduce=reduce)
     new_estimate = adjusted_estimate(estimate=estimate, r2yz_dx=r2yz_dx, r2dz_x=r2dz_x, se=se, dof=dof, reduce=reduce)
@@ -121,7 +191,33 @@ def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=No
 
 def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None,
                         reduce=True, h0=0):
-    """ Compute the bias-adjusted partial R2, based on adjusted_t. See description at top for details. """
+    """Compute the bias-adjusted partial R2, based on adjusted_t. See description at top for details.
+
+    Parameters
+    ----------
+    r2dz_x :
+        
+    r2yz_dx :
+        
+    model :
+         (Default value = None)
+    treatment :
+         (Default value = None)
+    estimate :
+         (Default value = None)
+    se :
+         (Default value = None)
+    dof :
+         (Default value = None)
+    reduce :
+         (Default value = True)
+    h0 :
+         (Default value = 0)
+
+    Returns
+    -------
+
+    """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_partial_r2', r2dz_x, r2yz_dx, model=model,
                                                      treatment=treatment, estimate=estimate,
                                                      se=se, dof=dof, reduce=reduce)
@@ -130,7 +226,27 @@ def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=No
 
 
 def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
-    """ Compute the omitted variable bias for the partial R2 parameterization. See description at top for details. """
+    """Compute the omitted variable bias for the partial R2 parameterization. See description at top for details.
+
+    Parameters
+    ----------
+    r2dz_x :
+        
+    r2yz_dx :
+        
+    model :
+         (Default value = None)
+    treatment :
+         (Default value = None)
+    se :
+         (Default value = None)
+    dof :
+         (Default value = None)
+
+    Returns
+    -------
+
+    """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      se=se, dof=dof, estimate_is_param=False, reduce_is_param=False)
     bias_val = bf(r2dz_x, r2yz_dx) * se * np.sqrt(dof)  # numpy array
@@ -138,7 +254,29 @@ def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
 
 
 def relative_bias(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None):
-    """ Compute the relative bias for the partial R2 parameterization. See description at top for details. """
+    """Compute the relative bias for the partial R2 parameterization. See description at top for details.
+
+    Parameters
+    ----------
+    r2dz_x :
+        
+    r2yz_dx :
+        
+    model :
+         (Default value = None)
+    treatment :
+         (Default value = None)
+    estimate :
+         (Default value = None)
+    se :
+         (Default value = None)
+    dof :
+         (Default value = None)
+
+    Returns
+    -------
+
+    """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('relative_bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      estimate=estimate, se=se, dof=dof, reduce_is_param=False)
     t_statistic = abs(estimate / se)
@@ -149,13 +287,37 @@ def relative_bias(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se
 
 
 def rel_bias(r_est, est):
-    """ Compute the relative bias for any estimator and the truth value. """
+    """Compute the relative bias for any estimator and the truth value.
+
+    Parameters
+    ----------
+    r_est :
+        
+    est :
+        
+
+    Returns
+    -------
+
+    """
     r_est, est = np.array(r_est), np.array(est)
     return (r_est - est) / r_est
 
 
 def bf(r2dz_x, r2yz_dx):
-    """ Compute the bias function for the partial R2 parameters. See description at top for details. """
+    """Compute the bias function for the partial R2 parameters. See description at top for details.
+
+    Parameters
+    ----------
+    r2dz_x :
+        
+    r2yz_dx :
+        
+
+    Returns
+    -------
+
+    """
     r2dz_x, r2yz_dx = np.array(r2dz_x), np.array(r2yz_dx)
     return np.sqrt((r2yz_dx * r2dz_x) / (1 - r2dz_x))
 
@@ -163,10 +325,38 @@ def bf(r2dz_x, r2yz_dx):
 def param_check(function_name, r2dz_x, r2yz_dx,
                 model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True,
                 estimate_is_param=True, reduce_is_param=True):
-    """
-    Helper method that checks whether the required parameters have been passed in and have valid values.
+    """Helper method that checks whether the required parameters have been passed in and have valid values.
     Also extracts data from a statsmodels OLSResults object (if one is given) for use in numerical formulae.
     See description at top for details.
+
+    Parameters
+    ----------
+    function_name :
+        
+    r2dz_x :
+        
+    r2yz_dx :
+        
+    model :
+         (Default value = None)
+    treatment :
+         (Default value = None)
+    estimate :
+         (Default value = None)
+    se :
+         (Default value = None)
+    dof :
+         (Default value = None)
+    reduce :
+         (Default value = True)
+    estimate_is_param :
+         (Default value = True)
+    reduce_is_param :
+         (Default value = True)
+
+    Returns
+    -------
+
     """
     if estimate_is_param:
         if (model is None or treatment is None) and (estimate is None or se is None or dof is None):
