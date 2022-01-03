@@ -462,6 +462,7 @@ class Sensemakr:
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import main
         >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+        """
         if plot_type == 'contour':
             sensitivity_plots.ovb_contour_plot(sense_obj=self,sensitivity_of=sensitivity_of,**kwargs)
         elif (plot_type == 'extreme') and (sensitivity_of == 't-value'):
@@ -470,7 +471,7 @@ class Sensemakr:
             sensitivity_plots.ovb_extreme_plot(sense_obj=self,**kwargs)
         else:
             sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')
-        """
+
 
     def print(self, digits=3):
         """Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
