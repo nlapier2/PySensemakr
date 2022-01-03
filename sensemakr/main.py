@@ -122,19 +122,19 @@ from . import sensitivity_bounds
 from . import sensitivity_plots
 
 class Sensemakr:
-    """r"""
+    r"""
     Sensitivity analysis to unobserved confounders.
-    
+
     This function performs sensitivity analysis to omitted variables as discussed in Cinelli and Hazlett (2020).
     It returns an object of class Sensemakr with several pre-computed sensitivity statistics for reporting.
     After creating the object, you may directly use the plot and summary methods of the returned object.
-    
+
     Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly,
     such as the functions for sensitivity plots (ovb_contour_plot, ovb_extreme_plot), the functions for
     computing bias-adjusted estimates and t-values (adjusted_estimate, adjusted_t), the functions for computing the
     robustness value and partial R2 (robustness_value, partial_r2),  or the functions for bounding the strength
     of unobserved confounders (ovb_bounds), among others.
-    
+
     **Parameters**
 
     Parameters
@@ -146,7 +146,7 @@ class Sensemakr:
     degrees :
         of freedom
     Return :
-        
+
     An :
         object of class Sensemakr
     sensitivity_stats :
@@ -158,13 +158,13 @@ class Sensemakr:
     as :
         computed by the function ovb_bounds
     Reference :
-        
+
     Cinelli :
-        
+
     Journal :
         of the Royal Statistical Society
     Examples :
-        
+
 
     Returns
     -------
@@ -181,6 +181,7 @@ class Sensemakr:
     >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Description of results
     >>> sensitivity.summary() # doctest: +SKIP
+    """
 
     def __init__(self, model=None, treatment=None, estimate=None, se=None, dof=None, benchmark_covariates=None, kd=1,
                  ky=None, q=1, alpha=0.05, r2dz_x=None, r2yz_dx=None, r2dxj_x=None, r2yxj_dx=None,
@@ -424,12 +425,12 @@ class Sensemakr:
                   " power of the chosen benchmark covariate(s).\n")
             print(self.bounds)
     def plot(self, plot_type = "contour", sensitivity_of = 'estimate', **kwargs):
-        """r"""
+        """r
         **Description:**
         This function provides the contour and extreme scenario sensitivity
         plots of the sensitivity analysis results obtained with the function Sensemakr. They are basically dispatchers
         to the core plot functions ovb_contour_plot and ovb_extreme_plot.
-        
+
         This function takes as input a sensemakr object and one of the plot type "contour" or "extreme". Optional arguments
         can be found in sensitivity_plots documentation including col_contour, col_thr_line etc.
 
@@ -442,13 +443,13 @@ class Sensemakr:
         sensitivity_of :
              (Default value = 'estimate')
         **kwargs :
-            
+
 
         Returns
         -------
         type
             a plot for the corresponding plot type
-            
+
             **Examples:**
 
         >>> # Load example dataset:
@@ -469,6 +470,7 @@ class Sensemakr:
             sensitivity_plots.ovb_extreme_plot(sense_obj=self,**kwargs)
         else:
             sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')
+        """
 
     def print(self, digits=3):
         """Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
@@ -512,9 +514,9 @@ class Sensemakr:
 
     def ovb_minimal_reporting(self, format = 'html', digits = 3, display = True):
         """**Descriptions:**
-        
+
         ovb_minimal_reporting returns the LaTeX/HTML code for a table summarizing the sensemakr object.
-        
+
         This function takes as input a sensemakr object, the digit to round number, one of the format type "latex" or "html",
         and a boolean whether to display the output or not. The default is round 3 digits, 'html' format and display the table.
 
@@ -533,9 +535,9 @@ class Sensemakr:
 
         Returns
         -------
-        type
+
             LaTex/HTML code for creating the table summarizing the sensemakr object
-            
+
             **Examples:**
 
         >>> # Load example dataset:
@@ -576,7 +578,7 @@ class Sensemakr:
             "\\%""}\\\\\n"+\
             "\\end{tabular}\n"+\
             "\\end{table}")
-            
+
             if(display==True):
                 from IPython.display import display_latex
                 display_latex(result, raw=True)
