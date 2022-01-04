@@ -1,4 +1,4 @@
-sensemakr\.sensemakr
+sensemakr
 ---------------------------
 
 .. automodule:: sensemakr.main
