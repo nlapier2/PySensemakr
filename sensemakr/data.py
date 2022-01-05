@@ -1,7 +1,6 @@
 """
-Description
-------------
 The module provides the example data of darfur based on a survey among Darfurian refugees in eastern Chad.
+
 The data is on attitudes of Darfurian refugees in eastern Chad. The main "treatment" variable is *directlyharmed*,
 which indicates that the individual was physically injured during attacks on villages in Darfur,
 largely between 2003 and 2004. The main outcome of interest is *peacefactor*, a measure of pro-peace attitudes.
@@ -12,7 +11,6 @@ prior to the conflict).
 
 Format
 -------
-
 A data frame with 1276 rows and 14 columns.
 
 **wouldvote**
@@ -93,5 +91,5 @@ import os
 path=os.path.join(os.path.dirname(__file__), 'data/darfur.csv')
 
 def load_darfur():
-    """ Load the darfur example data of the packages. """
+    """Load the darfur example data of the packages."""
     return pd.read_csv(path)

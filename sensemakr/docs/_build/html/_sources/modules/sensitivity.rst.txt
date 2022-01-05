@@ -1,4 +1,4 @@
-sensemakr\.ovb\_bounds
+sensemakr\.sensitivity\_bounds
 -----------------------------
 
 .. automodule:: sensemakr.ovb_bounds

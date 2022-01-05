@@ -1,116 +1,54 @@
-# """
-# Description:
-# ------------
-# PySensemakr is the Python version of the R package sensemakr.  The sensemakr package implements a suite of sensitivity analysis tools that makes it easier to
-# understand the impact of omitted variables in linear regression models, as discussed in Cinelli and Hazlett (2020).
-#
-# R's linear model ("lm") and data.frame objects most naturally translate to statsmodels OLS/OLSResults and pandas
-# DataFrame/Series objects, thus PySensemakr makes heavy use of those packages.
-# In this documention, several examples are included to demonstrate how to use these objects to run this package successfully.
-#
-# The main function of the package is main.Sensemakr, which computes the most common sensitivity analysis results.
-# After creating an object of the Sensemakr class, you may directly use the plot, summary, and print methods of the object.
-#
-# You may also use the other sensitivity functions of the package directly, such as: (i) functions for sensitivity plots
-# (`ovb_contour_plot`, `ovb_extreme_plot`); (ii) functions for computing bias-adjusted estimates and t-values
-# (`adjusted_estimate`, `adjusted_t`); (iii) functions for computing the robustness value and partial R2 directly (`robustness_value`,
-# `partial_r2`); and, (iv) functions for bounding the strength of unobserved confounders (`ovb_bounds`), among others. These functions are
-# in the modules `ovb_plots`, `bias_functions`, `sensitivity_stats`, and `ovb_bounds`. `PySensemakr` also comes with example data sets, found
-# in the module `data`.
-#
-# More information can be found on this documentation and related papers.
-#
-# Reference:
-# ----------
-#
-# Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-# Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-#
-# Examples:
-# ---------
-#
-# Load example dataset:
-#
-# >>> from sensemakr import data
-# >>> darfur = data.load_darfur()
-#
-# Fit a statsmodels OLSResults object ("fitted_model")
-#
-# >>> import statsmodels.formula.api as smf
-# >>> model = smf.ols(formula='peacefactor ~ \
-#         directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
-# >>> fitted_model = model.fit()
-#
-# Runs sensemakr for sensitivity analysis
-#
-# >>> from sensemakr import main
-# >>> sensitivity = main.Sensemakr(
-#         fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-#
-# Description of results
-#
-# >>> sensitivity.summary()
-#
-# Pandas DataFrame with sensitivity statistics
-#
-# >>> sensitivity.sensitivity_stats
-#
-# Pandas DataFrame with bounds on the strength of confounders
-#
-# >>> sensitivity.bounds
-#
-# Using sensitivity functions directly
-#
-# >>> from sensemakr import sensitivity_stats
-# >>> from sensemakr import sensitivity_bounds
-# >>> from sensemakr import bias_functions
-#
-# Robustness value of directly harmed q = 1 (reduce estimate to zero)
-#
-# >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed')
-#
-# Robustness value of directly harmed q = 1/2 (reduce estimate in half)
-#
-# >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed', q = 0.5)
-#
-# Robustness value of directly harmed q = 1/2, alpha = 0.05
-#
-# >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = 'directlyharmed', q = 0.5, alpha = 0.05)
-#
-# Partial R2 of directly harmed with peacefactor
-#
-# >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")
-#
-# Partial R2 of female with peacefactor
-#
-# >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")
-#
-# Pandas DataFrame with sensitivity statistics
-#
-# >>> sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = "directlyharmed")
-#
-# Bounds on the strength of confounders using female and age
-#
-# >>> sensitivity_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed",
-#     benchmark_covariates = ["female", "age"], kd = [1, 2, 3])
-#
-# Adjusted estimate given hypothetical strength of confounder
-#
-# >>> bias_functions.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.1, r2yz_dx = 0.1)
-#
-# Adjusted t-value given hypothetical strength of confounder
-#
-# >>> bias_functions.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.1, r2yz_dx = 0.1)
-#
-# Bias contour plot directly from model
-#
-# >>> ovb_contour_plot(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-#
-# Extreme scenario plot directly from model
-#
-# >>> ovb_extreme_plot(model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3], lim = 0.05)
-#
-# """
+r"""
+Sensitivity analysis to unobserved confounders.
+
+This class performs sensitivity analysis to omitted variables as discussed in Cinelli and Hazlett (2020).
+It returns an object of class Sensemakr with several pre-computed sensitivity statistics for reporting.
+After creating the object, you may directly use the plot and summary methods of the returned object.
+
+Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly,
+such as the functions for sensitivity plots (ovb_contour_plot, ovb_extreme_plot), the functions for
+computing bias-adjusted estimates and t-values (adjusted_estimate, adjusted_t), the functions for computing the
+robustness value and partial R2 (robustness_value, partial_r2),  or the functions for bounding the strength
+of unobserved confounders (ovb_bounds), among others.
+
+**Parameters:**
+arguments passed to other methods. First argument should either be
+
+* a statsmodels OLSResults object ("fitted_model"); or
+* the numerical estimated value of the coefficient, along with the numeric values of standard errors and
+  degrees of freedom (arguments estimate, se and df).
+
+**Return:**
+An object of class Sensemakr, containing:
+
+* sensitivity_stats : A Pandas DataFrame with the sensitivity statistics for the treatment variable,
+  as computed by the function sensitivity_stats.
+
+* bounds : A pandas DataFrame with bounds on the strength of confounding according to some benchmark covariates,
+  as computed by the function ovb_bounds.
+
+**Reference:**
+Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
+Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+
+
+Examples
+--------
+
+>>> # Load example dataset:
+>>> from sensemakr import data
+>>> darfur = data.load_darfur()
+>>> # Fit a statsmodels OLSResults object ("fitted_model")
+>>> import statsmodels.formula.api as smf
+>>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
+>>> fitted_model = model.fit()
+>>> # Runs sensemakr for sensitivity analysis
+>>> from sensemakr import main
+>>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+>>> # Description of results
+>>> sensitivity.summary() # doctest: +SKIP
+"""
+
 
 import sys
 import pandas as pd
@@ -123,89 +61,108 @@ from . import sensitivity_plots
 
 class Sensemakr:
     r"""
-    Sensitivity analysis to unobserved confounders.
+    The constructor for a Sensemakr object.
 
-    This function performs sensitivity analysis to omitted variables as discussed in Cinelli and Hazlett (2020).
-    It returns an object of class Sensemakr with several pre-computed sensitivity statistics for reporting.
-    After creating the object, you may directly use the plot and summary methods of the returned object.
+    Parameter descriptions are below. For usage and info, see the
+    description of the class.
 
-    Sensemakr is a convenience class. You may use the other sensitivity functions of the package directly,
-    such as the functions for sensitivity plots (ovb_contour_plot, ovb_extreme_plot), the functions for
-    computing bias-adjusted estimates and t-values (adjusted_estimate, adjusted_t), the functions for computing the
-    robustness value and partial R2 (robustness_value, partial_r2),  or the functions for bounding the strength
-    of unobserved confounders (ovb_bounds), among others.
+    Required parameters: model and treatment, or estimate, se, and dof.
 
-    **Parameters**
-    arguments passed to other methods. First argument should either be
+    Parameters
+    ----------
 
-    * a statsmodels OLSResults object ("fitted_model"); or
-    * the numerical estimated value of the coefficient, along with the numeric values of standard errors and
-      degrees of freedom (arguments estimate, se and df).
-
-    **Return:**
-    An object of class Sensemakr, containing:
-
-    * sensitivity_stats : A Pandas DataFrame with the sensitivity statistics for the treatment variable,
-      as computed by the function sensitivity_stats.
-
-    * bounds : A pandas DataFrame with bounds on the strength of confounding according to some benchmark covariates,
-      as computed by the function ovb_bounds.
-
-    **Reference:**
-    Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-    Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-    **Examples:**
-
-    >>> # Load example dataset:
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
-    >>> # Fit a statsmodels OLSResults object ("fitted_model")
-    >>> import statsmodels.formula.api as smf
-    >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
-    >>> fitted_model = model.fit()
-    >>> # Runs sensemakr for sensitivity analysis
-    >>> from sensemakr import main
-    >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-    >>> # Description of results
-    >>> sensitivity.summary() # doctest: +SKIP
-
+    model: statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
+    treatment: string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    estimate: float
+        a float with the estimate of the coefficient for the independent variable of interest.
+    se: float
+        a float with the standard error of the regression.
+    dof: int
+        an int with the degrees of freedom of the regression.
+    benchmark_covariates: string or list of strings
+        a string or list of strings with the names of the variables to use for benchmark bounding.
+    kd: float or list of floats
+        a float or list of floats with each being a multiple of the strength of association between a
+        benchmark variable and the treatment variable to test with benchmark bounding.
+    ky: float or list of floats
+        same as kd except measured in terms of strength of association with the outcome variable.
+    q: float
+        a float with the percent to reduce the point estimate by for the robustness value RV_q.
+    alpha: float
+        a float with the significance level for the robustness value RV_qa to render the estimate not significant.
+    r2dz_x: float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out. In this case, you are manually
+        specifying a putative confounder's strength rather than benchmarking.
+    r2yz_dx: float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z"
+        with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+        In this case, you are manually specifying a putative confounder's strength rather than benchmarking.
+    r2dxj_x: float
+        float with the partial R2 of covariate Xj with the treatment D
+        (after partialling out the effect of the remaining covariates X, excluding Xj).
+    r2yxj_dx: float
+        float with the partial R2 of covariate Xj with the outcome Y
+        (after partialling out the effect of the remaining covariates X, excluding Xj).
+    bound_label: string
+        a string what to call the name of a bounding variable, for printing and plotting purposes.
+    reduce: boolean
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
     """
 
     def __init__(self, model=None, treatment=None, estimate=None, se=None, dof=None, benchmark_covariates=None, kd=1,
                  ky=None, q=1, alpha=0.05, r2dz_x=None, r2yz_dx=None, r2dxj_x=None, r2yxj_dx=None,
                  bound_label="Manual Bound", reduce=True):
         r"""
-        The constructor for a Sensemakr object. Parameter descriptions are below. For usage and info, see the
-        description of the class above.
+        The constructor for a Sensemakr object.
+
+        Parameter descriptions are below. For usage and info, see the
+        description of the class.
 
         Required parameters: model and treatment, or estimate, se, and dof
 
-        :param model: a fitted statsmodels OLSResults object for the restricted regression model you have provided
-        :param treatment: a string with the name of the "treatment" variable, e.g. the independent variable of interest
-        :param estimate: a float with the estimate of the coefficient for the independent variable of interest
-        :param se: a float with the standard error of the regression
-        :param dof: an int with the degrees of freedom of the regression
-        :param benchmark_covariates: a string or list of strings with
-        the names of the variables to use for benchmark bounding
-        :param kd: a float or list of floats with each being a multiple of the strength of association between a
-        benchmark variable and the treatment variable to test with benchmark bounding
-        :param ky: same as kd except measured in terms of strength of association with the outcome variable
-        :param q: a float with the percent to reduce the point estimate by for the robustness value RV_q
-        :param alpha: a float with the significance level for the robustness value RV_qa to render the
-        estimate not significant
-        :param r2dz_x: a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
-        with the treatment variable "d", with observed covariates "x" partialed out. In this case, you are manually
-        specifying a putative confounder's strength rather than benchmarking.
-        :param r2yz_dx: a float or list of floats with the  partial R^2 of a putative unobserved confounder "z"
-        with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
-        In this case, you are manually specifying a putative confounder's strength rather than benchmarking.
-        :param r2dxj_x: float with the partial R2 of covariate Xj with the treatment D
-        (after partialling out the effect of the remaining covariates X, excluding Xj).
-        :param r2yxj_dx: float with the partial R2 of covariate Xj with the outcome Y
-        (after partialling out the effect of the remaining covariates X, excluding Xj).
-        :param bound_label: a string what to call the name of a bounding variable, for printing and plotting purposes
-        :param reduce: whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+        Parameters
+        ----------
+
+        model: statsmodels OLSResults object
+            a fitted statsmodels OLSResults object for the restricted regression model you have provided
+        treatment: string
+            a string with the name of the "treatment" variable, e.g. the independent variable of interest
+        estimate: float
+            a float with the estimate of the coefficient for the independent variable of interest
+        se: float
+            a float with the standard error of the regression
+        dof: int
+            an int with the degrees of freedom of the regression
+        benchmark_covariates: string or list of strings
+            a string or list of strings with the names of the variables to use for benchmark bounding
+        kd: float or list of floats
+            a float or list of floats with each being a multiple of the strength of association between a
+            benchmark variable and the treatment variable to test with benchmark bounding
+        ky: float or list of floats
+            same as kd except measured in terms of strength of association with the outcome variable
+        q: float
+            a float with the percent to reduce the point estimate by for the robustness value RV_q
+        alpha: float
+            a float with the significance level for the robustness value RV_qa to render the estimate not significant
+        r2dz_x: float or list of floats
+            a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out. In this case, you are manually
+            specifying a putative confounder's strength rather than benchmarking.
+        r2yz_dx: float or list of floats
+            a float or list of floats with the  partial R^2 of a putative unobserved confounder "z"
+            with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+            In this case, you are manually specifying a putative confounder's strength rather than benchmarking.
+        r2dxj_x: float
+            float with the partial R2 of covariate Xj with the treatment D
+            (after partialling out the effect of the remaining covariates X, excluding Xj).
+        r2yxj_dx: float
+            float with the partial R2 of covariate Xj with the outcome Y
+            (after partialling out the effect of the remaining covariates X, excluding Xj).
+        bound_label: string
+            a string what to call the name of a bounding variable, for printing and plotting purposes
+        reduce: boolean
+            whether to reduce (True, default) or increase (False) the estimate due to putative confounding
         """
         if (model is None or treatment is None) and (estimate is None or se is None or dof is None):
             sys.exit('Error: Sensemakr object requires either a statsmodels OLSResults object and treatment name or an '
@@ -345,10 +302,20 @@ class Sensemakr:
 
     def summary(self, digits=3):
         """
-        Print a summary of the sensitivity results for a Sensemakr object, including robustness value, extreme
-        confounding scenario, and benchmark bounding. digits is the number of digits to round numbers to; default is 3.
+        Print a summary of the sensitivity results for a Sensemakr object, including robustness value, extreme confounding scenario, and benchmark bounding.
+
+        digits is the number of digits to round numbers to; default is 3.
         Following the example above, if you have a Sensemakr object called sensitivity, call this method using
         sensitivity.summary(). To round to 5 digits instead of 3, call sensitivity.summary(digits=5).
+
+        Parameters
+        ----------
+        digits : int
+             Rounding digit for summary (Default value = 3).
+
+        Returns
+        -------
+
         """
         if self.reduce:
             h0 = round(self.estimate * (1 - self.q), digits)
@@ -406,21 +373,32 @@ class Sensemakr:
                   " power of the chosen benchmark covariate(s).\n")
             print(self.bounds)
     def plot(self, plot_type = "contour", sensitivity_of = 'estimate', **kwargs):
-        r"""
-        **Description:**
-        This function provides the contour and extreme scenario sensitivity
-        plots of the sensitivity analysis results obtained with the function Sensemakr. They are basically dispatchers
+        """
+        Provide the contour and extreme scenario sensitivity plots of the sensitivity analysis results obtained with the function Sensemakr.
+
+        They are basically dispatchers
         to the core plot functions ovb_contour_plot and ovb_extreme_plot.
 
         This function takes as input a sensemakr object and one of the plot type "contour" or "extreme". Optional arguments
         can be found in sensitivity_plots documentation including col_contour, col_thr_line etc.
 
-        :param sense_obj: a sensemakr object
-        :param plot_type: either "extreme" or "contour"
+        Parameters
+        ----------
+        sense_obj : sensemakr object
+            A sensemakr object to plot.
+        plot_type : string
+            Either "extreme" or "contour" (Default value = "contour").
+        sensitivity_of : string
+            Either "estimate" or "t-value" (Default value = 'estimate').
+        **kwargs :
+            Arbitrary keyword arguments. See ovb_contour_plot and ovb_extreme_plot.
 
-        :return: a plot for the corresponding plot type
+        Returns
+        -------
 
-        **Examples:**
+
+        Examples
+        ---------
 
         >>> # Load example dataset:
         >>> from sensemakr import data
@@ -432,7 +410,6 @@ class Sensemakr:
         >>> # Runs sensemakr for sensitivity analysis
         >>> from sensemakr import main
         >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-
         """
         if plot_type == 'contour':
             sensitivity_plots.ovb_contour_plot(sense_obj=self,sensitivity_of=sensitivity_of,**kwargs)
@@ -443,12 +420,22 @@ class Sensemakr:
         else:
             sys.exit('Error: "plot_type" argument must be "contour" or "extreme"')
 
+
     def print(self, digits=3):
-        """
-        Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
+        """Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
+
         digits is the number of digits to round numbers to; default is 3.
         Following the example above, if you have a Sensemakr object called sensitivity, call this method using
         sensitivity.print(). To round to 5 digits instead of 3, call sensitivity.print(digits=5).
+
+        Parameters
+        ----------
+        digits : int
+             Rounding digits for print (Default value = 3).
+
+        Returns
+        -------
+
         """
         if self.reduce:
             h0 = round(self.estimate * (1 - self.q), digits)
@@ -463,8 +450,6 @@ class Sensemakr:
             #print("Model Formula: " + model_formula + "\n")
             print("Model Formula: "+self.model.model.formula+"\n")
         print("Null hypothesis: q =", self.q, "and reduce =", self.reduce, "\n")
-        print("-- This means we are considering biases that", direction, "the absolute value of the current estimate.")
-        print("-- The null hypothesis deemed problematic is H0:tau =", h0, "\n")
 
         print("Unadjusted Estimates of '", self.treatment, "':")
         print("  Coef. estimate:", round(self.estimate, digits))
@@ -479,21 +464,29 @@ class Sensemakr:
 
     def ovb_minimal_reporting(self, format = 'html', digits = 3, display = True):
         """
-        **Descriptions:**
-
         ovb_minimal_reporting returns the LaTeX/HTML code for a table summarizing the sensemakr object.
 
         This function takes as input a sensemakr object, the digit to round number, one of the format type "latex" or "html",
         and a boolean whether to display the output or not. The default is round 3 digits, 'html' format and display the table.
 
-        :param sense_obj: a sensemakr object
-        :param digit: rounding digit for the table (minimal 3 to support percentages)
-        :param format: either "latex" or "html"
-        :param display: default is True, to display the table
+        Parameters
+        ----------
+        sense_obj : sensemakr object
+            A sensemakr object for reporting.
+        format : string
+            Either "latex" or "html" (Default value = 'html').
+        display : boolean
+            Default is True, to display the table.
+        digits : int
+            Rounding digit for the table (Default value = 3).
 
-        :return: LaTex/HTML code for creating the table summarizing the sensemakr object
+        Returns
+        -------
+        string
+            LaTex/HTML code for creating the table summarizing the sensemakr object.
 
-        **Examples:**
+        Examples
+        ---------
 
         >>> # Load example dataset:
         >>> from sensemakr import data
@@ -510,7 +503,6 @@ class Sensemakr:
         >>> # Prints raw html code
         >>> print(result) # doctest: +SKIP
         """
-
         if(format=='latex'):
             result='\\begin{table}[!h] \n\\centering \n\\begin{tabular}{lrrrrrr} \n'+\
             "\\multicolumn{7}{c}{Outcome: \\textit{"+str(self.model.model.endog_names)+"}} \\\\\n"+\
@@ -533,7 +525,7 @@ class Sensemakr:
             "\\%""}\\\\\n"+\
             "\\end{tabular}\n"+\
             "\\end{table}")
-            
+
             if(display==True):
                 from IPython.display import display_latex
                 display_latex(result, raw=True)
