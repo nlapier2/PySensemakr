@@ -30,17 +30,17 @@ r2dz_x : float or list of floats
 r2yz_dx : float or list of floats
     a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
 model : statsmodels OLSResults object
-    a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    a fitted statsmodels OLSResults object for the restricted regression model you have provided.
 treatment : string
-    a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    a string with the name of the "treatment" variable, e.g. the independent variable of interest.
 estimate : float
-    a float with the unadjusted estimate of the coefficient for the independent variable of interest
+    a float with the unadjusted estimate of the coefficient for the independent variable of interest.
 se : float
-    a float with the unadjusted standard error of the regression
+    a float with the unadjusted standard error of the regression.
 dof : int
-    an int with the degrees of freedom of the regression
+    an int with the degrees of freedom of the regression.
 reduce : boolean
-    whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+    whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
 
 Reference
 ^^^^^^^^^^

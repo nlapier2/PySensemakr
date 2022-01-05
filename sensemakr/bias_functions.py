@@ -1,6 +1,4 @@
 """
-Description
-------------
 Compute bias-adjusted estimates, standard-errors, and t-values.
 
 All methods in the script below have similar purposes and parameters, so they are all described here.
@@ -31,26 +29,26 @@ r2dz_x :
 r2yz_dx :
     a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
 model :
-    a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    a fitted statsmodels OLSResults object for the restricted regression model you have provided.
 treatment :
-    a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    a string with the name of the "treatment" variable, e.g. the independent variable of interest.
 estimate :
-    a float with the unadjusted estimate of the coefficient for the independent variable of interest
+    a float with the unadjusted estimate of the coefficient for the independent variable of interest.
 se :
-    a float with the unadjusted standard error of the regression
+    a float with the unadjusted standard error of the regression.
 dof :
-    an int with the degrees of freedom of the regression
+    an int with the degrees of freedom of the regression.
 reduce :
-    whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+    whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
 
 Parameters only used in param_check
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function_name :
-    string with the name of the calling function, used to print the function name in error messages
+    string with the name of the calling function, used to print the function name in error messages.
 estimate_is_param :
-    flag for whether estimate should be a required parameter for the calling function
+    flag for whether estimate should be a required parameter for the calling function.
 reduce_is_param :
-    flag for whether reduce is a parameter for the calling function
+    flag for whether reduce is a parameter for the calling function.
 
 Reference
 ------------
@@ -101,17 +99,17 @@ def adjusted_estimate(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None
     r2yz_dx : float or list of floats
         a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
     model : statsmodels OLSResults object
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment : string
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     estimate : float
-        a float with the unadjusted estimate of the coefficient for the independent variable of interest
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest.
     se : float
-        a float with the unadjusted standard error of the regression
+        a float with the unadjusted standard error of the regression.
     dof : int
-        an int with the degrees of freedom of the regression
+        an int with the degrees of freedom of the regression.
     reduce : boolean
-        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
 
     Returns
     -------
@@ -138,13 +136,13 @@ def adjusted_se(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
     r2yz_dx : float or list of floats
         a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
     model : statsmodels OLSResults object
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment : string
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     se : float
-        a float with the unadjusted standard error of the regression
+        a float with the unadjusted standard error of the regression.
     dof : int
-        an int with the degrees of freedom of the regression
+        an int with the degrees of freedom of the regression.
 
     Returns
     -------
@@ -167,24 +165,24 @@ def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=No
     r2yz_dx : float or list of floats
         a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
     model : statsmodels OLSResults object
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment : string
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     estimate : float
-        a float with the unadjusted estimate of the coefficient for the independent variable of interest
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest.
     se : float
-        a float with the unadjusted standard error of the regression
+        a float with the unadjusted standard error of the regression.
     dof : int
-        an int with the degrees of freedom of the regression
+        an int with the degrees of freedom of the regression.
     reduce : boolean
-        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
     h0 : float
-        the test value for null hypothesis
+        the test value for null hypothesis.
 
     Returns
     -------
     float
-        bias-adjusted t-statistic, (adjusted_estimate - h0) / adjusted_se
+        bias-adjusted t-statistic, (adjusted_estimate - h0) / adjusted_se.
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_t', r2dz_x, r2yz_dx, model=model, treatment=treatment,
@@ -205,24 +203,24 @@ def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=No
     r2yz_dx : float or list of floats
         a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
     model : statsmodels OLSResults object
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment : string
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     estimate : float
-        a float with the unadjusted estimate of the coefficient for the independent variable of interest
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest.
     se : float
-        a float with the unadjusted standard error of the regression
+        a float with the unadjusted standard error of the regression.
     dof : int
-        an int with the degrees of freedom of the regression
+        an int with the degrees of freedom of the regression.
     reduce : boolean
-        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
     h0 : float
-        the test value for null hypothesis
+        the test value for null hypothesis.
 
     Returns
     -------
     float
-        the bias-adjusted partial R2, based on adjusted_t
+        the bias-adjusted partial R2, based on adjusted_t.
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_partial_r2', r2dz_x, r2yz_dx, model=model,
@@ -242,18 +240,18 @@ def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
     r2yz_dx : float or list of floats
         a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
     model : statsmodels OLSResults object
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment : string
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     se : float
-        a float with the unadjusted standard error of the regression
+        a float with the unadjusted standard error of the regression.
     dof : int
-        an int with the degrees of freedom of the regression
+        an int with the degrees of freedom of the regression.
 
     Returns
     -------
     float
-        the omitted variable bias for the partial R2 parameterization
+        the omitted variable bias for the partial R2 parameterization.
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
@@ -272,20 +270,20 @@ def relative_bias(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se
     r2yz_dx : float or list of floats
         a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
     model : statsmodels OLSResults object
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment : string
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     estimate : float
-        a float with the unadjusted estimate of the coefficient for the independent variable of interest
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest.
     se : float
-        a float with the unadjusted standard error of the regression
+        a float with the unadjusted standard error of the regression.
     dof : int
-        an int with the degrees of freedom of the regression
+        an int with the degrees of freedom of the regression.
 
     Returns
     -------
     float
-        the relative bias for the partial R2 parameterization
+        the relative bias for the partial R2 parameterization.
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('relative_bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
@@ -302,10 +300,10 @@ def rel_bias(r_est, est):
 
     Parameters
     ----------
-    r_est :
-
-    est :
-
+    r_est : float
+        a float or list of floats of a reference value.
+    est : float
+        a float or list of floats of an estimator.
 
     Returns
     -------
@@ -320,9 +318,10 @@ def bf(r2dz_x, r2yz_dx):
 
     Parameters
     ----------
-    r2dz_x :
-
-    r2yz_dx :
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
 
 
     Returns
@@ -337,33 +336,36 @@ def param_check(function_name, r2dz_x, r2yz_dx,
                 model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True,
                 estimate_is_param=True, reduce_is_param=True):
     """Helper method that checks whether the required parameters have been passed in and have valid values.
+
     Also extracts data from a statsmodels OLSResults object (if one is given) for use in numerical formulae.
     See description at top for details.
 
     Parameters
     ----------
-    function_name :
-
-    r2dz_x :
-
-    r2yz_dx :
-
-    model :
-         (Default value = None)
-    treatment :
-         (Default value = None)
-    estimate :
-         (Default value = None)
-    se :
-         (Default value = None)
-    dof :
-         (Default value = None)
-    reduce :
-         (Default value = True)
-    estimate_is_param :
-         (Default value = True)
-    reduce_is_param :
-         (Default value = True)
+    function_name : string
+        name of the function to check parameters.
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    estimate : float
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest.
+    se : float
+        a float with the unadjusted standard error of the regression.
+    dof : int
+        an int with the degrees of freedom of the regression.
+    reduce : boolean
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
+    h0 : float
+        the test value for null hypothesis.
+    estimate_is_param : boolean
+         whether or not estimate is a parameter to check.
+    reduce_is_param : boolean
+         whether or not reduce is a parameter to check.
 
     Returns
     -------

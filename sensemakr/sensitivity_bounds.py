@@ -1,7 +1,6 @@
 """
-Description:
-------------
 Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
+
 The main generic function is ovb_bounds, which can compute both the bounds on the strength of confounding
 as well as the adjusted estimates, standard errors, t-values and confidence intervals.
 
@@ -47,10 +46,9 @@ import statsmodels.api as sm
 
 def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha=0.05, h0=0, reduce=True,
                bound='partial r2', adjusted_estimates=True):
-
     """
+    Provide bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
 
-    Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
     The main generic function is ovb_bounds, which can compute both the bounds on the strength of confounding
     as well as the adjusted estimates, standard errors, t-values and confidence intervals.
 
@@ -92,23 +90,23 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
 
         A Pandas DataFrame containing the following variables:
 
-        **treatment** : the name of the provided treatment variable
+        **treatment** : the name of the provided treatment variable.
 
-        **bound_label** : a string created by label_maker to serve as a label for the bound for printing & plotting purposes
+        **bound_label** : a string created by label_maker to serve as a label for the bound for printing & plotting purposes.
 
         **r2dz_x** : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
-        as strong as the benchmark_covariates
+        as strong as the benchmark_covariates.
 
         **r2yz_dx** : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
-        as implied by z being ky-times as strong as the benchmark_covariates
+        as implied by z being ky-times as strong as the benchmark_covariates.
 
-        **adjusted_estimate** : the bias-adjusted estimate adjusted for a confounder with the given r2dz_x and r2yz_dx above
+        **adjusted_estimate** : the bias-adjusted estimate adjusted for a confounder with the given r2dz_x and r2yz_dx above.
 
-        **adjusted_se** : the bias-adjusted standard error adjusted for a confounder with the given r2dz_x and r2yz_dx above
+        **adjusted_se** : the bias-adjusted standard error adjusted for a confounder with the given r2dz_x and r2yz_dx above.
 
-        **adjusted_t** : the bias-adjusted t-statistic adjusted for a confounder with the given r2dz_x and r2yz_dx above
+        **adjusted_t** : the bias-adjusted t-statistic adjusted for a confounder with the given r2dz_x and r2yz_dx above.
 
 
     Example
@@ -151,29 +149,30 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
 def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None,
                          benchmark_covariates=None, kd=1, ky=None):
     """
-    The function `ovb_partial_r2_bound()` returns only a Pandas DataFrame with the bounds on the strength of the
-    unobserved confounder. Adjusted estimates, standard errors and t-values (among other quantities) need to be computed
+    Provide a Pandas DataFrame with the bounds on the strength of the unobserved confounder.
+
+    Adjusted estimates, standard errors and t-values (among other quantities) need to be computed
     manually by the user using those bounds with the functions adjusted_estimate, adjusted_se and adjusted_t.
 
-    :Required parameters: (model and treatment) or (r2dxj_x and r2yxj_dx)
+    :Required parameters: (model and treatment) or (r2dxj_x and r2yxj_dx).
 
     Parameters
     ----------
-    model :
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided (Default value = None)
-    treatment :
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest (Default value = None)
-    r2dxj_x :
-        float with the partial R2 of covariate Xj with the treatment D (after partialling out the effect of the remaining covariates X, excluding Xj). (Default value = None)
-    r2yxj_dx :
-        float with the partial R2 of covariate Xj with the outcome Y (after partialling out the effect of the remaining covariates X, excluding Xj). (Default value = None)
-    benchmark_covariates :
-        a string or list of strings with names of the variables to use for benchmark bounding (Default value = None)
-    kd :
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    r2dxj_x : float
+        float with the partial R2 of covariate Xj with the treatment D (after partialling out the effect of the remaining covariates X, excluding Xj).
+    r2yxj_dx : float
+        float with the partial R2 of covariate Xj with the outcome Y (after partialling out the effect of the remaining covariates X, excluding Xj).
+    benchmark_covariates : string or list of strings
+        a string or list of strings with names of the variables to use for benchmark bounding.
+    kd : float or list of floats
         a float or list of floats with each being a multiple of the strength of association between a
-        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1)
-    ky :
-        same as kd except measured in terms of strength of association with the outcome variable (Default value = None)
+        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1).
+    ky : float or list of floats
+        same as kd except measured in terms of strength of association with the outcome variable (Default value = None).
 
     Returns
     -------
@@ -181,15 +180,15 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 
         A Pandas DataFrame containing the following variables:
 
-        **bound_label** : a string created by label_maker to serve as a label for the bound for printing & plotting purposes
+        **bound_label** : a string created by label_maker to serve as a label for the bound for printing & plotting purposes.
 
         **r2dz_x** : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
-        as strong as the benchmark_covariates
+        as strong as the benchmark_covariates.
 
         **r2yz_dx** : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
-        as implied by z being ky-times as strong as the benchmark_covariates
+        as implied by z being ky-times as strong as the benchmark_covariates.
 
 
 
@@ -307,18 +306,20 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 
 
 def label_maker(benchmark_covariate, kd, ky, digits=2):
-    """Returns a string created by appending the covariate name to the multiplier(s) ky and (if applicable) kd.
+    """
+    Return a string created by appending the covariate name to the multiplier(s) ky and (if applicable) kd.
 
     Parameters
     ----------
-    benchmark_covariate :
-        param kd:
-    ky :
-        param digits:  (Default value = 2)
-    kd :
-
-    digits :
-         (Default value = 2)
+    benchmark_covariates : string or list of strings
+        a string or list of strings with names of the variables to use for benchmark bounding.
+    kd : float or list of floats
+        a float or list of floats with each being a multiple of the strength of association between a
+        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1).
+    ky : float or list of floats
+        same as kd except measured in terms of strength of association with the outcome variable (Default value = None).
+    digits : int
+        rouding digit of ky/kd shown in the string (Default value = 2).
 
     Returns
     -------

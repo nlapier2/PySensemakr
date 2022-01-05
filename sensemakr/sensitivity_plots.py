@@ -1,12 +1,8 @@
 """
-Description
-------------
 This module provides sensitivity contour plots and extreme scenario sensitivity plots.
+
 They can be used on an object of class `Sensemakr`, directly in an OLS `statsmodel,`
 or by providing the required statistics manually.
-
-Functions
-------------
 """
 # Code for producing sensitivity contour plots and other plots
 import matplotlib.pyplot as plt
@@ -30,7 +26,9 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
                      col_contour="black", col_thr_line="red", label_text=True, label_bump_x=None, label_bump_y=None,
                      xlab=None, ylab=None, plot_margin_fraction=0.05, round_dig=3):
     r"""
-    Contour plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
+    Contour plots of omitted variable bias for sensitivity analysis.
+
+    The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
 
     The horizontal axis of the plot shows hypothetical values of the partial R2 of the unobserved confounder(s) with the treatment.
@@ -48,7 +46,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     sense_obj : sensemakr object
         a sensemakr object to plot.
     sensitivity_of : string
-        either "estimate" or "t-value". (Default value = 'estimate')
+        either "estimate" or "t-value". (Default value = 'estimate').
     model : statsmodels OLSResults object
         a fitted statsmodels OLSResults object.
     treatment : string
@@ -69,6 +67,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
         a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with treatment D, given covariates X.
     r2yz_dx : float or list of floats
         a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with outcome Y, given covariates X and treatment D.
+    reduce: boolean
         whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default is True.
     estimate_threshold : float
         threshold line to emphasize when contours correspond to estimate, default is 0.
@@ -85,19 +84,19 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     col_thr_line : string of color
         color of the threshold line, default is "red".
     bound_label : string
-        label of the bound variable
+        label of the bound variable.
     lim : float
-        x axis maximum
+        x axis maximum.
     lim_y : float
-        y axis maximum
+        y axis maximum.
     label_text : boolean
-        whether to include label text
+        whether to include label text.
     label_bump_x : float
-         x-axis position of label above 0
+         x-axis position of label above 0.
     label_bump_y : float
-         y-axis position of label above 0
+         y-axis position of label above 0.
     plot_margin_fraction : float
-         margin fraction added to the top of lim and lim_y
+         margin fraction added to the top of lim and lim_y.
 
     Return
     -------
@@ -241,7 +240,9 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
                          treatment=None, bounds=None, r2dz_x=None, r2yz_dx=None, bound_value=None, bound_label=None,
                          sensitivity_of=None, label_text=True, label_bump_x=None, label_bump_y=None, round_dig=3):
     r"""
-    Add bound label to the contour plot of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
+    Add bound label to the contour plot of omitted variable bias for sensitivity analysis.
+
+    The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
 
     The reference points are the bounds on the partial R2 of the unobserved confounder if it were k times ''as strong'' as the observed covariate used for benchmarking (see arguments kd and ky).
@@ -249,44 +250,44 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     Parameters
     ----------
     sensitivity_of : string
-        either "estimate" or "t-value"
+        either "estimate" or "t-value".
     model : statsmodels OLSResults object
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment : string
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     benchmark_covariates : string
         a string or list of strings with
-        the names of the variables to use for benchmark bounding
+        the names of the variables to use for benchmark bounding.
     kd : float or list of floats
         a float or list of floats with each being a multiple of the strength of association between a
-        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1)
+        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1).
     ky : float or list of floats
-        same as kd except measured in terms of strength of association with the outcome variable
+        same as kd except measured in terms of strength of association with the outcome variable.
     r2dz_x : float or list of floats
         a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
-        as strong as the benchmark_covariates
+        as strong as the benchmark_covariates.
     r2yz_dx : float or list of floats
         a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
-        as implied by z being ky-times as strong as the benchmark_covariates
+        as implied by z being ky-times as strong as the benchmark_covariates.
     bound_value : float
-        the value of the reference point
+        the value of the reference point.
     bound_label : string
-        a string that label the reference point
+        a string that label the reference point.
     round_dig : int
-        rounding digit of the display numbers, default=3
+        rounding digit of the display numbers, default=3.
     reduce : boolean
-        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
     bounds : pandas dataframe
         A pandas dataframe with bounds on the strength of confounding according to some benchmark covariates,
         as computed by the function ovb_bounds.
     label_text : boolean
-        whether to include label text
+        whether to include label text.
     label_bump_x : float
-        x-axis position of label above 0
+        x-axis position of label above 0.
     label_bump_y : float
-        y-axis position of label above 0
+        y-axis position of label above 0.
 
     Return
     -------
@@ -384,8 +385,9 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
                      reduce=True, threshold=0, lim=None, lim_y=None,
                      xlab=None, ylab=None):
     r"""
+    Extreme scenario plots of omitted variable bias for sensitivity analysis.
 
-    Extreme scenario plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
+    The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
 
     The horizontal axis shows the partial R2 of the unobserved confounder(s) with the treatment. The vertical axis shows the adjusted treatment effect estimate.
@@ -398,7 +400,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     Parameters
     ----------
     sense_obj : sensemakr object
-        a sensemakr object
+        a sensemakr object.
     model : statsmodels OLSResults object
         a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment : string
@@ -426,17 +428,17 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
         as implied by z being ky-times as strong as the benchmark_covariates, default=[1,0.75,0.5].
     reduce : boolean
-        whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default=True
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default=True.
     threshold : float
-        threshold line to emphasize when drawing estimate, default=0
+        threshold line to emphasize when drawing estimate, default=0.
     xlab : string
-        x-axis label text
+        x-axis label text.
     ylab : string
-        y-axis label text
+        y-axis label text.
     lim : float
-        range of x-axis
+        range of x-axis.
     lim_y : float
-        range of y-axis 
+        range of y-axis.
 
     Return
     --------
@@ -533,12 +535,13 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
 
 # Extracts sensitivity and bounding parameters from a given Sensemakr object
 def extract_from_sense_obj(sense_obj):
-    """This is a helper function to extract parameters from sensemakr object.
+    """
+    A helper function to extract parameters from sensemakr object.
 
     Parameters
     ----------
-    sense_obj :
-
+    sense_obj : sensemakr object
+        sensemakr object
 
     Returns
     -------
@@ -573,24 +576,31 @@ def extract_from_sense_obj(sense_obj):
 
 # Extracts estimate, standard error, degrees of freedom, and parial R^2 values from a specified model+treatment pair
 def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r2yz_dx):
-    """This is a helper function to extract parameters from model.
+    """
+    A helper function to extract parameters from model.
 
     Parameters
     ----------
-    model :
-
-    treatment :
-
-    benchmark_covariates :
-
-    kd :
-
-    ky :
-
-    r2dz_x :
-
-    r2yz_dx :
-
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    benchmark_covariates : string or list of strings
+        a string or list of strings with
+        the names of the variables to use for benchmark bounding.
+    kd : float or list of floats
+        a float or list of floats with each being a multiple of the strength of association between a
+        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1).
+    ky : float or list of floats
+        same as kd except measured in terms of strength of association with the outcome variable.
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+        with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
+        as strong as the benchmark_covariates.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+        with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
+        as implied by z being ky-times as strong as the benchmark_covariates.
 
     Returns
     -------
@@ -632,25 +642,25 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
 
 # Checks to make sure given parameters are valid and sets some default parameter values if not specified by the user
 def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y):
-    """This is a helper function to check plot arguments.
+    """
+    A helper function to check plot arguments.
 
     Parameters
     ----------
-    estimate :
-
-    r2dz_x :
-
-    r2yz_dx :
-
-    lim :
-
-    lim_y :
-
-    label_bump_x :
-
-    label_bump_y :
-
-
+    estimate : float
+        a float with the estimate of the coefficient for the independent variable of interest.
+    r2dz_x : float or list of floats
+        a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with treatment D, given covariates X.
+    r2yz_dx : float or list of floats
+        a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with outcome Y, given covariates X and treatment D.
+    lim : float
+        x axis maximum.
+    lim_y : float
+        y axis maximum.
+    label_bump_x : float
+         x-axis position of label above 0.
+    label_bump_y : float
+         y-axis position of label above 0.
 
     Returns
     -------
@@ -695,18 +705,19 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
 
 # Checks to make sure given parameters are valid and sets some default parameter values if not specified by the user
 def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim):
-    """This is a helper function to check plot arguments.
+    """
+    A helper function to check plot arguments.
 
     Parameters
     ----------
-    estimate :
-
-    r2dz_x :
-
-    r2yz_dx :
-
-    lim :
-
+    estimate : float
+        a float with the estimate of the coefficient for the independent variable of interest.
+    r2dz_x : float or list of floats
+        a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with treatment D, given covariates X.
+    r2yz_dx : float or list of floats
+        a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with outcome Y, given covariates X and treatment D.
+    lim : float
+        x axis maximum.
 
     Returns
     -------
@@ -738,12 +749,13 @@ def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim):
 
 # Parameter validators
 def check_estimate(estimate):
-    """Make sure that the estimate is a single floating point number.
+    """
+    Make sure that the estimate is a single floating point number.
 
     Parameters
     ----------
-    estimate :
-
+    estimate : float
+        a float with the estimate of the coefficient for the independent variable of interest.
 
     Returns
     -------
@@ -757,14 +769,16 @@ def check_estimate(estimate):
 
 
 def check_multipliers(ky, kd):
-    """Make sure ky and kd are both numbers or equal-length lists of numbers.
+    """
+    Make sure ky and kd are both numbers or equal-length lists of numbers.
 
     Parameters
     ----------
-    ky :
-
-    kd :
-
+    kd : float or list of floats
+        a float or list of floats with each being a multiple of the strength of association between a
+        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1).
+    ky : float or list of floats
+        same as kd except measured in terms of strength of association with the outcome variable.
 
     Returns
     -------

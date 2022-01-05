@@ -1,7 +1,5 @@
 """
-Description:
-------------
-Computes the sensitivity statistics: robustness value, partial R2, and Cohen's f2; plus helper functions
+Computes the sensitivity statistics: robustness value, partial R2, and Cohen's f2; plus helper functions.
 
 Reference:
 ------------
@@ -23,7 +21,9 @@ import pandas as pd
 
 def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=1, alpha=1.0):
     """
-    This function computes the robustness value of a regression coefficient. The robustness value describes the
+    Compute the robustness value of a regression coefficient.
+
+    The robustness value describes the
     minimum strength of association (parameterized in terms of partial R2) that omitted variables would need to have
     both with the treatment and with the outcome to change the estimated coefficient by a certain amount
     (for instance, to bring it down to zero).
@@ -53,7 +53,7 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     alpha : float
         a float with the significance level for the robustness value RV_qa to render the estimate not significant (Default value = 1.0).
     covariates : string
-        a string or list of strings with the names of the variables to use for benchmark bounding
+        a string or list of strings with the names of the variables to use for benchmark bounding.
 
     Returns
     -------
@@ -80,7 +80,6 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     >>> # You can also provide the statistics directly:
     >>> sensitivity_stats.robustness_value(t_statistic = 4.18445, dof = 783) # doctest: +SKIP
     """
-
     if model is None and (t_statistic is None or dof is None):
         sys.exit('Error: robustness_value requires either a statsmodels OLSResults object '
                  'or a t-statistic and degrees of freedom.')
@@ -114,8 +113,10 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
 
 def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     r"""
-    This function computes the partial R2 for a linear regression model. The partial R2 describes how much of the
-    residual variance of the outcome (after partialing out the other covariates) a covariate explains.
+    Compute the partial R2 for a linear regression model.
+
+    The partial R2 describes how much of the residual variance of the outcome (after partialing out
+    the other covariates) a covariate explains.
 
     The partial R2 can be used as an extreme-scenario sensitivity analysis to omitted variables.
     Considering an unobserved confounder that explains 100% of the residual variance of the outcome,
@@ -141,7 +142,7 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     Returns
     -------
     float
-        a float with the computed partial R^2
+        a float with the computed partial R^2.
 
 
 
@@ -149,7 +150,7 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     ---------
         This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
         For partial R2 of groups of covariates, check group_partial_r2.
-        
+
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()
@@ -169,7 +170,6 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)  # doctest: +NUMBER
     0.021873
     """
-
     if model is None and (t_statistic is None or dof is None):
         sys.exit('Error: partial_r2 requires either a statsmodels OLSResults object '
                  'or a t-statistic and degrees of freedom.')
@@ -185,9 +185,10 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
 
 def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
     r"""
-    This function computes the partial (Cohen's) f2 for a linear regression model. The partial (Cohen's) f2 is a
-    common measure of effect size (a transformation of the partial R2) that can also be used directly
-    for sensitivity analysis using a bias factor table.
+    Compute the partial (Cohen's) f2 for a linear regression model.
+
+    The partial (Cohen's) f2 is a common measure of effect size (a transformation of the partial R2) that can
+    also be used directly for sensitivity analysis using a bias factor table.
     For details see Cinelli and Hazlett (2020).
 
     This function takes as input a statsmodels OLSResults object or you may pass directly t-value & degrees of freedom.
@@ -209,7 +210,7 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
     Returns
     -------
     float
-        a float with the computed partial f^2
+        a float with the computed partial f^2.
 
     Examples
     ---------
@@ -230,7 +231,6 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783) # doctest: +NUMBER
     0.022362
     """
-
     if model is None and (t_statistic is None or dof is None):
         sys.exit('Error: partial_f2 requires either a statsmodels OLSResults object '
                  'or a t-statistic and degrees of freedom.')
@@ -244,29 +244,32 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
 
 
 def partial_f(model=None, covariates=None, t_statistic=None, dof=None):
-    """This is the square root of the partial_f2 function described above.
+    """
+    Calculate the square root of the partial_f2 function described above.
 
     Parameters
     ----------
-    model :
-         (Default value = None)
-    covariates :
-         (Default value = None)
-    t_statistic :
-         (Default value = None)
-    dof :
-         (Default value = None)
+    model : statsmodels OLSResults object
+        a statsmodels OLSResults object containing the restricted regression.
+    covariates : string or list of strings
+        a string or list of strings with the covariates used to compute the t_statistic and dof
+        from the model. If not specified, defaults to all variables.
+    t_statistic : float
+        a float with the t_statistic for the restricted model regression.
+    dof : int
+        an int with the degrees of freedom of the restricted regression.
 
     Returns
     -------
-
+    float
+        a float with the computed partial f.
     """
     return np.sqrt(partial_f2(model, covariates, t_statistic, dof))
 
 
 def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=None):
     r"""
-    Partial R2 of groups of covariates in a linear regression model
+    Partial R2 of groups of covariates in a linear regression model.
 
     This function computes the partial R2 of a group of covariates in a linear regression model. Multivariate version
     of the partial_r2 function; see that for more details.
@@ -290,7 +293,7 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     Returns
     -------
     float
-        a float with the computed group partial R^2
+        a float with the computed group partial R^2.
 
     Examples
     ---------
@@ -306,7 +309,6 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     >>> sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"]) # doctest: +NUMBER
     0.11681
     """
-
     if (model is None or covariates is None) and (f_statistic is None or p is None or dof is None):
         sys.exit('Error: group_partial_r2 requires either a statsmodels OLSResults object and covariates or an '
                  'f-statistic, number of parameters, and degrees of freedom.')
@@ -327,7 +329,6 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
 def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=None, q=1, alpha=0.05, reduce=True):
     r"""
     Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
-    See those function descriptions above for more details.
 
     **Required parameters:** either model and treatment, or (estimate, se, and dof).
 
@@ -346,7 +347,7 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
     q : float
         a float with the percent to reduce the point estimate by for the robustness value RV_q (Default value = 1).
     alpha : float
-        a float with the significance level for the robustness value RV_qa to render the estimate not significant (Default value = 0.05)
+        a float with the significance level for the robustness value RV_qa to render the estimate not significant (Default value = 0.05).
     reduce : boolean
         whether to reduce or increase the estimate due to confounding (Default value = True).
 
@@ -355,23 +356,23 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
     Pandas DataFrame
         a Pandas DataFrame containing the following quantities:
 
-        **treatment** : a string with the name of the treatment variable
+        **treatment** : a string with the name of the treatment variable.
 
-        **estimate** : a float with the estimated effect of the treatment
+        **estimate** : a float with the estimated effect of the treatment.
 
-        **se** : a float with the estimated standard error of the treatment effect
+        **se** : a float with the estimated standard error of the treatment effect.
 
-        **t_statistics** : a float with  the t-value of the treatment
+        **t_statistics** : a float with  the t-value of the treatment.
 
-        **r2yd_x** : a float with the partial R2 of the treatment and the outcome, see details in partial_r2
+        **r2yd_x** : a float with the partial R2 of the treatment and the outcome, see details in partial_r2.
 
-        **rv_q** : a float the robustness value of the treatment, see details in robustness_value
+        **rv_q** : a float the robustness value of the treatment, see details in robustness_value.
 
-        **rv_qa** : a float with the robustness value of the treatment considering statistical significance, see details in robustness_value
+        **rv_qa** : a float with the robustness value of the treatment considering statistical significance, see details in robustness_value.
 
-        **f2yd_x** : a float with the partial (Cohen's) f2 of the treatment with the outcome, see details in partial_f2
+        **f2yd_x** : a float with the partial (Cohen's) f2 of the treatment with the outcome, see details in partial_f2.
 
-        **dof** : an int with the degrees of freedom of the model
+        **dof** : an int with the degrees of freedom of the model.
 
     Examples
     ---------
@@ -389,7 +390,6 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
     >>> # You can  also pass the numeric values directly:
     >>> sensitivity_stats.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783) # doctest: +SKIP
     """
-
     if (model is None or treatment is None) and (estimate is None or se is None or dof is None):
         sys.exit('Error: sensitivity_stats requires either a statsmodels OLSResults object and treatment name or an '
                  'estimate, standard error, and degrees of freedom.')
@@ -423,14 +423,16 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
 
 # Helper function for quickly extracting properties from a model, allowing specification of a subset of covariates
 def model_helper(model, covariates=None):
-    """Internal function for extracting info from a statsmodels OLSResults object and returning it in a dict.
+    """
+    Internal function for extracting info from a statsmodels OLSResults object and returning it in a dict.
 
     Parameters
     ----------
-    model :
-
-    covariates :
-         (Default value = None)
+    model : statsmodels OLSResults object
+        a statsmodels OLSResults object containing the restricted regression.
+    covariates : string or list of strings
+        a string or list of strings with the covariates used to compute the t_statistic and dof
+        from the model. If not specified, defaults to all variables.
 
     Returns
     -------
@@ -455,13 +457,17 @@ def model_helper(model, covariates=None):
 # Variable validators for sensitivity stats and sensemakr
 
 def check_r2(r2dz_x, r2yz_dx):
-    """Ensures that r2dz_x and r2yz_dx are numpy scalars or arrays.
+    """
+    Ensure that r2dz_x and r2yz_dx are numpy scalars or arrays.
 
     Parameters
     ----------
-    r2dz_x :
-
-    r2yz_dx :
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved
+        confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved
+        confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
 
 
     Returns
@@ -489,12 +495,13 @@ def check_r2(r2dz_x, r2yz_dx):
 
 
 def check_q(q):
-    """Ensures that q, the percent reduction to the point estimate for RV_q, is a float or int greater than 0.
+    """
+    Ensure that q, the percent reduction to the point estimate for RV_q, is a float or int greater than 0.
 
     Parameters
     ----------
-    q :
-
+    q : float
+        a float with the percent to reduce the point estimate by for the robustness value RV_q (Default value = 1).
 
     Returns
     -------
@@ -505,12 +512,14 @@ def check_q(q):
 
 
 def check_alpha(alpha):
-    """Ensures that alpha, the significance level for RV_qa, is a float between 0 and 1.
+    """
+    Ensure that alpha, the significance level for RV_qa, is a float between 0 and 1.
 
     Parameters
     ----------
-    alpha :
-
+    alpha : float
+        a float with the significance level for the robustness value RV_qa to
+        render the estimate not significant (Default value = 0.05).
 
     Returns
     -------
@@ -521,12 +530,13 @@ def check_alpha(alpha):
 
 
 def check_se(se):
-    """Ensures that standard error is a float greater than zero.
+    """
+    Ensure that standard error is a float greater than zero.
 
     Parameters
     ----------
-    se :
-
+    se : float
+        a float with the standard error of the restricted regression.
 
     Returns
     -------
@@ -537,12 +547,13 @@ def check_se(se):
 
 
 def check_dof(dof):
-    """Ensures that the degrees of freedom for a regression is a positive integer.
+    """
+    Ensure that the degrees of freedom for a regression is a positive integer.
 
     Parameters
     ----------
-    dof :
-
+    dof : int
+        an int with the degrees of freedom of the restricted regression.
 
     Returns
     -------
@@ -556,12 +567,12 @@ def check_dof(dof):
 
 
 def error_if_no_dof(model):
-    """For a given statsmodels OLSResults object, ensure that its degrees of freedom is not zero.
+    """
+    For a given statsmodels OLSResults object, ensure that its degrees of freedom is not zero.
 
     Parameters
     ----------
-    model :
-
+    model : statsmodels OLSResults object.
 
     Returns
     -------
@@ -572,14 +583,14 @@ def error_if_no_dof(model):
 
 
 def check_covariates(all_names, covariates):
-    """Ensure that all provided covariates are strings and are in the regression model.
+    """
+    Ensure that all provided covariates are strings and are in the regression model.
 
     Parameters
     ----------
-    all_names :
+    all_names : list of strings.
 
-    covariates :
-
+    covariates : string or list of strings.
 
     Returns
     -------
