@@ -8,4 +8,5 @@ Modules
    sensitivity_plots
    sensitivity_bounds
    sensitivity_stats
+   bias_functions
    data

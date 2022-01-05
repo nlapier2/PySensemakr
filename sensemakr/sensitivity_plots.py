@@ -28,9 +28,8 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
                      benchmark_covariates=None, kd=1, ky=None, r2dz_x=None, r2yz_dx=None, bound_label=None,
                      reduce=True, estimate_threshold=0, t_threshold=2, lim=None, lim_y=None,
                      col_contour="black", col_thr_line="red", label_text=True, label_bump_x=None, label_bump_y=None,
-                     xlab=None, ylab=None, asp=None, list_par=None, plot_margin_fraction=0.05, round_dig=3):
+                     xlab=None, ylab=None, plot_margin_fraction=0.05, round_dig=3):
     r"""
-    **Description:**
     Contour plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
 
@@ -46,75 +45,67 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
 
     Parameters
     ----------
-    sense_obj :
-        a Sensemakr object. (Default value = None)
-    sensitivity_of :
+    sense_obj : sensemakr object
+        a sensemakr object to plot.
+    sensitivity_of : string
         either "estimate" or "t-value". (Default value = 'estimate')
-    model :
-        a fitted statsmodels OLSResults object. (Default value = None)
-    treatment :
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest. (Default value = None)
-    estimate :
-        a float with the estimate of the coefficient for the independent variable of interest. (Default value = None)
-    se :
-        a float with the standard error of the regression. (Default value = None)
-    dof :
-        an int with the degrees of freedom of the regression. (Default value = None)
-    benchmark_covariates :
-        a string or list of strings with the names of the variables to use for benchmarking. (Default value = None)
-    kd :
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object.
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    estimate : float
+        a float with the estimate of the coefficient for the independent variable of interest.
+    se : float
+        a float with the standard error of the regression.
+    dof : int
+        an int with the degrees of freedom of the regression.
+    benchmark_covariates : string or list of strings
+        a string or list of strings with the names of the variables to use for benchmarking.
+    kd : float or list of floats
         a float or list of floats. Parameterizes how many times stronger the confounder is related to the treatment in comparison to the observed benchmark covariate. Default value is 1 (confounder is as strong as benchmark covariate).
-    ky :
+    ky : float or list of floats
         a float or list of floats. Parameterizes how many times stronger the confounder is related to the outcome in comparison to the observed benchmark covariate. Default value is the same as kd.
-    r2dz_x :
-        a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with treatment D, given covariates X. (Default value = None)
-    r2yz_dx :
-        a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with outcome Y, given covariates X and treatment D. (Default value = None)
-    reduce :
+    r2dz_x : float or list of floats
+        a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with treatment D, given covariates X.
+    r2yz_dx : float or list of floats
+        a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with outcome Y, given covariates X and treatment D.
         whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default is True.
-    estimate_threshold :
+    estimate_threshold : float
         threshold line to emphasize when contours correspond to estimate, default is 0.
-    t_threshold :
+    t_threshold : float
         threshold line to emphasize when contours correspond to t-value, default is 2.
-    xlab :
-        x-axis label text. (Default value = None)
-    ylab :
-        y-axis label text. (Default value = None)
-    round_dig :
+    xlab : string
+        x-axis label text.
+    ylab : string
+        y-axis label text.
+    round_dig : int
         rounding digit of the display numbers, default is 3.
-    col_contour :
+    col_contour : string of color
         color of the contour line, default is "black".
-    col_thr_line :
+    col_thr_line : string of color
         color of the threshold line, default is "red".
-    bound_label :
-         (Default value = None)
-    lim :
-         (Default value = None)
-    lim_y :
-         (Default value = None)
-    label_text :
-         (Default value = True)
-    label_bump_x :
-         (Default value = None)
-    label_bump_y :
-         (Default value = None)
-    asp :
-         (Default value = None)
-    list_par :
-         (Default value = None)
-    plot_margin_fraction :
-         (Default value = 0.05)
+    bound_label : string
+        label of the bound variable
+    lim : float
+        x axis maximum
+    lim_y : float
+        y axis maximum
+    label_text : boolean
+        whether to include label text
+    label_bump_x : float
+         x-axis position of label above 0
+    label_bump_y : float
+         y-axis position of label above 0
+    plot_margin_fraction : float
+         margin fraction added to the top of lim and lim_y
 
-    Returns
+    Return
     -------
+    plot
         a contour plot of omitted variable bias for the corresponding model/sense_obj.
 
-        **Reference:**
-
-        Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-        Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-        **Examples:**
+    Examples
+    --------
 
     >>> # Load example dataset:
     >>> from sensemakr import data
@@ -148,8 +139,8 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     elif estimate is None or se is None or dof is None:
         sys.exit('Error: must provide a Sensemakr object, a statsmodels OLSResults object and treatment, or'
                  'an estimate, standard error, and degrees of freedom.')
-    estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par = check_params(
-        estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par)
+    estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y= check_params(
+        estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y)
     plot_env['lim'] = lim
     plot_env['lim_y'] = lim_y
     plot_env['reduce'] = reduce
@@ -250,7 +241,6 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
                          treatment=None, bounds=None, r2dz_x=None, r2yz_dx=None, bound_value=None, bound_label=None,
                          sensitivity_of=None, label_text=True, label_bump_x=None, label_bump_y=None, round_dig=3):
     r"""
-    **Description:**
     Add bound label to the contour plot of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
 
@@ -258,50 +248,53 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
 
     Parameters
     ----------
-    sensitivity_of :
-        either "estimate" or "t-value" (Default value = None)
-    model :
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided (Default value = None)
-    treatment :
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest (Default value = None)
-    benchmark_covariates :
+    sensitivity_of : string
+        either "estimate" or "t-value"
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    benchmark_covariates : string
         a string or list of strings with
-        the names of the variables to use for benchmark bounding (Default value = None)
-    kd :
+        the names of the variables to use for benchmark bounding
+    kd : float or list of floats
         a float or list of floats with each being a multiple of the strength of association between a
         benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1)
-    ky :
-        same as kd except measured in terms of strength of association with the outcome variable (Default value = None)
-    r2dz_x :
+    ky : float or list of floats
+        same as kd except measured in terms of strength of association with the outcome variable
+    r2dz_x : float or list of floats
         a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
-        as strong as the benchmark_covariates (Default value = None)
-    r2yz_dx :
+        as strong as the benchmark_covariates
+    r2yz_dx : float or list of floats
         a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
-        as implied by z being ky-times as strong as the benchmark_covariates (Default value = None)
-    bound_value :
-        the value of the reference point (Default value = None)
-    bound_label :
-        a string that label the reference point (Default value = None)
-    round_dig :
+        as implied by z being ky-times as strong as the benchmark_covariates
+    bound_value : float
+        the value of the reference point
+    bound_label : string
+        a string that label the reference point
+    round_dig : int
         rounding digit of the display numbers, default=3
-    reduce :
-         (Default value = None)
-    bounds :
-         (Default value = None)
-    label_text :
-         (Default value = True)
-    label_bump_x :
-         (Default value = None)
-    label_bump_y :
-         (Default value = None)
+    reduce : boolean
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+    bounds : pandas dataframe
+        A pandas dataframe with bounds on the strength of confounding according to some benchmark covariates,
+        as computed by the function ovb_bounds.
+    label_text : boolean
+        whether to include label text
+    label_bump_x : float
+        x-axis position of label above 0
+    label_bump_y : float
+        y-axis position of label above 0
 
-    Returns
+    Return
     -------
+    add on existing plot
         add a bound label to the existing contour plot.
 
-        **Examples:**
+    Examples
+    --------
 
     >>> # Load example dataset:
     >>> from sensemakr import data
@@ -389,9 +382,8 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
 def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, se=None, dof=None,
                      benchmark_covariates=None, kd=1,ky=None, r2dz_x=None, r2yz_dx=[1, 0.75, 0.5],
                      reduce=True, threshold=0, lim=None, lim_y=None,
-                     xlab=None, ylab=None, list_par=None):
+                     xlab=None, ylab=None):
     r"""
-    **Description:**
 
     Extreme scenario plots of omitted variable bias for sensitivity analysis. The main inputs are a statsmodel object, the treatment variable
     and the covariates used for benchmarking the strength of unobserved confounding.
@@ -405,63 +397,54 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
 
     Parameters
     ----------
-    sense_obj :
-        a sensemakr object (Default value = None)
-    model :
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided (Default value = None)
-    treatment :
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest (Default value = None)
-    estimate :
-        a float with the estimate of the coefficient for the independent variable of interest (Default value = None)
-    se :
-        a float with the standard error of the regression (Default value = None)
-    dof :
-        an int with the degrees of freedom of the regression (Default value = None)
-    benchmark_covariates :
+    sense_obj : sensemakr object
+        a sensemakr object
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    estimate : float
+        a float with the estimate of the coefficient for the independent variable of interest.
+    se : float
+        a float with the standard error of the regression.
+    dof : float
+        an int with the degrees of freedom of the regression.
+    benchmark_covariates : string or list of strings
         a string or list of strings with
-        the names of the variables to use for benchmark bounding (Default value = None)
-    kd :
+        the names of the variables to use for benchmark bounding.
+    kd : float or list of floats
         a float or list of floats with each being a multiple of the strength of association between a
-        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1)
-    ky :
-        same as kd except measured in terms of strength of association with the outcome variable (Default value = None)
-    r2dz_x :
+        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1).
+    ky : float or list of floats
+        same as kd except measured in terms of strength of association with the outcome variable.
+    r2dz_x : float or list of floats
         a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
-        as strong as the benchmark_covariates (Default value = None)
-    r2yz_dx :
+        as strong as the benchmark_covariates.
+    r2yz_dx : float or list of floats
         a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
-        as implied by z being ky-times as strong as the benchmark_covariates, default=[1,0.75,0.5]
-    reduce :
+        as implied by z being ky-times as strong as the benchmark_covariates, default=[1,0.75,0.5].
+    reduce : boolean
         whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default=True
-    threshold :
+    threshold : float
         threshold line to emphasize when drawing estimate, default=0
-    xlab :
-        x-axis label text (Default value = None)
-    ylab :
-        y-axis label text (Default value = None)
-    lim :
-        range of x-axis (Default value = None)
-    lim_y :
-        range of y-axis (Default value = None)
-    0.75 :
+    xlab : string
+        x-axis label text
+    ylab : string
+        y-axis label text
+    lim : float
+        range of x-axis
+    lim_y : float
+        range of y-axis 
 
-    0.5] :
-
-    list_par :
-         (Default value = None)
-
-    Returns
-    -------
+    Return
+    --------
+    plot
         an extreme value plot of omitted variable bias for the corresponding model/sense_obj.
 
-        **Reference:**
-
-        Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias."
-        Journal of the Royal Statistical Society, Series B (Statistical Methodology).
-
-        **Examples:**
+    Examples
+    --------
 
     >>> # Load example dataset:
     >>> from sensemakr import data
@@ -493,8 +476,8 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     elif estimate is None or se is None or dof is None:
         sys.exit('Error: must provide a Sensemakr object, a statsmodels OLSResults object and treatment, or'
                  'an estimate, standard error, and degrees of freedom.')
-    estimate, r2dz_x,r2yz_dx,lim,list_par = check_params_extreme(
-        estimate, r2dz_x, r2yz_dx, lim, list_par)
+    estimate, r2dz_x,r2yz_dx,lim = check_params_extreme(
+        estimate, r2dz_x, r2yz_dx, lim)
 
     r2d_values = np.arange(0, lim, 0.001)
 
@@ -648,7 +631,7 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
 
 
 # Checks to make sure given parameters are valid and sets some default parameter values if not specified by the user
-def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par):
+def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y):
     """This is a helper function to check plot arguments.
 
     Parameters
@@ -667,9 +650,6 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
 
     label_bump_y :
 
-    asp :
-
-    list_par :
 
 
     Returns
@@ -693,8 +673,6 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
         else:
             lim_y = min(np.max(np.append(r2yz_dx * 1.2, 0.4)), 1 - 10 ** -12)
             #lim_y = min(np.max(list(r2yz_dx * 1.2) + [0.4]), 1 - 10 ** -12)
-    if asp is None:
-        asp = lim / lim_y
     if label_bump_x is None:
         label_bump_x = lim / 30.0
     if label_bump_y is None:
@@ -711,12 +689,12 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
     elif lim_y < 0:
         lim_y = 0.4
         print('Warning: Contour limit less than 0 was set to 0.4.')
-    if list_par is None:
-        list_par = {'mar': [4, 4, 1, 1]}
-    return estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y, asp, list_par
+    # if list_par is None:
+    #     list_par = {'mar': [4, 4, 1, 1]}
+    return estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump_y
 
 # Checks to make sure given parameters are valid and sets some default parameter values if not specified by the user
-def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim, list_par):
+def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim):
     """This is a helper function to check plot arguments.
 
     Parameters
@@ -728,8 +706,6 @@ def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim, list_par):
     r2yz_dx :
 
     lim :
-
-    list_par :
 
 
     Returns
@@ -754,9 +730,9 @@ def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim, list_par):
         lim = 0.4
         print('Warning: Contour limit less than 0 was set to 0.4.')
 
-    if list_par is None:
-        list_par = {'mar': [4, 4, 1, 1]}
-    return estimate, r2dz_x, r2yz_dx, lim, list_par
+    # if list_par is None:
+    #     list_par = {'mar': [4, 4, 1, 1]}
+    return estimate, r2dz_x, r2yz_dx, lim
 
 
 

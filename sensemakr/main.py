@@ -427,7 +427,8 @@ class Sensemakr:
 
         Returns
         -------
-        LaTex/HTML code for creating the table summarizing the sensemakr object
+        string
+            LaTex/HTML code for creating the table summarizing the sensemakr object
 
         Examples
         ---------

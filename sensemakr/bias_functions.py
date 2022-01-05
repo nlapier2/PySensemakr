@@ -92,29 +92,31 @@ import numpy as np
 
 
 def adjusted_estimate(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True):
-    """Compute the bias-adjusted coefficient estimate. See description at top for details.
+    """Compute the bias-adjusted coefficient estimate.
 
     Parameters
     ----------
-    r2dz_x :
-        
-    r2yz_dx :
-        
-    model :
-         (Default value = None)
-    treatment :
-         (Default value = None)
-    estimate :
-         (Default value = None)
-    se :
-         (Default value = None)
-    dof :
-         (Default value = None)
-    reduce :
-         (Default value = True)
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    estimate : float
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest
+    se : float
+        a float with the unadjusted standard error of the regression
+    dof : int
+        an int with the degrees of freedom of the regression
+    reduce : boolean
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
 
     Returns
     -------
+    float
+        the bias-adjusted coefficient estimate
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_estimate', r2dz_x, r2yz_dx, model=model,
@@ -127,26 +129,27 @@ def adjusted_estimate(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None
 
 
 def adjusted_se(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
-    """Compute the bias-adjusted regression standard error. See description at top for details.
+    """Compute the bias-adjusted regression standard error.
 
     Parameters
     ----------
-    r2dz_x :
-        
-    r2yz_dx :
-        
-    model :
-         (Default value = None)
-    treatment :
-         (Default value = None)
-    se :
-         (Default value = None)
-    dof :
-         (Default value = None)
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    se : float
+        a float with the unadjusted standard error of the regression
+    dof : int
+        an int with the degrees of freedom of the regression
 
     Returns
     -------
-
+    float
+        bias-adjusted regression standard error
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_se', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      se=se, dof=dof, estimate_is_param=False, reduce_is_param=False)
@@ -155,31 +158,33 @@ def adjusted_se(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
 
 
 def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None, reduce=True, h0=0):
-    """Compute bias-adjusted t-statistic, (adjusted_estimate - h0) / adjusted_se. See description at top for details.
+    """Compute bias-adjusted t-statistic, (adjusted_estimate - h0) / adjusted_se.
 
     Parameters
     ----------
-    r2dz_x :
-        
-    r2yz_dx :
-        
-    model :
-         (Default value = None)
-    treatment :
-         (Default value = None)
-    estimate :
-         (Default value = None)
-    se :
-         (Default value = None)
-    dof :
-         (Default value = None)
-    reduce :
-         (Default value = True)
-    h0 :
-         (Default value = 0)
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    estimate : float
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest
+    se : float
+        a float with the unadjusted standard error of the regression
+    dof : int
+        an int with the degrees of freedom of the regression
+    reduce : boolean
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+    h0 : float
+        the test value for null hypothesis
 
     Returns
     -------
+    float
+        bias-adjusted t-statistic, (adjusted_estimate - h0) / adjusted_se
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_t', r2dz_x, r2yz_dx, model=model, treatment=treatment,
@@ -191,31 +196,33 @@ def adjusted_t(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=No
 
 def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None,
                         reduce=True, h0=0):
-    """Compute the bias-adjusted partial R2, based on adjusted_t. See description at top for details.
+    """Compute the bias-adjusted partial R2, based on adjusted_t.
 
     Parameters
     ----------
-    r2dz_x :
-        
-    r2yz_dx :
-        
-    model :
-         (Default value = None)
-    treatment :
-         (Default value = None)
-    estimate :
-         (Default value = None)
-    se :
-         (Default value = None)
-    dof :
-         (Default value = None)
-    reduce :
-         (Default value = True)
-    h0 :
-         (Default value = 0)
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    estimate : float
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest
+    se : float
+        a float with the unadjusted standard error of the regression
+    dof : int
+        an int with the degrees of freedom of the regression
+    reduce : boolean
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
+    h0 : float
+        the test value for null hypothesis
 
     Returns
     -------
+    float
+        the bias-adjusted partial R2, based on adjusted_t
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('adjusted_partial_r2', r2dz_x, r2yz_dx, model=model,
@@ -226,25 +233,27 @@ def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=No
 
 
 def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
-    """Compute the omitted variable bias for the partial R2 parameterization. See description at top for details.
+    """Compute the omitted variable bias for the partial R2 parameterization.
 
     Parameters
     ----------
-    r2dz_x :
-        
-    r2yz_dx :
-        
-    model :
-         (Default value = None)
-    treatment :
-         (Default value = None)
-    se :
-         (Default value = None)
-    dof :
-         (Default value = None)
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    se : float
+        a float with the unadjusted standard error of the regression
+    dof : int
+        an int with the degrees of freedom of the regression
 
     Returns
     -------
+    float
+        the omitted variable bias for the partial R2 parameterization
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
@@ -254,27 +263,29 @@ def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
 
 
 def relative_bias(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se=None, dof=None):
-    """Compute the relative bias for the partial R2 parameterization. See description at top for details.
+    """Compute the relative bias for the partial R2 parameterization.
 
     Parameters
     ----------
-    r2dz_x :
-        
-    r2yz_dx :
-        
-    model :
-         (Default value = None)
-    treatment :
-         (Default value = None)
-    estimate :
-         (Default value = None)
-    se :
-         (Default value = None)
-    dof :
-         (Default value = None)
+    r2dz_x : float or list of floats
+        a float or list of floats with the partial R^2 of a putative unobserved confounder "z" with the treatment variable "d", with observed covariates "x" partialed out.
+    r2yz_dx : float or list of floats
+        a float or list of floats with the  partial R^2 of a putative unobserved confounder "z" with the outcome variable "y", with observed covariates "x" and treatment variable "d" partialed out.
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest
+    estimate : float
+        a float with the unadjusted estimate of the coefficient for the independent variable of interest
+    se : float
+        a float with the unadjusted standard error of the regression
+    dof : int
+        an int with the degrees of freedom of the regression
 
     Returns
     -------
+    float
+        the relative bias for the partial R2 parameterization
 
     """
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('relative_bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
@@ -292,9 +303,9 @@ def rel_bias(r_est, est):
     Parameters
     ----------
     r_est :
-        
+
     est :
-        
+
 
     Returns
     -------
@@ -310,9 +321,9 @@ def bf(r2dz_x, r2yz_dx):
     Parameters
     ----------
     r2dz_x :
-        
+
     r2yz_dx :
-        
+
 
     Returns
     -------
@@ -332,11 +343,11 @@ def param_check(function_name, r2dz_x, r2yz_dx,
     Parameters
     ----------
     function_name :
-        
+
     r2dz_x :
-        
+
     r2yz_dx :
-        
+
     model :
          (Default value = None)
     treatment :

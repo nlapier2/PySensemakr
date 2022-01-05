@@ -24,13 +24,13 @@ reduce = True
 benchmark_covariates=["female"]
 kd = [1, 2, 3]
 ky = kd
-s = main.Sensemakr(model, treatment, q=q, 
+s = main.Sensemakr(model, treatment, q=q,
                         alpha=alpha, reduce=reduce, benchmark_covariates=benchmark_covariates, kd=kd)
-s2 = main.Sensemakr(model, treatment, q=q, 
+s2 = main.Sensemakr(model, treatment, q=q,
                         alpha=alpha, reduce=False, benchmark_covariates=benchmark_covariates, kd=kd)
 def test_plots():
 	ovb_contour_plot(model=model,treatment='directlyharmed',r2dz_x=0.1)
-	ovb_contour_plot(model=model,treatment='directlyharmed',list_par=None)
+	ovb_contour_plot(model=model,treatment='directlyharmed')
 	ovb_contour_plot(model=model,treatment='directlyharmed',r2dz_x=0.1,benchmark_covariates='female')
 	ovb_contour_plot(model=model,treatment='directlyharmed',benchmark_covariates='female',reduce=False)
 	ovb_contour_plot(model=model,treatment='directlyharmed',benchmark_covariates='female',lim=0.2,lim_y=0.3)
@@ -46,11 +46,11 @@ def test_plots():
 	assert(True)
 def test_plot_errors():
 	with pytest.raises(SystemExit):
-		ovb_contour_plot(model=model,sensitivity_of='p-value') 
+		ovb_contour_plot(model=model,sensitivity_of='p-value')
 	with pytest.raises(SystemExit):
-		ovb_contour_plot(estimate=2,se=10) 
-	with pytest.raises(SystemExit):	
-		ovb_extreme_plot(estimate=2,se=10) 
+		ovb_contour_plot(estimate=2,se=10)
+	with pytest.raises(SystemExit):
+		ovb_extreme_plot(estimate=2,se=10)
 	with pytest.raises(SystemExit):
 		ovb_contour_plot(model=model,treatment=['directlyharmed','female'])
 	with pytest.raises(SystemExit):

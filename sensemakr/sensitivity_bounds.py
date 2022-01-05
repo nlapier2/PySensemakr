@@ -32,6 +32,9 @@ and 1, 2, or 3 times as strong as pastvoted
 
 >>> from sensemakr import sensitivity_bounds
 >>> sensitivity_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
+
+Functions
+------------
 """
 # Computes bounds on the strength of unobserved confounders using observed covariates
 import sys
@@ -45,7 +48,7 @@ import statsmodels.api as sm
 def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha=0.05, h0=0, reduce=True,
                bound='partial r2', adjusted_estimates=True):
 
-    """**Description:**
+    """
 
     Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
     The main generic function is ovb_bounds, which can compute both the bounds on the strength of confounding
@@ -56,54 +59,60 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
 
     Currently it implements only the bounds based on partial R2. Other bounds will be implemented soon.
 
-    :Required parameters: model and treatment
+    :Required parameters: model and treatment.
 
     Parameters
     ----------
-    model :
-        a fitted statsmodels OLSResults object for the restricted regression model you have provided
-    treatment :
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest
-    benchmark_covariates :
-        a string or list of strings with names of the variables to use for benchmark bounding (Default value = None)
-    kd :
+    model : statsmodels OLSResults object
+        a fitted statsmodels OLSResults object for the restricted regression model you have provided.
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    benchmark_covariates : string or list of strings
+        a string or list of strings with names of the variables to use for benchmark bounding.
+    kd : float or list of floats
         a float or list of floats with each being a multiple of the strength of association between a
-        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1)
-    ky :
-        same as kd except measured in terms of strength of association with the outcome variable (Default value = None)
-    alpha :
+        benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1).
+    ky : float or list of floats
+        same as kd except measured in terms of strength of association with the outcome variable.
+    alpha : float
         a float with the significance level for the robustness value RV_qa to render the
-        estimate not significant (Default value = 0.05)
-    h0 :
-        a float with the null hypothesis effect size; defaults to 0
-    reduce :
-        whether to reduce (True, default) or increase (False) the estimate due to putative confounding
-    bound :
-        type of bound to perform; as of now, only partial R^2 bounding is allowed (Default value = 'partial r2')
-    adjusted_estimates :
-        whether to compute bias-adjusted estimates, standard errors, and t-statistics (Default value = True)
+        estimate not significant (Default value = 0.05).
+    h0 : float
+        a float with the null hypothesis effect size; defaults to 0.
+    reduce : boolean
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
+    bound : string
+        type of bound to perform; as of now, only partial R^2 bounding is allowed (Default value = 'partial r2').
+    adjusted_estimates : boolean
+        whether to compute bias-adjusted estimates, standard errors, and t-statistics (Default value = True).
 
     Returns
     -------
+    Pandas DataFrame
+
         A Pandas DataFrame containing the following variables:
 
-        * treatment : the name of the provided treatment variable
-        * bound_label : a string created by label_maker to serve as a label for the bound for printing & plotting purposes
-        * r2dz_x : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+        **treatment** : the name of the provided treatment variable
+
+        **bound_label** : a string created by label_maker to serve as a label for the bound for printing & plotting purposes
+
+        **r2dz_x** : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
         as strong as the benchmark_covariates
-        * r2yz_dx : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+
+        **r2yz_dx** : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
         as implied by z being ky-times as strong as the benchmark_covariates
-        * adjusted_estimate : the bias-adjusted estimate adjusted for a confounder with the given r2dz_x and r2yz_dx above
-        * adjusted_se : the bias-adjusted standard error adjusted for a confounder with the given r2dz_x and r2yz_dx above
-        * adjusted_t : the bias-adjusted t-statistic adjusted for a confounder with the given r2dz_x and r2yz_dx above
 
-        **Reference:**
+        **adjusted_estimate** : the bias-adjusted estimate adjusted for a confounder with the given r2dz_x and r2yz_dx above
 
-        Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
+        **adjusted_se** : the bias-adjusted standard error adjusted for a confounder with the given r2dz_x and r2yz_dx above
 
-        **Example:**
+        **adjusted_t** : the bias-adjusted t-statistic adjusted for a confounder with the given r2dz_x and r2yz_dx above
+
+
+    Example
+    -------
 
     >>> # Load example dataset
     >>> from sensemakr import data
@@ -141,7 +150,7 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
 
 def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None,
                          benchmark_covariates=None, kd=1, ky=None):
-    """**Description:**
+    """
     The function `ovb_partial_r2_bound()` returns only a Pandas DataFrame with the bounds on the strength of the
     unobserved confounder. Adjusted estimates, standard errors and t-values (among other quantities) need to be computed
     manually by the user using those bounds with the functions adjusted_estimate, adjusted_se and adjusted_t.
@@ -168,21 +177,24 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 
     Returns
     -------
+    Pandas DataFrame
 
         A Pandas DataFrame containing the following variables:
 
-        * bound_label : a string created by label_maker to serve as a label for the bound for printing & plotting purposes
-        * r2dz_x : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+        **bound_label** : a string created by label_maker to serve as a label for the bound for printing & plotting purposes
+
+        **r2dz_x** : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
         as strong as the benchmark_covariates
-        * r2yz_dx : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
+
+        **r2yz_dx** : a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the outcome variable "y", with observed covariates "x" and the treatment variable "d" partialed out,
         as implied by z being ky-times as strong as the benchmark_covariates
 
-        **Reference:**
-        Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 
-        **Examples:**
+
+    Examples
+    ---------
         Let's construct bounds from summary statistics only. Suppose you didn't have access to the data, but only to the treatment and outcome regression tables.
         You can still compute the bounds.
 
