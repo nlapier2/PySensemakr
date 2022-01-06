@@ -1,5 +1,5 @@
 """
-This module provides sensitivity contour plots and extreme scenario sensitivity plots.
+Provides sensitivity contour plots and extreme scenario sensitivity plots.
 
 They can be used on an object of class `Sensemakr`, directly in an OLS `statsmodel,`
 or by providing the required statistics manually.
@@ -105,7 +105,6 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
 
     Examples
     --------
-
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()
@@ -296,7 +295,6 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
 
     Examples
     --------
-
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()
@@ -447,7 +445,6 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
 
     Examples
     --------
-
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()

@@ -62,7 +62,6 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
 
     Examples
     --------
-
     >>> # Load example dataset
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()
@@ -297,7 +296,6 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
 
     Examples
     ---------
-
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()
@@ -328,7 +326,7 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
 
 def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=None, q=1, alpha=0.05, reduce=True):
     r"""
-    Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
+    Computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
 
     **Required parameters:** either model and treatment, or (estimate, se, and dof).
 
@@ -376,7 +374,6 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
 
     Examples
     ---------
-
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()

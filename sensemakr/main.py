@@ -34,7 +34,6 @@ Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 
 Examples
 --------
-
 >>> # Load example dataset:
 >>> from sensemakr import data
 >>> darfur = data.load_darfur()
@@ -70,7 +69,6 @@ class Sensemakr:
 
     Parameters
     ----------
-
     model: statsmodels OLSResults object
         a fitted statsmodels OLSResults object for the restricted regression model you have provided.
     treatment: string
@@ -115,7 +113,7 @@ class Sensemakr:
                  ky=None, q=1, alpha=0.05, r2dz_x=None, r2yz_dx=None, r2dxj_x=None, r2yxj_dx=None,
                  bound_label="Manual Bound", reduce=True):
         r"""
-        The constructor for a Sensemakr object.
+        Construct for a Sensemakr object.
 
         Parameter descriptions are below. For usage and info, see the
         description of the class.
@@ -124,7 +122,6 @@ class Sensemakr:
 
         Parameters
         ----------
-
         model: statsmodels OLSResults object
             a fitted statsmodels OLSResults object for the restricted regression model you have provided
         treatment: string
@@ -399,7 +396,6 @@ class Sensemakr:
 
         Examples
         ---------
-
         >>> # Load example dataset:
         >>> from sensemakr import data
         >>> darfur = data.load_darfur()
@@ -487,7 +483,6 @@ class Sensemakr:
 
         Examples
         ---------
-
         >>> # Load example dataset:
         >>> from sensemakr import data
         >>> darfur = data.load_darfur()
