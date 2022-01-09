@@ -33,7 +33,7 @@ setuptools.setup(
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.7',
     install_requires=requirements,
 
     include_package_data=True
