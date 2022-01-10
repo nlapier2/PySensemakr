@@ -297,6 +297,42 @@ class Sensemakr:
         else:
             self.bounds = self.bounds.append(self.bench_bounds).reset_index()
 
+    def __repr__(self):
+        """Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
+
+        Following the example above, if you have a Sensemakr object called sensitivity, call this method using
+        print(sensitivity) or just sensitivity.
+
+        """
+        digits=3
+        if self.reduce:
+            h0 = round(self.estimate * (1 - self.q), digits)
+            direction = "reduce"
+        else:
+            h0 = round(self.estimate * (1 + self.q), digits)
+            direction = "increase"
+
+        s="Sensitivity Analysis to Unobserved Confounding\n\n"
+        if self.model is not None:
+            #model_formula = self.model.model.endog_names + ' ~ ' + ' + '.join(self.model.model.exog_names)
+            #print("Model Formula: " + model_formula + "\n")
+            s+="Model Formula: "+self.model.model.formula+"\n\n"
+        s+="Null hypothesis: q = "+str(self.q)+ " and reduce = "+str(self.reduce)+"\n\n"
+
+        s+="Unadjusted Estimates of '"+str(self.treatment)+ "':\n"
+        s+="  Coef. estimate: "+str(round(self.estimate, digits))+"\n"
+        s+="  Standard Error: "+str(round(self.sensitivity_stats['se'], digits))+'\n'
+        s+="  t-value: "+str(round(self.sensitivity_stats['t_statistic'], digits))+ "\n\n"
+
+        s+="Sensitivity Statistics: \n"
+        s+="  Partial R2 of treatment with outcome: "+str(round(self.sensitivity_stats['r2yd_x'], digits))+'\n'
+        s+="  Robustness Value, q = "+str(self.q)+ " : "+str(round(self.sensitivity_stats['rv_q'], digits))+'\n'
+        s+="  Robustness Value, q = "+str(self.q)+ " alpha = "+ str(self.alpha)+ " : "+ \
+        str(round(self.sensitivity_stats['rv_qa'], digits))+ "\n"
+
+        return s
+
+
     def summary(self, digits=3):
         """
         Print a summary of the sensitivity results for a Sensemakr object, including robustness value, extreme confounding scenario, and benchmark bounding.

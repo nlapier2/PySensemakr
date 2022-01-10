@@ -234,6 +234,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
               y0,
               y1 + y_plot_margin))
     plt.tight_layout()
+    plt.show()
 
 def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, reduce=None,
                          treatment=None, bounds=None, r2dz_x=None, r2yz_dx=None, bound_value=None, bound_label=None,
@@ -527,7 +528,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     else:
         plt.ylim(-(lim_y / 15.0), lim_y)
     plt.tight_layout()
-
+    plt.show()
 
 
 # Extracts sensitivity and bounding parameters from a given Sensemakr object
