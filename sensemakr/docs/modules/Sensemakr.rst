@@ -1,1 +1,0 @@
-.. autofunction:: sensemakr.main.Sensemakr
