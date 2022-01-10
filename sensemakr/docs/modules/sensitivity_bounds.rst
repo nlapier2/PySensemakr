@@ -1,6 +1,8 @@
 sensemakr\.sensitivity\_bounds
 -------------------------------
 
+Description
+^^^^^^^^^^^^
 Bounds on the strength of unobserved confounders using observed covariates, as in Cinelli and Hazlett (2020).
 The main generic function is ovb_bounds, which can compute both the bounds on the strength of confounding
 as well as the adjusted estimates, standard errors, t-values and confidence intervals.
@@ -35,6 +37,6 @@ and 1, 2, or 3 times as strong as pastvoted
 
 Functions
 ^^^^^^^^^^
-.. autofunction:: sensemakr.sensitivity_bounds.ovb_bounds
+.. autofunction:: sensemakr.ovb_bounds
 
-.. autofunction:: sensemakr.sensitivity_bounds.ovb_partial_r2_bound
+.. autofunction:: sensemakr.ovb_partial_r2_bound
