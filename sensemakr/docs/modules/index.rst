@@ -1,12 +1,13 @@
-Modules
-=========
+.. sensitivity_plots
 
-.. toctree::
-   :maxdepth: 1
+=================
+sensitivity plots
+=================
+.. currentmodule:: sensemakr
 
-   main
-   sensitivity_plots
-   sensitivity_bounds
-   sensitivity_stats
-   bias_functions
-   data
+.. autosummary::
+   :toctree: api/
+
+   ovb_contour_plot
+   ovb_extreme_plot
+   add_bound_to_contour

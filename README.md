@@ -1,8 +1,8 @@
 # PySensemakr - sensemakr for Python
 
 ![PyPI](https://img.shields.io/pypi/v/Pysensemakr)
-[![CI](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml/badge.svg)](https://github.com/KennyZhang-17/PySensemakr/actions/workflows/ci.yml)
-[![Codecov](https://img.shields.io/codecov/c/gh/KennyZhang-17/PySensemakr)](https://app.codecov.io/gh/KennyZhang-17/PySensemakr)
+[![CI](https://github.com/nlapier2/PySensemakr/actions/workflows/ci.yml/badge.svg)](https://github.com/nlapier2/PySensemakr/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/gh/nlapier2/PySensemakr)](https://app.codecov.io/gh/nlapier2/PySensemakr)
 [![Documentation Status](https://readthedocs.org/projects/pysensemakr/badge/?version=latest)](https://pysensemakr.readthedocs.io/en/latest/?badge=latest)
 
 `sensemakr` for Python (`PySensemakr`) implements a suite of sensitivity analysis tools that
