@@ -7,6 +7,7 @@ from sensemakr.bias_functions import *
 from sensemakr.sensitivity_plots import *
 from sensemakr.sensitivity_bounds import *
 import statsmodels.formula.api as smf
+from IPython.display import display
 from sensemakr import main
 import pytest
 import os
