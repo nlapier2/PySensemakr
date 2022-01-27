@@ -7,7 +7,6 @@ from sensemakr.bias_functions import *
 from sensemakr.sensitivity_plots import *
 from sensemakr.sensitivity_bounds import *
 import statsmodels.formula.api as smf
-from IPython.display import display
 from sensemakr import main
 import pytest
 import os
@@ -43,8 +42,8 @@ def test_darfur_Sensemakr():
 	darfur_out=main.Sensemakr(model=model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
 	darfur_out.summary()
 	darfur_out.print()
-	darfur_out.ovb_minimal_reporting(format='html')
-	darfur_out.ovb_minimal_reporting()
+	darfur_out.ovb_minimal_reporting(format='html',display=False)
+	darfur_out.ovb_minimal_reporting(display=False)
 	ovb_contour_plot(sense_obj=darfur_out)
 	ovb_extreme_plot(sense_obj=darfur_out)
 	# info
@@ -73,8 +72,8 @@ def test_darfur_Sensemakr():
 
 	darfur_out2=main.Sensemakr(model=model,treatment='directlyharmed')
 	darfur_out3=main.Sensemakr(model=model, treatment='directlyharmed', q=1.0, alpha=0.05, reduce=True)
-	darfur_out3.ovb_minimal_reporting(format='html')
-	darfur_out3.ovb_minimal_reporting()
+	darfur_out3.ovb_minimal_reporting(format='html',display=False)
+	darfur_out3.ovb_minimal_reporting(display=False)
 	ovb_contour_plot(sense_obj=darfur_out2)
 	ovb_extreme_plot(sense_obj=darfur_out2)
 
