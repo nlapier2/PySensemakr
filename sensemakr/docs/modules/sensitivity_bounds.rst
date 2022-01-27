@@ -1,4 +1,4 @@
-sensemakr\.sensitivity\_bounds
+sensitivity\_bounds
 -------------------------------
 
 Description

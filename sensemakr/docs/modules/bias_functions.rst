@@ -1,4 +1,4 @@
-sensemakr\.bias\_functions
+bias\_functions
 ---------------------------------
 Description
 ^^^^^^^^^^^^^

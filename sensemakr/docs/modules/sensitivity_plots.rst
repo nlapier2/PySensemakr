@@ -1,4 +1,4 @@
-sensemakr\.sensitivity\_plots
+sensitivity\_plots
 ------------------------------
 
 Description

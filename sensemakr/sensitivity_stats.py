@@ -44,6 +44,8 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     ----------
     model : statsmodels OLSResults object
         a statsmodels OLSResults object containing the restricted regression.
+    covariates : string
+        a string or list of strings with the names of the variables to use for benchmark bounding.
     t_statistic : float
         a float with the t_statistic for the restricted model regression.
     dof : int
@@ -52,8 +54,6 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
         a float with the percent to reduce the point estimate by for the robustness value RV_q (Default value = 1).
     alpha : float
         a float with the significance level for the robustness value RV_qa to render the estimate not significant (Default value = 1.0).
-    covariates : string
-        a string or list of strings with the names of the variables to use for benchmark bounding.
 
     Returns
     -------

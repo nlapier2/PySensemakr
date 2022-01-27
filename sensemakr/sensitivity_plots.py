@@ -67,36 +67,36 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
         a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with treatment D, given covariates X.
     r2yz_dx : float or list of floats
         a float or list of floats. Hypothetical partial R2 of unobserved confounder Z with outcome Y, given covariates X and treatment D.
+    bound_label : string
+        label of the bound variable.
     reduce: boolean
         whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default is True.
     estimate_threshold : float
         threshold line to emphasize when contours correspond to estimate, default is 0.
     t_threshold : float
         threshold line to emphasize when contours correspond to t-value, default is 2.
-    xlab : string
-        x-axis label text.
-    ylab : string
-        y-axis label text.
-    round_dig : int
-        rounding digit of the display numbers, default is 3.
-    col_contour : string of color
-        color of the contour line, default is "black".
-    col_thr_line : string of color
-        color of the threshold line, default is "red".
-    bound_label : string
-        label of the bound variable.
     lim : float
         x axis maximum.
     lim_y : float
         y axis maximum.
+    col_contour : string of color
+        color of the contour line, default is "black".
+    col_thr_line : string of color
+        color of the threshold line, default is "red".
     label_text : boolean
         whether to include label text.
     label_bump_x : float
          x-axis position of label above 0.
     label_bump_y : float
          y-axis position of label above 0.
+    xlab : string
+        x-axis label text.
+    ylab : string
+        y-axis label text.
     plot_margin_fraction : float
          margin fraction added to the top of lim and lim_y.
+    round_dig : int
+        rounding digit of the display numbers, default is 3.
 
     Return
     -------
@@ -249,12 +249,8 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
 
     Parameters
     ----------
-    sensitivity_of : string
-        either "estimate" or "t-value".
     model : statsmodels OLSResults object
         a fitted statsmodels OLSResults object for the restricted regression model you have provided.
-    treatment : string
-        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
     benchmark_covariates : string
         a string or list of strings with
         the names of the variables to use for benchmark bounding.
@@ -263,6 +259,13 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         benchmark variable and the treatment variable to test with benchmark bounding (Default value = 1).
     ky : float or list of floats
         same as kd except measured in terms of strength of association with the outcome variable.
+    reduce : boolean
+        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
+    treatment : string
+        a string with the name of the "treatment" variable, e.g. the independent variable of interest.
+    bounds : pandas dataframe
+        A pandas dataframe with bounds on the strength of confounding according to some benchmark covariates,
+        as computed by the function ovb_bounds.
     r2dz_x : float or list of floats
         a float or list of floats with the partial R^2 of a putative unobserved confounder "z"
         with the treatment variable "d", with observed covariates "x" partialed out, as implied by z being kd-times
@@ -275,19 +278,16 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
         the value of the reference point.
     bound_label : string
         a string that label the reference point.
-    round_dig : int
-        rounding digit of the display numbers, default=3.
-    reduce : boolean
-        whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
-    bounds : pandas dataframe
-        A pandas dataframe with bounds on the strength of confounding according to some benchmark covariates,
-        as computed by the function ovb_bounds.
+    sensitivity_of : string
+        either "estimate" or "t-value".
     label_text : boolean
         whether to include label text.
     label_bump_x : float
         x-axis position of label above 0.
     label_bump_y : float
         y-axis position of label above 0.
+    round_dig : int
+        rounding digit of the display numbers, default=3.
 
     Return
     -------
@@ -430,14 +430,14 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
         whether to reduce (True, default) or increase (False) the estimate due to putative confounding, default=True.
     threshold : float
         threshold line to emphasize when drawing estimate, default=0.
-    xlab : string
-        x-axis label text.
-    ylab : string
-        y-axis label text.
     lim : float
         range of x-axis.
     lim_y : float
         range of y-axis.
+    xlab : string
+        x-axis label text.
+    ylab : string
+        y-axis label text.
 
     Return
     --------

@@ -417,8 +417,6 @@ class Sensemakr:
 
         Parameters
         ----------
-        sense_obj : sensemakr object
-            A sensemakr object to plot.
         plot_type : string
             Either "extreme" or "contour" (Default value = "contour").
         sensitivity_of : string
@@ -503,8 +501,6 @@ class Sensemakr:
 
         Parameters
         ----------
-        sense_obj : sensemakr object
-            A sensemakr object for reporting.
         format : string
             Either "latex" or "html" (Default value = 'html').
         display : boolean

@@ -1,4 +1,4 @@
-sensemakr\.sensitivity\_stats
+sensitivity\_stats
 ------------------------------------
 Description
 ^^^^^^^^^^^^^^

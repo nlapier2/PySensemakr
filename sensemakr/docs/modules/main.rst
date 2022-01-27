@@ -16,7 +16,7 @@ of unobserved confounders (ovb_bounds), among others.
 
 Parameters
 ^^^^^^^^^^
-arguments passed to other methods. First argument should either be
+First argument should either be
 
 * a statsmodels OLSResults object ("fitted_model"); or
 * the numerical estimated value of the coefficient, along with the numeric values of standard errors and
