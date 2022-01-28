@@ -44,6 +44,8 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     ----------
     model : statsmodels OLSResults object
         a statsmodels OLSResults object containing the restricted regression.
+    covariates : string
+        a string or list of strings with the names of the variables to use for benchmark bounding.
     t_statistic : float
         a float with the t_statistic for the restricted model regression.
     dof : int
@@ -52,8 +54,6 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
         a float with the percent to reduce the point estimate by for the robustness value RV_q (Default value = 1).
     alpha : float
         a float with the significance level for the robustness value RV_qa to render the estimate not significant (Default value = 1.0).
-    covariates : string
-        a string or list of strings with the names of the variables to use for benchmark bounding.
 
     Returns
     -------
@@ -62,7 +62,6 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
 
     Examples
     --------
-
     >>> # Load example dataset
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()
@@ -297,7 +296,6 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
 
     Examples
     ---------
-
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()
@@ -328,7 +326,7 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
 
 def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=None, q=1, alpha=0.05, reduce=True):
     r"""
-    Convenience function that computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
+    Computes the robustness_value, partial_r2 and partial_f2 of the coefficient of interest.
 
     **Required parameters:** either model and treatment, or (estimate, se, and dof).
 
@@ -376,7 +374,6 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
 
     Examples
     ---------
-
     >>> # Load example dataset:
     >>> from sensemakr import data
     >>> darfur = data.load_darfur()

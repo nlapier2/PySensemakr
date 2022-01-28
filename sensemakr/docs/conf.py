@@ -45,6 +45,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.napoleon']
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
+numpydoc_validation_checks = {"all"}
 #napoleon_use_admonition_for_examples = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -61,8 +62,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PySensemakr'
-copyright = u'2021, Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
-author = u'Nathan LaPierre, Kenny Zhang, Brian Hill, Carlos Cinelli'
+copyright = u'2021, Nathan LaPierre, Zhehao Zhang, Brian Hill, Carlos Cinelli'
+author = u'Nathan LaPierre, Zhehao Zhang, Brian Hill, Carlos Cinelli'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -187,13 +188,3 @@ texinfo_documents = [
      author, 'PySensemakr', 'sensemakr for Python',
      'Miscellaneous'),
 ]
-
-def skip_functions(app,what,name,obj,skip,options):
-    exclusions=[]
-    exclusions.append(name.startswith('bias'))
-    exclude=name in exclusions
-    return True if exclude else None
-
-
-def setup(app):
-    app.connect('autodoc-skip-member',skip_functions)

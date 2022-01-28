@@ -1,4 +1,4 @@
-sensemakr\.sensitivity\_plots
+sensitivity\_plots
 ------------------------------
 
 Description
@@ -10,8 +10,8 @@ or by providing the required statistics manually.
 Functions
 ^^^^^^^^^^
 
-.. autofunction:: sensemakr.sensitivity_plots.ovb_contour_plot
+.. autofunction:: sensemakr.ovb_contour_plot
 
-.. autofunction:: sensemakr.sensitivity_plots.add_bound_to_contour
+.. autofunction:: sensemakr.add_bound_to_contour
 
-.. autofunction:: sensemakr.sensitivity_plots.ovb_extreme_plot
+.. autofunction:: sensemakr.ovb_extreme_plot

@@ -1,4 +1,4 @@
-sensemakr\.sensitivity\_stats
+sensitivity\_stats
 ------------------------------------
 Description
 ^^^^^^^^^^^^^^
@@ -11,12 +11,12 @@ Cinelli, C. and Hazlett, C. (2020), "Making Sense of Sensitivity: Extending Omit
 Functions
 ^^^^^^^^^^^
 
-.. autofunction:: sensemakr.sensitivity_stats.robustness_value
+.. autofunction:: sensemakr.robustness_value
 
-.. autofunction:: sensemakr.sensitivity_stats.sensitivity_stats
+.. autofunction:: sensemakr.sensitivity_stats
 
-.. autofunction:: sensemakr.sensitivity_stats.partial_r2
+.. autofunction:: sensemakr.partial_r2
 
-.. autofunction:: sensemakr.sensitivity_stats.partial_f2
+.. autofunction:: sensemakr.partial_f2
 
-.. autofunction:: sensemakr.sensitivity_stats.group_partial_r2
+.. autofunction:: sensemakr.group_partial_r2

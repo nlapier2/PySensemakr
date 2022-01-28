@@ -18,7 +18,7 @@ Finally, in the python version of the package, there is a param_check method whi
 they are roughly the same for each method.
 
 Parameters
-------------
+----------
 For all methods, r2dz_x and r2yz_dx are required. For all methods other than bf, either model and treatment
 or estimate, se, and dof are also required, except adjused_se and bias which do not accept the estimate parameter.
 

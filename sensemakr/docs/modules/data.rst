@@ -1,7 +1,9 @@
-sensemakr\.data
+data
 ----------------------
+Description
+^^^^^^^^^^^^
+This module provides the example data for the package.
 
-.. automodule:: sensemakr.data
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Function
+^^^^^^^^^
+.. autofunction:: sensemakr.load_darfur()

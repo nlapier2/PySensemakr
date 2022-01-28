@@ -1,4 +1,4 @@
-sensemakr\.bias\_functions
+bias\_functions
 ---------------------------------
 Description
 ^^^^^^^^^^^^^
@@ -77,14 +77,14 @@ Example
 Functions
 ^^^^^^^^^^
 
-.. autofunction:: sensemakr.bias_functions.adjusted_estimate
+.. autofunction:: sensemakr.adjusted_estimate
 
-.. autofunction:: sensemakr.bias_functions.adjusted_se
+.. autofunction:: sensemakr.adjusted_se
 
-.. autofunction:: sensemakr.bias_functions.adjusted_t
+.. autofunction:: sensemakr.adjusted_t
 
-.. autofunction:: sensemakr.bias_functions.adjusted_partial_r2
+.. autofunction:: sensemakr.adjusted_partial_r2
 
-.. autofunction:: sensemakr.bias_functions.bias
+.. autofunction:: sensemakr.bias
 
-.. autofunction:: sensemakr.bias_functions.relative_bias
+.. autofunction:: sensemakr.relative_bias

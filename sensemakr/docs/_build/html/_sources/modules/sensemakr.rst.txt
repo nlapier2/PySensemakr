@@ -1,7 +1,0 @@
-sensemakr\.main
----------------------------
-
-.. automodule:: sensemakr.sensemakr
-    :members:
-    :undoc-members:
-    :show-inheritance:
