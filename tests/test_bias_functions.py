@@ -3,7 +3,7 @@ from scipy.stats import t
 import numpy as np
 import pandas as pd
 from sensemakr.bias_functions import *
-from sensemakr.sensitivity_stats import *
+from sensemakr.sensitivity_statistics import *
 import statsmodels.formula.api as smf
 from sensemakr import main
 
@@ -62,4 +62,3 @@ def test_manual_input():
     est= out.bounds['adjusted_estimate'][0]
     est_check = adjusted_estimate(estimate = 2, se=2, dof=100, r2dz_x=0.2, r2yz_dx=0.2)
     assert(est==est_check)
-

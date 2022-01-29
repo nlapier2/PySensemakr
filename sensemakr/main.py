@@ -53,7 +53,7 @@ import sys
 import pandas as pd
 from scipy.stats import t
 import numpy as np
-from . import sensitivity_stats
+from . import sensitivity_statistics
 from . import bias_functions
 from . import sensitivity_bounds
 from . import sensitivity_plots
@@ -195,7 +195,7 @@ class Sensemakr:
         if model is not None:
             self.model = model
             self.treatment = treatment
-            self.sensitivity_stats = sensitivity_stats.sensitivity_stats(model=self.model, treatment=self.treatment,
+            self.sensitivity_stats = sensitivity_statistics.sensitivity_stats(model=self.model, treatment=self.treatment,
                                                                          q=self.q, alpha=self.alpha, reduce=self.reduce)
             self.estimate = self.sensitivity_stats['estimate']
             self.se = self.sensitivity_stats['se']
@@ -203,7 +203,7 @@ class Sensemakr:
         else:
             self.model=None
             self.estimate = estimate
-            self.sensitivity_stats = sensitivity_stats.sensitivity_stats(estimate=self.estimate, se=se, dof=dof,
+            self.sensitivity_stats = sensitivity_statistics.sensitivity_stats(estimate=self.estimate, se=se, dof=dof,
                                                                          q=self.q, alpha=self.alpha, reduce=self.reduce)
             #self.estimate = estimate
             self.se = se
@@ -219,7 +219,7 @@ class Sensemakr:
             self.bounds = None
         else:
             if model is not None:
-                self.r2dz_x, self.r2yz_dx = sensitivity_stats.check_r2(self.r2dz_x, self.r2yz_dx)
+                self.r2dz_x, self.r2yz_dx = sensitivity_statistics.check_r2(self.r2dz_x, self.r2yz_dx)
                 # Compute adjusted parameter estimate, standard error, and t statistic
                 self.adjusted_estimate = bias_functions.adjusted_estimate(model=self.model, treatment=self.treatment,
                                                                           r2dz_x=self.r2dz_x, r2yz_dx=self.r2yz_dx,
@@ -230,7 +230,7 @@ class Sensemakr:
                                                             r2dz_x=self.r2dz_x, r2yz_dx=self.r2yz_dx,
                                                             h0=self.h0, reduce=self.reduce)
             else:
-                self.r2dz_x, self.r2yz_dx = sensitivity_stats.check_r2(self.r2dz_x, self.r2yz_dx)
+                self.r2dz_x, self.r2yz_dx = sensitivity_statistics.check_r2(self.r2dz_x, self.r2yz_dx)
                 # Compute adjusted parameter estimate, standard error, and t statistic
                 self.adjusted_estimate = bias_functions.adjusted_estimate(estimate=self.estimate, se=self.se,
                                                                           dof=self.dof, treatment=self.treatment,

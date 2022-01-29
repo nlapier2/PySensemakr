@@ -6,7 +6,7 @@ or by providing the required statistics manually.
 """
 # Code for producing sensitivity contour plots and other plots
 import matplotlib.pyplot as plt
-from . import sensitivity_stats
+from . import sensitivity_statistics
 from . import sensitivity_bounds
 from . import bias_functions
 import sys
@@ -206,7 +206,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
 
     # add bounds
     if r2dz_x is not None:
-        r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+        r2dz_x, r2yz_dx = sensitivity_statistics.check_r2(r2dz_x, r2yz_dx)
         if(np.isscalar(kd)):
             kd=[kd]
         if(ky is None):
@@ -609,7 +609,7 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
     if type(treatment) is not str:
         sys.exit('Error: treatment must be a single string.')
 
-    model_data = sensitivity_stats.model_helper(model, covariates=treatment)
+    model_data = sensitivity_statistics.model_helper(model, covariates=treatment)
     estimate = model_data['estimate']
     se = model_data['se']
     dof = model_data['dof']
@@ -666,7 +666,7 @@ def check_params(estimate, r2dz_x, r2yz_dx, lim, lim_y, label_bump_x, label_bump
     check_estimate(estimate)
     if r2yz_dx is None:
         r2yz_dx = r2dz_x
-    r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+    r2dz_x, r2yz_dx = sensitivity_statistics.check_r2(r2dz_x, r2yz_dx)
 
     if lim is None:
         if r2dz_x is None:
@@ -722,7 +722,7 @@ def check_params_extreme(estimate, r2dz_x, r2yz_dx, lim):
     """
     check_estimate(estimate)
 
-    r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+    r2dz_x, r2yz_dx = sensitivity_statistics.check_r2(r2dz_x, r2yz_dx)
 
     if lim is None:
         if r2dz_x is None:

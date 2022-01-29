@@ -69,15 +69,15 @@ def robustness_value(model=None, covariates=None, t_statistic=None, dof=None, q=
     >>> import statsmodels.formula.api as smf
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
-    >>> from sensemakr import sensitivity_stats
+    >>> from sensemakr import sensitivity_statistics
     >>> # Robustness value of directly harmed q =1 (reduce estimate to zero):
-    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed") # doctest: +SKIP
+    >>> sensitivity_statistics.robustness_value(model = fitted_model, covariates = "directlyharmed") # doctest: +SKIP
     >>> # Robustness value of directly harmed q = 1/2 (reduce estimate in half):
-    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2) # doctest: +SKIP
+    >>> sensitivity_statistics.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2) # doctest: +SKIP
     >>> # Robustness value of directly harmed q = 1/2, alpha = 0.05 (reduce estimate in half, with 95% confidence):
-    >>> sensitivity_stats.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2, alpha = 0.05) # doctest: +SKIP
+    >>> sensitivity_statistics.robustness_value(model = fitted_model, covariates = "directlyharmed", q = 1/2, alpha = 0.05) # doctest: +SKIP
     >>> # You can also provide the statistics directly:
-    >>> sensitivity_stats.robustness_value(t_statistic = 4.18445, dof = 783) # doctest: +SKIP
+    >>> sensitivity_statistics.robustness_value(t_statistic = 4.18445, dof = 783) # doctest: +SKIP
     """
     if model is None and (t_statistic is None or dof is None):
         sys.exit('Error: robustness_value requires either a statsmodels OLSResults object '
@@ -158,15 +158,15 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Load this module:
-    >>> from sensemakr import sensitivity_stats
+    >>> from sensemakr import sensitivity_statistics
     >>> # Partial R2 of directly harmed with peacefactor:
-    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "directlyharmed")  # doctest: +NUMBER
+    >>> sensitivity_statistics.partial_r2(model = fitted_model, covariates = "directlyharmed")  # doctest: +NUMBER
     0.02187
     >>> # Partial R2 of female with peacefactor:
-    >>> sensitivity_stats.partial_r2(model = fitted_model, covariates = "female")  # doctest: +NUMBER
+    >>> sensitivity_statistics.partial_r2(model = fitted_model, covariates = "female")  # doctest: +NUMBER
     0.10903
     >>> # You can also provide the statistics directly:
-    >>> sensitivity_stats.partial_r2(t_statistic = 4.18445, dof = 783)  # doctest: +NUMBER
+    >>> sensitivity_statistics.partial_r2(t_statistic = 4.18445, dof = 783)  # doctest: +NUMBER
     0.021873
     """
     if model is None and (t_statistic is None or dof is None):
@@ -221,13 +221,13 @@ def partial_f2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Load this module:
-    >>> from sensemakr import sensitivity_stats
+    >>> from sensemakr import sensitivity_statistics
     >>> # Partial f2 of directly harmed with peacefactor:
-    >>> sensitivity_stats.partial_f2(model = fitted_model, covariates = "directlyharmed") # doctest: +SKIP
+    >>> sensitivity_statistics.partial_f2(model = fitted_model, covariates = "directlyharmed") # doctest: +SKIP
     >>> # Partial f2 of female with peacefactor:
-    >>> sensitivity_stats.partial_f2(model = fitted_model, covariates = "female") # doctest: +SKIP
+    >>> sensitivity_statistics.partial_f2(model = fitted_model, covariates = "female") # doctest: +SKIP
     >>> # You can also provide the statistics directly:
-    >>> sensitivity_stats.partial_f2(t_statistic = 4.18445, dof = 783) # doctest: +NUMBER
+    >>> sensitivity_statistics.partial_f2(t_statistic = 4.18445, dof = 783) # doctest: +NUMBER
     0.022362
     """
     if model is None and (t_statistic is None or dof is None):
@@ -303,8 +303,8 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     >>> import statsmodels.formula.api as smf
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
-    >>> from sensemakr import sensitivity_stats
-    >>> sensitivity_stats.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"]) # doctest: +NUMBER
+    >>> from sensemakr import sensitivity_statistics
+    >>> sensitivity_statistics.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"]) # doctest: +NUMBER
     0.11681
     """
     if (model is None or covariates is None) and (f_statistic is None or p is None or dof is None):
@@ -381,11 +381,11 @@ def sensitivity_stats(model=None, treatment=None, estimate=None, se=None, dof=No
     >>> import statsmodels.formula.api as smf
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
-    >>> from sensemakr import sensitivity_stats
+    >>> from sensemakr import sensitivity_statistics
     >>> # Sensitivity stats for directly harmed:
-    >>> sensitivity_stats.sensitivity_stats(model = fitted_model, treatment = "directlyharmed") # doctest: +SKIP
+    >>> sensitivity_statistics.sensitivity_stats(model = fitted_model, treatment = "directlyharmed") # doctest: +SKIP
     >>> # You can  also pass the numeric values directly:
-    >>> sensitivity_stats.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783) # doctest: +SKIP
+    >>> sensitivity_statistics.sensitivity_stats(estimate = 0.09731582, se = 0.02325654, dof = 783) # doctest: +SKIP
     """
     if (model is None or treatment is None) and (estimate is None or se is None or dof is None):
         sys.exit('Error: sensitivity_stats requires either a statsmodels OLSResults object and treatment name or an '

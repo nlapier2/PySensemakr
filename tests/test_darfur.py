@@ -2,7 +2,7 @@ import sys
 from scipy.stats import t
 import numpy as np
 import pandas as pd
-from sensemakr.sensitivity_stats import *
+from sensemakr.sensitivity_statistics import *
 from sensemakr.bias_functions import *
 from sensemakr.sensitivity_plots import *
 from sensemakr.sensitivity_bounds import *
@@ -165,7 +165,7 @@ def test_darfur_sensitivity_stats():
 	np.testing.assert_allclose(r2,0.02187309,atol=1e-5)
 	f2=partial_f2(model=model,covariates='directlyharmed')
 	np.testing.assert_allclose(f2,0.02236222,atol=1e-5)
-	sens_stats=sensitivity_stats.sensitivity_stats(model=model,treatment='directlyharmed')
+	sens_stats=sensitivity_statistics.sensitivity_stats(model=model,treatment='directlyharmed')
 	np.testing.assert_allclose(sens_stats['dof'],783,atol=1e-5)
 	np.testing.assert_allclose(sens_stats['estimate'],0.09731582,atol=1e-5)
 	np.testing.assert_allclose(sens_stats['se'],0.02325654,atol=1e-5)

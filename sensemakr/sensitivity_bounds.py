@@ -38,7 +38,7 @@ Functions
 # Computes bounds on the strength of unobserved confounders using observed covariates
 import sys
 from . import bias_functions
-from . import sensitivity_stats
+from . import sensitivity_statistics
 from scipy.stats import t
 import pandas as pd
 import numpy as np
@@ -245,19 +245,19 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 
         if type(benchmark_covariates) is str:
             # r2yxj_dx = partial R^2 with outcome; r2dxj_x = partial R^2 with treatment
-            r2yxj_dx = [sensitivity_stats.partial_r2(model, covariates=benchmark_covariates)]
-            r2dxj_x = [sensitivity_stats.partial_r2(treatment_results, covariates=benchmark_covariates)]
+            r2yxj_dx = [sensitivity_statistics.partial_r2(model, covariates=benchmark_covariates)]
+            r2dxj_x = [sensitivity_statistics.partial_r2(treatment_results, covariates=benchmark_covariates)]
         elif(type(benchmark_covariates) is list):
             r2yxj_dx, r2dxj_x = [], []
             for b in benchmark_covariates:
-              	r2yxj_dx.append(sensitivity_stats.group_partial_r2(model, covariates=b))
-              	r2dxj_x.append(sensitivity_stats.group_partial_r2(treatment_results, covariates=b))
+              	r2yxj_dx.append(sensitivity_statistics.group_partial_r2(model, covariates=b))
+              	r2dxj_x.append(sensitivity_statistics.group_partial_r2(treatment_results, covariates=b))
      	# Group Benchmark
         elif(type(benchmark_covariates) is dict):
             r2yxj_dx, r2dxj_x = [], []
             for b in benchmark_covariates:
-                r2yxj_dx.append(sensitivity_stats.group_partial_r2(model, benchmark_covariates[b]))
-                r2dxj_x.append(sensitivity_stats.group_partial_r2(treatment_results, benchmark_covariates[b]))
+                r2yxj_dx.append(sensitivity_statistics.group_partial_r2(model, benchmark_covariates[b]))
+                r2dxj_x.append(sensitivity_statistics.group_partial_r2(treatment_results, benchmark_covariates[b]))
     elif r2dxj_x is not None:
         if np.isscalar(r2dxj_x):
             r2dxj_x = [r2dxj_x]
@@ -266,7 +266,7 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
 
     bounds = pd.DataFrame()
     for i in range(len(benchmark_covariates)):
-        r2dxj_x[i], r2yxj_dx[i] = sensitivity_stats.check_r2(r2dxj_x[i], r2yxj_dx[i])
+        r2dxj_x[i], r2yxj_dx[i] = sensitivity_statistics.check_r2(r2dxj_x[i], r2yxj_dx[i])
         if type(kd) is list:
             kd = np.array(kd)
         if ky is None:

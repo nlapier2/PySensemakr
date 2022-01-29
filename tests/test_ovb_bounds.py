@@ -2,7 +2,7 @@ import sys
 from scipy.stats import t
 import numpy as np
 import pandas as pd
-from sensemakr.sensitivity_stats import *
+from sensemakr.sensitivity_statistics import *
 from sensemakr.bias_functions import *
 from sensemakr.sensitivity_plots import *
 from sensemakr.sensitivity_bounds import *
@@ -89,7 +89,7 @@ def test_group_bench():
 	bound  = ovb_partial_r2_bound(model=model,treatment="d")
 	bound2 = ovb_partial_r2_bound(model=model,treatment="d",benchmark_covariates='x1')
 	assert(out.bounds.equals(out2.bounds))
-	
+
 
 def test_bound_errors():
 	with pytest.raises(SystemExit):

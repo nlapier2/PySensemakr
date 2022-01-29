@@ -3,7 +3,7 @@ from scipy.stats import t
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sensemakr.sensitivity_stats import *
+from sensemakr.sensitivity_statistics import *
 from sensemakr.bias_functions import *
 from sensemakr.sensitivity_plots import *
 from sensemakr.sensitivity_bounds import *
