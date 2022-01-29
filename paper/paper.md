@@ -41,16 +41,15 @@ While regression is widely used in Python, to the best of the author’s knowled
 We illustrate how to use the package using a simple example:
 
 ```python
-# Imports
-from sensemakr import data
-from sensemakr import sensemakr
+# imports sensemakr
+import sensemakr as smkr
 import statsmodels.formula.api as smf
 ```
 
 
 ```python
-# loads data
-darfur = data.load_darfur()
+# loads darfur data
+darfur = smkr.load_darfur()
 ```
 
 
@@ -68,7 +67,7 @@ darfur_model = reg_model.fit()
 
 ```python
 # Create a sensemakr object and print summary of results
-darfur_sense = sensemakr.Sensemakr(model = darfur_model,
+darfur_sense = smkr.Sensemakr(model = darfur_model,
                                    treatment = "directlyharmed",
                                    benchmark_covariates = ["female"],
                                    kd = [1,2,3])
