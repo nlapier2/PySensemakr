@@ -1,4 +1,4 @@
-sensitivity\_stats
+sensitivity\_statistics
 ------------------------------------
 Description
 ^^^^^^^^^^^^^^

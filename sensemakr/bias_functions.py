@@ -84,7 +84,7 @@ Example
 """
 
 
-from . import sensitivity_stats
+from . import sensitivity_statistics
 import sys
 import numpy as np
 
@@ -227,7 +227,7 @@ def adjusted_partial_r2(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=No
                                                      treatment=treatment, estimate=estimate,
                                                      se=se, dof=dof, reduce=reduce)
     new_t = adjusted_t(estimate=estimate, r2yz_dx=r2yz_dx, r2dz_x=r2dz_x, se=se, dof=dof, reduce=reduce, h0=h0)
-    return sensitivity_stats.partial_r2(t_statistic=new_t, dof=dof-1)
+    return sensitivity_statistics.partial_r2(t_statistic=new_t, dof=dof-1)
 
 
 def bias(r2dz_x, r2yz_dx, model=None, treatment=None, se=None, dof=None):
@@ -289,7 +289,7 @@ def relative_bias(r2dz_x, r2yz_dx, model=None, treatment=None, estimate=None, se
     r2dz_x, r2yz_dx, estimate, se, dof = param_check('relative_bias', r2dz_x, r2yz_dx, model=model, treatment=treatment,
                                                      estimate=estimate, se=se, dof=dof, reduce_is_param=False)
     t_statistic = abs(estimate / se)
-    f = sensitivity_stats.partial_f(t_statistic=t_statistic, dof=dof)
+    f = sensitivity_statistics.partial_f(t_statistic=t_statistic, dof=dof)
     bf_val = bf(r2dz_x, r2yz_dx)
     q = bf_val / f
     return q
@@ -385,13 +385,13 @@ def param_check(function_name, r2dz_x, r2yz_dx,
     if model is not None:
         if type(treatment) is not str:
             sys.exit('Error in ' + function_name + ' method: must provide only one treatment variable.')
-        model_data = sensitivity_stats.model_helper(model, covariates=treatment)  # extracts model data
+        model_data = sensitivity_statistics.model_helper(model, covariates=treatment)  # extracts model data
         estimate = list(model_data['estimate'])[0]  # extract the raw float value
         se = list(model_data['se'])[0]
         dof = int(model_data['dof'])
-    sensitivity_stats.check_se(se)
-    sensitivity_stats.check_dof(dof)
-    r2dz_x, r2yz_dx = sensitivity_stats.check_r2(r2dz_x, r2yz_dx)
+    sensitivity_statistics.check_se(se)
+    sensitivity_statistics.check_dof(dof)
+    r2dz_x, r2yz_dx = sensitivity_statistics.check_r2(r2dz_x, r2yz_dx)
     if estimate_is_param and type(estimate) is not float and type(estimate) is not int:
         sys.exit('Error in ' + function_name + ' method: provided estimate must be a single number.')
     if reduce_is_param and type(reduce) is not bool:
