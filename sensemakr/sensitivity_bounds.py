@@ -17,8 +17,8 @@ Example:
 ------------
 Load example dataset
 
->>> from sensemakr import data
->>> darfur = data.load_darfur()
+>>> import sensemakr as smkr
+>>> darfur = smkr.load_darfur()
 
 Fit a statsmodels OLSResults object ("fitted_model")
 
@@ -29,8 +29,7 @@ Fit a statsmodels OLSResults object ("fitted_model")
 Bounds on the strength of confounders 1, 2, or 3 times as strong as female
 and 1, 2, or 3 times as strong as pastvoted
 
->>> from sensemakr import sensitivity_bounds
->>> sensitivity_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
+>>> smkr.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
 
 Functions
 ------------
@@ -113,16 +112,15 @@ def ovb_bounds(model, treatment, benchmark_covariates=None, kd=1, ky=None, alpha
     -------
 
     >>> # Load example dataset
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
+    >>> import sensemakr as smkr
+    >>> darfur = smkr.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model")
     >>> import statsmodels.formula.api as smf
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Bounds on the strength of confounders 1, 2, or 3 times as strong as female
     >>> # and 1, 2, or 3 times as strong as pastvoted
-    >>> from sensemakr import sensitivity_bounds
-    >>> sensitivity_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
+    >>> smkr.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
     """
     if ky is None:
         ky = kd
@@ -198,18 +196,18 @@ def ovb_partial_r2_bound(model=None, treatment=None, r2dxj_x=None, r2yxj_dx=None
         You can still compute the bounds.
 
     >>> # First import the necessary libraries.
-    >>> from sensemakr import *
+    >>> import sensemakr as smkr
     >>> # Use the t statistic of female in the outcome regression to compute the partial R2 of female with the outcome.
-    >>> r2yxj_dx = partial_r2(t_statistic = -9.789, dof = 783)
+    >>> r2yxj_dx = smkr.partial_r2(t_statistic = -9.789, dof = 783)
     >>> # Use the t-value of female in the *treatment* regression to compute the partial R2 of female with the treatment.
-    >>> r2dxj_x = partial_r2(t_statistic = -2.680, dof = 783)
+    >>> r2dxj_x = smkr.partial_r2(t_statistic = -2.680, dof = 783)
     >>> # Compute manually bounds on the strength of confounders 1, 2, or 3 times as strong as female.
-    >>> bounds = ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,kd = [1, 2, 3], ky = [1, 2, 3])
+    >>> bounds = smkr.ovb_partial_r2_bound(r2dxj_x = r2dxj_x, r2yxj_dx = r2yxj_dx,kd = [1, 2, 3], ky = [1, 2, 3])
     >>> # Compute manually adjusted estimates.
-    >>> bound_values = adjusted_estimate(estimate = 0.0973, se = 0.0232, dof = 783, r2dz_x = bounds['r2dz_x'], r2yz_dx = bounds['r2yz_dx'])
+    >>> bound_values = smkr.adjusted_estimate(estimate = 0.0973, se = 0.0232, dof = 783, r2dz_x = bounds['r2dz_x'], r2yz_dx = bounds['r2yz_dx'])
     >>> # Plot contours and bounds.
-    >>> ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)
-    >>> add_bound_to_contour(bounds=bounds, bound_value = bound_values)
+    >>> smkr.ovb_contour_plot(estimate = 0.0973, se = 0.0232, dof = 783)
+    >>> smkr.add_bound_to_contour(bounds=bounds, bound_value = bound_values)
     """
     if (model is None or treatment is None) and (r2dxj_x is None or r2yxj_dx is None):
         sys.exit('Error: ovb_partial_r2_bound requires either a statsmodels OLSResults object and a treatment name'

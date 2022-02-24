@@ -40,7 +40,7 @@ pip3 install git+https://github.com/nlapier2/PySensemakr
 A user version on PyPI can be installed via:
 
 ```
-pip3 install Pysensemakr
+pip3 install PySensemakr
 ```
 
 ## Example Usage
@@ -56,121 +56,7 @@ import statsmodels.formula.api as smf
 ```python
 # loads data
 darfur = smkr.load_darfur()
-darfur.head()
 ```
-
-
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>wouldvote</th>
-      <th>peacefactor</th>
-      <th>peace_formerenemies</th>
-      <th>peace_jjindiv</th>
-      <th>peace_jjtribes</th>
-      <th>gos_soldier_execute</th>
-      <th>directlyharmed</th>
-      <th>age</th>
-      <th>farmer_dar</th>
-      <th>herder_dar</th>
-      <th>pastvoted</th>
-      <th>hhsize_darfur</th>
-      <th>village</th>
-      <th>female</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>1.000000</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>30</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>23</td>
-      <td>Abdel Khair</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>0</td>
-      <td>0.706831</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>20</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>5</td>
-      <td>Abdi Dar</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>1</td>
-      <td>0.000000</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>45</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>15</td>
-      <td>Abu Sorog</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>1</td>
-      <td>0.495178</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>55</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>9</td>
-      <td>Abu Dejaj</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>0</td>
-      <td>0.000000</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>25</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>7</td>
-      <td>Abu Dejaj</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
 
 
 ```python
@@ -238,7 +124,7 @@ darfur_sense.plot()
 
 
 
-![png](/images/output_6_0.png)
+![png](https://github.com/nlapier2/PySensemakr/blob/main/images/output_6_0.png)
 
 
 
@@ -250,7 +136,7 @@ darfur_sense.plot(sensitivity_of = 't-value')
 
 
 
-![png](/images/output_22_0.png)
+![png](https://github.com/nlapier2/PySensemakr/blob/main/images/output_22_0.png)
 
 
 
@@ -262,4 +148,4 @@ darfur_sense.plot(plot_type = 'extreme')
 
 
 
-![png](/images/output_7_0.png)
+![png](https://github.com/nlapier2/PySensemakr/blob/main/images/output_7_0.png)

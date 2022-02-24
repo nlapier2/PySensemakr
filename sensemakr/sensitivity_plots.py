@@ -106,24 +106,22 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     Examples
     --------
     >>> # Load example dataset:
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
+    >>> import sensemakr as smkr
+    >>> darfur = smkr.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model")
     >>> import statsmodels.formula.api as smf
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Contours directly from OLS object
     >>> ## Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
-    >>> from sensemakr import sensitivity_plots
-    >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+    >>> smkr.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
     >>> ## Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates kd=[1,2,3]
-    >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
+    >>> smkr.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2,3])
     >>> ## Plot contour of the fitted model with manual benchmark
-    >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
+    >>> smkr.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
     >>> # Contours from Sensemakr object
-    >>> from sensemakr import main
-    >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
-    >>> sensitivity_plots.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
+    >>> sensitivity = smkr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> smkr.ovb_contour_plot(sense_obj=sensitivity, sensitivity_of='estimate')
     """
     if sensitivity_of not in ["estimate", "t-value"]:
         sys.exit('Error: "sensitivity_of" argument is required and must be "estimate" or "t-value".')
@@ -297,20 +295,18 @@ def add_bound_to_contour(model=None, benchmark_covariates=None, kd=1, ky=None, r
     Examples
     --------
     >>> # Load example dataset:
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
+    >>> import sensemakr as smkr
+    >>> darfur = smkr.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
-    >>> from sensemakr import main
-    >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = smkr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot contour of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
-    >>> from sensemakr import sensitivity_plots
-    >>> sensitivity_plots.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+    >>> smkr.ovb_contour_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
     >>> # Add bound to contour.
-    >>> sensitivity_plots.add_bound_to_contour(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[2,3])
+    >>> smkr.add_bound_to_contour(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[2,3])
     """
     if ((model is None or benchmark_covariates is None) and bounds is None and (r2dz_x is None or r2yz_dx is None)):
         sys.exit('Error: add_bound_to_contour requires either a statsmodels OLSResults object and names of benchmark '
@@ -447,24 +443,22 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     Examples
     --------
     >>> # Load example dataset:
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
+    >>> import sensemakr as smkr
+    >>> darfur = smkr.load_darfur()
     >>> # Fit a statsmodels OLSResults object ("fitted_model"):
     >>> import statsmodels.formula.api as smf
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Runs sensemakr for sensitivity analysis
-    >>> from sensemakr import main
-    >>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+    >>> sensitivity = smkr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
     >>> # Plot extreme value of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates.
-    >>> from sensemakr import sensitivity_plots
-    >>> sensitivity_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
+    >>> smkr.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female')
     >>> # Plot extreme value of the fitted model with directlyharmed as treatment and "female" as benchmark_covariates kd=[1,2].
-    >>> sensitivity_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2])
+    >>> smkr.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',benchmark_covariates='female',kd=[1,2])
     >>> # Plot extreme value of the fitted model with manual benchmark
-    >>> sensitivity_plots.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
+    >>> smkr.ovb_extreme_plot(model=fitted_model,treatment='directlyharmed',r2dz_x=0.1)
     >>> # Plot extreme value of the sensemakr object
-    >>> sensitivity_plots.ovb_extreme_plot(sense_obj=sensitivity)
+    >>> smkr.ovb_extreme_plot(sense_obj=sensitivity)
     """
     if sense_obj is not None:
         # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
