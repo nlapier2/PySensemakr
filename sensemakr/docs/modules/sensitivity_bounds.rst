@@ -20,8 +20,8 @@ Examples
 ^^^^^^^^^
 Load example dataset
 
->>> from sensemakr import data
->>> darfur = data.load_darfur()
+>>> import sensemakr as smkr
+>>> darfur = smkr.load_darfur()
 
 Fit a statsmodels OLSResults object ("fitted_model")
 
@@ -32,8 +32,7 @@ Fit a statsmodels OLSResults object ("fitted_model")
 Bounds on the strength of confounders 1, 2, or 3 times as strong as female
 and 1, 2, or 3 times as strong as pastvoted
 
->>> from sensemakr import sensitivity_bounds
->>> sensitivity_bounds.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
+>>> smkr.ovb_bounds(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = ["female", "pastvoted"], kd = [1, 2, 3]) # doctest: +SKIP
 
 Functions
 ^^^^^^^^^^

@@ -40,15 +40,14 @@ Journal of the Royal Statistical Society, Series B (Statistical Methodology).
 Examples
 ^^^^^^^^
 >>> # Load example dataset:
->>> from sensemakr import data
->>> darfur = data.load_darfur()
+>>> import sensemakr as smkr
+>>> darfur = smkr.load_darfur()
 >>> # Fit a statsmodels OLSResults object ("fitted_model")
 >>> import statsmodels.formula.api as smf
 >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
 >>> fitted_model = model.fit()
 >>> # Runs sensemakr for sensitivity analysis
->>> from sensemakr import main
->>> sensitivity = main.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+>>> sensitivity = smkr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
 >>> # Description of results
 >>> sensitivity.summary() # doctest: +SKIP
 

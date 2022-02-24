@@ -93,7 +93,7 @@ def load_darfur():
 
     Example
     ------------
-    >>> from sensemakr import data
-    >>> darfur = data.load_darfur()
+    >>> import sensemakr as smkr
+    >>> darfur = smkr.load_darfur()
     """
     return pd.read_csv(path)
