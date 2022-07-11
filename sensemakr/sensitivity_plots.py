@@ -24,7 +24,7 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
                      benchmark_covariates=None, kd=1, ky=None, r2dz_x=None, r2yz_dx=None, bound_label=None,
                      reduce=True, estimate_threshold=0, t_threshold=2, lim=None, lim_y=None,
                      col_contour="black", col_thr_line="red", label_text=True, label_bump_x=None, label_bump_y=None,
-                     xlab=None, ylab=None, plot_margin_fraction=0.05, round_dig=3):
+                     xlab=None, ylab=None, plot_margin_fraction=0.05, round_dig=3, n_levels=None):
     r"""
     Contour plots of omitted variable bias for sensitivity analysis.
 
@@ -97,6 +97,8 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
          margin fraction added to the top of lim and lim_y.
     round_dig : int
         rounding digit of the display numbers, default is 3.
+    n_levels : int
+        maximum number of countours in the plot.
 
     Return
     -------
@@ -169,9 +171,12 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
                                                     reduce=reduce, h0=estimate_threshold)
     # TODO: see which of these params we want to include in function args list
     fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+    # Make n_levels maximum number of contour
+    if(n_levels):
+        n_levels=n_levels-1
     # draw all contours
     CS = ax.contour(grid_values_x, grid_values_y, z_axis,
-                    colors=col_contour, linewidths=1.0, linestyles="solid")
+                    colors=col_contour, linewidths=1.0, linestyles="solid", levels=n_levels)
 
     # remove contour line at threshold level
     round_thr = round(threshold, 0)
