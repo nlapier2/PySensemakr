@@ -294,7 +294,7 @@ class Sensemakr:
         if self.bounds is None:
             self.bounds = self.bench_bounds
         else:
-            self.bounds = self.bounds.append(self.bench_bounds).reset_index()
+            self.bounds = pd.concat([self.bounds,self.bench_bounds]).reset_index()
 
     def __repr__(self):
         """Print a short summary of the sensitivity results for a Sensemakr object, including formula, hypothesis, and sensitivity analysis.
