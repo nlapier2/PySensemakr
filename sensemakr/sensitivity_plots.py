@@ -629,10 +629,10 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
                 r2yz_dx=r2dz_x
             if(np.isscalar(r2dz_x)):
                 bounds = pd.DataFrame(data={'r2dz_x': [r2dz_x], 'r2yz_dx': [r2yz_dx]})
-                bounds = bench_bounds.append(bounds).reset_index()
+                bounds = pd.concat([bench_bounds, bounds]).reset_index()
             else:
                 bounds = pd.DataFrame(data={'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx})
-                bounds = bench_bounds.append(bounds).reset_index()
+                bounds = pd.concat([bench_bounds, bounds]).reset_index()
     return estimate, se, dof, bounds['r2dz_x'], bounds['r2yz_dx']
 
 
