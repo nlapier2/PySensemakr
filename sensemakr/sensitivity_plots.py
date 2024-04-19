@@ -184,7 +184,9 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     if round_thr in cs_levels:
         threshold_index = cs_levels.index(round_thr)
         CS.collections[threshold_index].remove()
-        ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=np.delete(CS.levels, threshold_index))
+        # There's a conflict in matplotlib 3.8.2 with this remove method and ax.clabel
+        # I'm currently commenting the line ax.clabel out but maybe there's a different way to do remove
+        #ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=np.delete(CS.levels, threshold_index))
     else:
         ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=CS.levels)
 
@@ -217,12 +219,12 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
         if bound_label is None:
             bound_label=[]
             for i in range(len(kd)):
-                bound_label.append( sensitivity_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
+                bound_label.append(sensitivity_bounds.label_maker(benchmark_covariate=benchmark_covariates, kd=kd[i], ky=ky[i]))
         if(np.isscalar(r2dz_x)):
-            bound_label.append( sensitivity_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
-        elif(len(r2dz_x)>len(kd)):
+            bound_label.append(sensitivity_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
+        elif(len(r2dz_x)>len(bound_label)):
             for i in range(len(r2dz_x)-len(kd)):
-                bound_label.append( sensitivity_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
+                bound_label.append(sensitivity_bounds.label_maker(benchmark_covariate=None, kd=1, ky=1))
         add_bound_to_contour(r2dz_x=r2dz_x, r2yz_dx=r2yz_dx, bound_value=bound_value, bound_label=bound_label,
                              sensitivity_of=sensitivity_of, label_text=label_text, label_bump_x=label_bump_x,
                              label_bump_y=label_bump_y, round_dig=round_dig)
@@ -629,10 +631,10 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
                 r2yz_dx=r2dz_x
             if(np.isscalar(r2dz_x)):
                 bounds = pd.DataFrame(data={'r2dz_x': [r2dz_x], 'r2yz_dx': [r2yz_dx]})
-                bounds = bench_bounds.append(bounds).reset_index()
+                bounds = pd.concat([bench_bounds, bounds]).reset_index()
             else:
                 bounds = pd.DataFrame(data={'r2dz_x': r2dz_x, 'r2yz_dx': r2yz_dx})
-                bounds = bench_bounds.append(bounds).reset_index()
+                bounds = pd.concat([bench_bounds, bounds]).reset_index()
     return estimate, se, dof, bounds['r2dz_x'], bounds['r2yz_dx']
 
 
