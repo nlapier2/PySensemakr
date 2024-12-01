@@ -64,20 +64,20 @@ Example
 >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
 >>> fitted_model = model.fit()
 >>> # Computes adjusted estimate for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
->>> smkr.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
+>>> float(smkr.adjusted_estimate(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05))  # doctest: +NUMBER
 0.06393
 >>> # Computes adjusted SE for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
->>> smkr.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
+>>> float(smkr.adjusted_se(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05))  # doctest: +NUMBER
 0.02327
 >>> # Computes adjusted t-value for confounder with  r2dz_x = 0.05, r2yz_dx = 0.05
->>> smkr.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
+>>> float(smkr.adjusted_t(model = fitted_model, treatment = "directlyharmed", r2dz_x = 0.05, r2yz_dx = 0.05))  # doctest: +NUMBER
 2.74724
 >>> # Alternatively, pass in numerical values directly.
->>> smkr.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
+>>> float(smkr.adjusted_estimate(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05))  # doctest: +NUMBER
 0.06393
->>> smkr.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05) # doctest: +NUMBER
+>>> float(smkr.adjusted_se(se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)) # doctest: +NUMBER
 0.02327
->>> smkr.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05)  # doctest: +NUMBER
+>>> float(smkr.adjusted_t(estimate = 0.09731582, se = 0.02325654, dof = 783, r2dz_x = 0.05, r2yz_dx = 0.05))  # doctest: +NUMBER
 2.74724
 """
 
