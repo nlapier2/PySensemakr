@@ -157,7 +157,7 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
     >>> # Partial R2 of directly harmed with peacefactor:
-    >>> smkr.partial_r2(model = fitted_model, covariates = "directlyharmed")  # doctest: +NUMBER
+    >>> float(smkr.partial_r2(model = fitted_model, covariates = "directlyharmed"))  # doctest: +NUMBER
     0.02187
     >>> # Partial R2 of female with peacefactor:
     >>> smkr.partial_r2(model = fitted_model, covariates = "female")  # doctest: +NUMBER
@@ -298,7 +298,7 @@ def group_partial_r2(model=None, covariates=None, f_statistic=None, p=None, dof=
     >>> import statsmodels.formula.api as smf
     >>> model = smf.ols(formula='peacefactor ~ directlyharmed + age + farmer_dar + herder_dar + pastvoted + hhsize_darfur + female + village', data=darfur)
     >>> fitted_model = model.fit()
-    >>> smkr.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"]) # doctest: +NUMBER
+    >>> float(smkr.group_partial_r2(model = fitted_model, covariates = ["female", "pastvoted"])) # doctest: +NUMBER
     0.11681
     """
     if (model is None or covariates is None) and (f_statistic is None or p is None or dof is None):
