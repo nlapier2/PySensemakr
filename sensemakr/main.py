@@ -78,8 +78,8 @@ class Sensemakr:
         a float with the standard error of the regression.
     dof: int
         an int with the degrees of freedom of the regression.
-    benchmark_covariates: string or list of strings
-        a string or list of strings with the names of the variables to use for benchmark bounding.
+    benchmark_covariates: string, list of strings or named dictionary
+        a string, list of strings, or a named dictionary with the strings of the variables to use for benchmark bounding. If named dictionary, the names are used as labels.
     kd: float or list of floats
         a float or list of floats with each being a multiple of the strength of association between a
         benchmark variable and the treatment variable to test with benchmark bounding.
@@ -102,8 +102,8 @@ class Sensemakr:
     r2yxj_dx: float
         float with the partial R2 of covariate Xj with the outcome Y
         (after partialling out the effect of the remaining covariates X, excluding Xj).
-    bound_label: string
-        a string what to call the name of a bounding variable, for printing and plotting purposes.
+    bound_label: string or list of strings
+        a string or list of strings with labels to the bounds provided manually via r2dz_x and r2yz_dx, for printing and plotting purposes.
     reduce: boolean
         whether to reduce (True, default) or increase (False) the estimate due to putative confounding.
     """
@@ -131,8 +131,8 @@ class Sensemakr:
             a float with the standard error of the regression
         dof: int
             an int with the degrees of freedom of the regression
-        benchmark_covariates: string or list of strings
-            a string or list of strings with the names of the variables to use for benchmark bounding
+        benchmark_covariates: string, list of strings or named dictionary
+            a string, list of strings, or a named dictionary with the strings of the variables to use for benchmark bounding. If named dictionary, the names are used as labels.
         kd: float or list of floats
             a float or list of floats with each being a multiple of the strength of association between a
             benchmark variable and the treatment variable to test with benchmark bounding
@@ -155,8 +155,8 @@ class Sensemakr:
         r2yxj_dx: float
             float with the partial R2 of covariate Xj with the outcome Y
             (after partialling out the effect of the remaining covariates X, excluding Xj).
-        bound_label: string
-            a string what to call the name of a bounding variable, for printing and plotting purposes
+        bound_label: string or list of strings
+            a string or list of strings with labels to the bounds provided manually via r2dz_x and r2yz_dx, for printing and plotting purposes.
         reduce: boolean
             whether to reduce (True, default) or increase (False) the estimate due to putative confounding
         """
