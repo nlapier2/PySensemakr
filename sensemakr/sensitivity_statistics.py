@@ -160,10 +160,10 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
     >>> float(smkr.partial_r2(model = fitted_model, covariates = "directlyharmed"))  # doctest: +NUMBER
     0.02187
     >>> # Partial R2 of female with peacefactor:
-    >>> smkr.partial_r2(model = fitted_model, covariates = "female")  # doctest: +NUMBER
+    >>> float(smkr.partial_r2(model = fitted_model, covariates = "female"))  # doctest: +NUMBER
     0.10903
     >>> # You can also provide the statistics directly:
-    >>> smkr.partial_r2(t_statistic = 4.18445, dof = 783)  # doctest: +NUMBER
+    >>> float(smkr.partial_r2(t_statistic = 4.18445, dof = 783))  # doctest: +NUMBER
     0.021873
     """
     if model is None and (t_statistic is None or dof is None):
