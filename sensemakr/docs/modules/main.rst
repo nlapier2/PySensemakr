@@ -48,6 +48,12 @@ Examples
 >>> fitted_model = model.fit()
 >>> # Runs sensemakr for sensitivity analysis
 >>> sensitivity = smkr.Sensemakr(fitted_model, treatment = "directlyharmed", benchmark_covariates = "female", kd = [1, 2, 3])
+>>> # Manual bounds example:
+>>> sensitivity_manual = smkr.Sensemakr(model = fitted_model, treatment = "directlyharmed", r2dz_x = [0.1, 0.2], r2yz_dx= [0.2, 0.3], bound_label= ["bound 1", "bound 2"])
+>>> # List of Lists example:
+>>> sensitivity_lists = smkr.Sensemakr(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = [['female'], ['pastvoted','female']])
+>>> # Dictionary Example:
+>>> sensitivity_dict = smkr.Sensemakr(model = fitted_model, treatment = "directlyharmed", benchmark_covariates = {'Fem':['female'],"FemPast":["female","pastvoted"]})
 >>> # Description of results
 >>> sensitivity.summary() # doctest: +SKIP
 
