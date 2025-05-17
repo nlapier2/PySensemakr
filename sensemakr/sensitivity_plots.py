@@ -174,26 +174,34 @@ def ovb_contour_plot(sense_obj=None, sensitivity_of='estimate', model=None, trea
     # Make n_levels maximum number of contour
     if(n_levels):
         n_levels=n_levels-1
-    # draw all contours
-    CS = ax.contour(grid_values_x, grid_values_y, z_axis,
-                    colors=col_contour, linewidths=1.0, linestyles="solid", levels=n_levels)
-
-    # remove contour line at threshold level
-    round_thr = round(threshold, 0)
-    cs_levels = CS.levels.tolist()
-    if round_thr in cs_levels:
-        threshold_index = cs_levels.index(round_thr)
-        CS.collections[threshold_index].remove()
-        # There's a conflict in matplotlib 3.8.2 with this remove method and ax.clabel
-        # I'm currently commenting the line ax.clabel out but maybe there's a different way to do remove
-        #ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=np.delete(CS.levels, threshold_index))
+    # draw all contours, excluding the threshold from the main contour levels
+    contour_levels = n_levels
+    if n_levels:
+        contour_levels = n_levels - 1
+    # Calculate all potential contour values
+    z_min, z_max = np.min(z_axis), np.max(z_axis)
+    if n_levels:
+        # Create levels avoiding threshold
+        delta = (z_max - z_min) / (n_levels + 1)
+        levels = []
+        current = z_min
+        while current < z_max:
+            if not np.isclose(current, threshold, atol=1e-8):
+                levels.append(current)
+            current += delta
     else:
-        ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray", levels=CS.levels)
+        # Default behavior with 10 levels, avoiding threshold
+        levels = [lvl for lvl in np.linspace(z_min, z_max, 10) if not np.isclose(lvl, threshold, atol=1e-8)]
 
-    # draw red critical contour line
+    # Draw main contours (excluding threshold)
     CS = ax.contour(grid_values_x, grid_values_y, z_axis,
-                    colors=col_thr_line, linewidths=1.0, linestyles=[(0, (7, 3))], levels=[threshold])
+                    colors=col_contour, linewidths=1.0, linestyles="solid", levels=levels)
     ax.clabel(CS, inline=1, fontsize=8, fmt="%1.3g", colors="gray")
+
+    # Draw threshold contour separately in red
+    CS_thr = ax.contour(grid_values_x, grid_values_y, z_axis,
+                        colors=col_thr_line, linewidths=1.0, linestyles=[(0, (7, 3))], levels=[threshold])
+    ax.clabel(CS_thr, inline=1, fontsize=8, fmt="%1.3g", colors="gray")
 
     # Plot point for unadjusted estimate / t_statistic
     ax.scatter([0], [0], c='k', marker='^')
@@ -394,7 +402,7 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
 
     The horizontal axis shows the partial R2 of the unobserved confounder(s) with the treatment. The vertical axis shows the adjusted treatment effect estimate.
     The partial R2 of the confounder with the outcome is represented by different curves for each scenario, as given by the parameter r2yz_dx.
-    The red marks on horizontal axis are bounds on the partial R2 of the unobserved confounder kd times as strong as the covariates used for benchmarking.
+    The red marks on the horizontal axis are bounds on the partial R2 of the unobserved confounder kd times as strong as the covariates used for benchmarking.
     The dotted red line represent the threshold for the effect estimate deemed to be problematic (for instance, zero).
 
     See Cinelli and Hazlett (2020) for details.
@@ -468,7 +476,8 @@ def ovb_extreme_plot(sense_obj=None, model=None, treatment=None, estimate=None, 
     >>> smkr.ovb_extreme_plot(sense_obj=sensitivity)
     """
     if sense_obj is not None:
-        # treatment, estimate, se, dof, r2dz_x, r2yz_dx, bound_label, reduce, thr, t_thr
+        # treatment, estimate, se, dof, r2dz_x, dum, bound_label, reduce, estimate_threshold, t_threshold,benchmark_covariates,kd,ky = \
+        #     extract_from_sense_obj(sense_obj)
         treatment, estimate, se, dof, r2dz_x, dum, bound_label, reduce, estimate_threshold, t_threshold,benchmark_covariates,kd,ky = \
             extract_from_sense_obj(sense_obj)
     elif model is not None and treatment is not None:
