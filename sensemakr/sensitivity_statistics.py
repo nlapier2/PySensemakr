@@ -174,7 +174,7 @@ def partial_r2(model=None, covariates=None, t_statistic=None, dof=None):
         model_data = model_helper(model, covariates=covariates)
         t_statistic = model_data['t_statistics']
         dof = model_data['dof']
-        return (t_statistic ** 2 / (t_statistic ** 2 + dof))[0]  # extracts float
+        return (t_statistic ** 2 / (t_statistic ** 2 + dof)).iloc[0]  # extracts float
     else:
         return t_statistic ** 2 / (t_statistic ** 2 + dof)
 
