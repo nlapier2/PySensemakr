@@ -1,4 +1,29 @@
-.idea
+# Python
 __pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Packaging / build artifacts
+*.egg-info/
+build/
+dist/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Jupyter
 .ipynb_checkpoints
+
+# Editors / IDEs
+.idea/
+.vscode/
+
+# Project specific
 backup/

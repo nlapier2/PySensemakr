@@ -624,7 +624,7 @@ def extract_from_model(model, treatment, benchmark_covariates, kd, ky, r2dz_x, r
     se = model_data['se']
     dof = model_data['dof']
     try:
-        estimate, se = float(estimate), float(se)
+        estimate, se = float(estimate.iloc[0]), float(se.iloc[0])
     except:
         sys.exit('Error: The estimated effect and standard error must be numeric.')
 
