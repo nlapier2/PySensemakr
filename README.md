@@ -29,7 +29,7 @@ For practical details of the package, see the the [package documentation](https:
 
 ## Installation
 
-Make sure you have Python 3.8, or higher, installed.
+Make sure you have Python 3.11, or higher, installed.
 
 To install the latest development version on GitHub, run:
 
@@ -41,6 +41,14 @@ A user version on PyPI can be installed via:
 
 ```
 pip3 install PySensemakr
+```
+
+For development, the project uses [uv](https://docs.astral.sh/uv/). To set up an environment with the
+test dependencies and run the tests:
+
+```
+uv sync
+uv run pytest
 ```
 
 ## Example Usage

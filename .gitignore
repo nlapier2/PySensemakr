@@ -6,6 +6,9 @@ __pycache__/
 .venv/
 venv/
 
+# uv
+uv.lock
+
 # Packaging / build artifacts
 *.egg-info/
 build/

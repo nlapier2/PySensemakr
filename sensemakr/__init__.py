@@ -19,9 +19,12 @@ Examples
 >>> sensitivity.summary() # doctest: +SKIP
 """
 
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("PySensemakr")
+except PackageNotFoundError:  # imported from a source checkout without installing
+    __version__ = "unknown"
 
 from sensemakr.main import Sensemakr
 from sensemakr.sensitivity_plots import ovb_contour_plot, ovb_extreme_plot, add_bound_to_contour

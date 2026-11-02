@@ -9,24 +9,48 @@ jobs:
       fail-fast: true
       matrix:
         os: ["ubuntu-latest", "windows-latest", "macos-latest"]
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # setuptools-scm derives the package version from git tags
 
-      - name: Setup python
-        uses: actions/setup-python@v4
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-          architecture: x64
+          enable-cache: true
 
-      - name: Install
-        run: |
-          pip install -e .
-          pip install -r requirements_test.txt
+      - name: Install newest dependency versions
+        run: uv sync
+
       - name: Run tests
-        run: pytest
-        
+        run: uv run --no-sync pytest
+
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v3
+
+  # Checks that the lower bounds in pyproject.toml still work: the direct dependencies at their
+  # minimum versions, on the oldest supported Python.
+  test-minimum-dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # setuptools-scm derives the package version from git tags
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.11"
+          enable-cache: true
+
+      - name: Install minimum dependency versions
+        run: uv sync --resolution lowest-direct
+
+      - name: Run tests
+        run: uv run --no-sync pytest

@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PySensemakr"
+dynamic = ["version"]
+description = "PySensemakr: sensemakr for Python"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [
+    { name = "Nathan LaPierre", email = "nathanl2012@gmail.com" },
+    { name = "Zhehao Zhang" },
+    { name = "Brian Hill" },
+    { name = "Carlos Cinelli" },
+]
+maintainers = [{ name = "Nathan LaPierre", email = "nathanl2012@gmail.com" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+# Lower bounds: the oldest releases that install on Python 3.11, with the test suite passing on them
+dependencies = [
+    "ipython>=8.0",  # IPython.display in Sensemakr.ovb_minimal_reporting
+    "matplotlib>=3.6.0",
+    "numpy>=1.23.2",
+    "pandas>=1.5.0",
+    "scipy>=1.9.2",
+    "statsmodels>=0.13.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/nlapier2/PySensemakr"
+Documentation = "https://pysensemakr.readthedocs.io"
+Issues = "https://github.com/nlapier2/PySensemakr/issues"
+
+[dependency-groups]
+dev = ["pytest>=8.0", "pytest-cov>=5.0"]
+docs = ["nbsphinx>=0.9", "pydata-sphinx-theme>=0.15", "sphinx>=7.0"]
+
+[tool.setuptools]
+packages = ["sensemakr"]
+include-package-data = false  # ship only the package data below, not sensemakr/docs
+
+[tool.setuptools.package-data]
+sensemakr = ["data/*.csv", "data/*.txt"]
+
+[tool.setuptools_scm]
+fallback_version = "0.0.0"  # builds without git metadata, e.g. from a source archive
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --cov=./"
+
+[tool.coverage.run]
+omit = ["sensemakr/__init__.py", "*tests*", "test_dev.py"]

@@ -21,7 +21,10 @@ sphinx:
 # Optionally build your docs in additional formats such as PDF and ePub
 formats: all
 
-# Optionally set the version of Python and requirements required to build your docs
+# Install the package and the "docs" dependency group with uv sync (uses uv.lock)
 python:
   install:
-    - requirements: requirements_docs.txt
+    - method: uv
+      command: sync
+      groups:
+        - docs
